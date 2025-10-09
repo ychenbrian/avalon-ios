@@ -116,7 +116,7 @@ extension TeamVote {
             leaderID: leader,
             teamMemberIDs: team,
             votesByVoter: votes,
-            result: result,
+            result: result
         )
 
         return teamVote
@@ -157,7 +157,12 @@ extension GameRound {
         teamVotes: [TeamVote] = TeamVote.emptyTeamVotes(roundIndex: 0),
         quest: GameQuest? = nil
     ) -> GameRound {
-        .init(index: index, status: status, quest: quest, teamVotes: teamVotes)
+        var teamVotes = teamVotes
+        if var firstVote = teamVotes.first {
+            firstVote.status = .inProgress
+            teamVotes[0] = firstVote
+        }
+        return .init(index: index, status: status, quest: quest, teamVotes: teamVotes)
     }
 
     /// A single random round.
@@ -222,7 +227,7 @@ extension RoundStatus {
 
 extension TeamVoteStatus {
     static func random() -> TeamVoteStatus {
-        let options: [TeamVoteStatus] = [.notStarted, .proposing, .finished]
+        let options: [TeamVoteStatus] = [.notStarted, .inProgress, .finished]
         return options.randomElement() ?? .notStarted
     }
 }

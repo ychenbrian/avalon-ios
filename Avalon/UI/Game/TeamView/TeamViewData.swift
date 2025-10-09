@@ -9,8 +9,6 @@ final class TeamViewData: Identifiable {
     var leader: Player?
     var members: [Player]
     var votesByVoter: [Player: VoteType]
-    var approvedCount: Int
-    var rejectedCount: Int
 
     init(id: UUID = UUID(), index: Int, leader: Player? = nil, members: [Player] = [], votesByVoter: [Player: VoteType] = [:]) {
         self.id = id
@@ -18,8 +16,6 @@ final class TeamViewData: Identifiable {
         self.leader = leader
         self.members = members
         self.votesByVoter = votesByVoter
-        approvedCount = Set(votesByVoter.compactMap { $0.value == .approve ? $0.key : nil }).count
-        rejectedCount = Set(votesByVoter.compactMap { $0.value == .reject ? $0.key : nil }).count
     }
 
     init(team: TeamVote) {
@@ -34,7 +30,5 @@ final class TeamViewData: Identifiable {
         }
         members = memberPlayers
         votesByVoter = team.votesByVoter
-        approvedCount = Set(team.votesByVoter.compactMap { $0.value == .approve ? $0.key : nil }).count
-        rejectedCount = Set(team.votesByVoter.compactMap { $0.value == .reject ? $0.key : nil }).count
     }
 }

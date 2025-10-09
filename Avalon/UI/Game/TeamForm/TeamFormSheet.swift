@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TeamFormSheet: View {
     let players: [Player]
+    var showVotes: Bool
     let onSave: (_ roundID: UUID, _ teamID: UUID, _ leader: Player?, _ members: [Player], _ votesByVoter: [Player: VoteType]) -> Void
     let onCancel: () -> Void
 
@@ -27,21 +28,31 @@ struct TeamFormSheet: View {
         roundID: UUID,
         teamID: UUID,
         leader: Player?,
+        members: [Player],
         players: [Player],
+        votesByVoter: [Player: VoteType],
         requiredTeamSize: Int,
+        showVotes: Bool = false,
         onSave: @escaping (_ roundID: UUID, _ teamID: UUID, _ leader: Player?, _ members: [Player], _ votesByVoter: [Player: VoteType]) -> Void,
         onCancel: @escaping () -> Void
     ) {
         self.players = players
+        self.showVotes = showVotes
         self.onSave = onSave
         self.onCancel = onCancel
-        _draft = .init(initialValue: .init(
+
+        var initialDraft = TeamFormDraft(
             roundID: roundID,
             teamID: teamID,
             leader: leader,
-            members: [],
-            requiredTeamSize: requiredTeamSize
-        ))
+            members: Set(members),
+            players: players,
+            requiredTeamSize: requiredTeamSize,
+            votesByVoter: votesByVoter
+        )
+        initialDraft.initialVotes()
+
+        _draft = .init(initialValue: initialDraft)
     }
 
     var body: some View {
@@ -65,7 +76,7 @@ struct TeamFormSheet: View {
                 // Team
                 let teamCount = draft.members.count
                 let teamSize = draft.requiredTeamSize
-                Text("Select Provisional Team (\(teamCount)/\(teamSize))")
+                Text("Select Team (\(teamCount)/\(teamSize))")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .padding(.top, 8)
@@ -79,38 +90,40 @@ struct TeamFormSheet: View {
 
                 Divider()
 
-                // Approvals
-                Text("Approvals")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 12)
+                if showVotes {
+                    // Approvals
+                    Text("Approvals")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 12)
 
-                PlayerGrid(
-                    players: self.players,
-                    selectedColor: .green,
-                    selected: { draft.votesByVoter[$0] == .approve },
-                    action: { toggleApprove($0) }
-                )
-                .padding(.vertical, 12)
+                    PlayerGrid(
+                        players: self.players,
+                        selectedColor: .green,
+                        selected: { draft.votesByVoter[$0] == .approve },
+                        action: { toggleApprove($0) }
+                    )
+                    .padding(.vertical, 12)
 
-                // Rejects
-                Text("Rejects")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 8)
+                    // Rejects
+                    Text("Rejects")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 8)
 
-                PlayerGrid(
-                    players: self.players,
-                    selectedColor: .red,
-                    selected: { draft.votesByVoter[$0] == .reject },
-                    action: { toggleReject($0) }
-                )
-                .padding(.vertical, 12)
+                    PlayerGrid(
+                        players: self.players,
+                        selectedColor: .red,
+                        selected: { draft.votesByVoter[$0] == .reject },
+                        action: { toggleReject($0) }
+                    )
+                    .padding(.vertical, 12)
+                }
 
                 Spacer(minLength: 0)
             }
             .padding(.horizontal)
-            .navigationTitle("Provisional Team")
+            .navigationTitle("Select Team")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -147,7 +160,9 @@ struct TeamFormSheetPreview: View {
             roundID: UUID(),
             teamID: UUID(),
             leader: nil,
+            members: [],
             players: Player.defaultPlayers,
+            votesByVoter: [:],
             requiredTeamSize: 4,
             onSave: { _, _, _, _, _ in },
             onCancel: {}

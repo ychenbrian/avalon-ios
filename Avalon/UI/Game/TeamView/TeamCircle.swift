@@ -14,7 +14,7 @@ struct TeamCircle: View {
                     .font(.headline.bold())
                     .foregroundColor(.white)
             }
-            Text("\(team.result?.displayText ?? "")")
+            Text("\(displayText)")
                 .font(.caption)
                 .bold()
                 .foregroundColor(team.result?.color ?? .secondary)
@@ -28,8 +28,7 @@ struct TeamCircle: View {
     private var fillColor: Color {
         switch team.status {
         case .notStarted: return .gray.opacity(0.5)
-        case .proposing: return .blue.opacity(0.7)
-        case .voting: return .orange.opacity(0.7)
+        case .inProgress: return .blue.opacity(0.7)
         case .finished:
             if let result = team.result {
                 return result.isApproved ? .green.opacity(0.8) : .red.opacity(0.8)
@@ -38,9 +37,22 @@ struct TeamCircle: View {
             }
         }
     }
+
+    private var displayText: String {
+        switch team.status {
+        case .notStarted: return "N/A"
+        case .inProgress: return "Progress"
+        case .finished:
+            if let result = team.result {
+                return result.displayText
+            } else {
+                return "Error"
+            }
+        }
+    }
 }
 
-#Preview("Team – circle") {
+#Preview {
     HStack {
         ForEach(0 ..< 5) { i in
             let team = TeamViewData(team: TeamVote.random(roundIndex: 0, teamIndex: i))

@@ -19,6 +19,7 @@ struct ErrorView: View {
 
 #Preview {
     ErrorView(error: NSError(domain: "", code: 0, userInfo: [
-        NSLocalizedDescriptionKey: "Something went wrong"]),
+        NSLocalizedDescriptionKey: "Something went wrong",
+    ]),
     retryAction: {})
 }

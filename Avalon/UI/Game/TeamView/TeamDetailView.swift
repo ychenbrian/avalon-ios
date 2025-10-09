@@ -53,13 +53,40 @@ struct TeamDetailView: View {
                     }
                 }
             }
+            Button("Edit Team") {
+                isEditingTeam = true
+            }
+            .font(.headline)
+            .foregroundColor(.primary)
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.secondary.opacity(0.2), lineWidth: 1))
         .sheet(isPresented: $isEditingTeam) {
-            NavigationStack {}
+            if let round = store.round(id: roundID), let team = store.team(id: teamID, in: roundID) {
+                TeamFormSheet(
+                    roundID: round.id,
+                    teamID: team.id,
+                    leader: team.leader,
+                    members: team.members,
+                    players: store.players,
+                    votesByVoter: team.votesByVoter,
+                    requiredTeamSize: round.requiredTeamSize,
+                    showVotes: true,
+                    onSave: { roundID, teamID, leader, members, votesByVoter in
+                        store.updateTeamLeader(leader, roundID: roundID, teamID: teamID)
+                        store.updateTeamMembers(members, roundID: roundID, teamID: teamID)
+                        store.updateTeamVotes(votesByVoter, roundID: roundID, teamID: teamID)
+                        store.finishTeam(roundID: roundID, teamID: teamID)
+                        withAnimation { isEditingTeam = false }
+                    },
+                    onCancel: { withAnimation { isEditingTeam = false } }
+                )
+                .presentationDetents([.large])
+            } else {
+                Color.clear.onAppear { isEditingTeam = false }
+            }
         }
     }
 
@@ -96,12 +123,6 @@ struct TeamDetailView: View {
             index = end
         }
         return rows
-    }
-
-    public func getPlayersByID(playerIDs: [PlayerID]) -> [Player] {
-        store.players
-            .filter { playerIDs.contains($0.id) }
-            .sorted { $0.index < $1.index }
     }
 }
 

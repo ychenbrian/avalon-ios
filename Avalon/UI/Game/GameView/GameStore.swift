@@ -28,7 +28,7 @@ final class GameStore {
     }
 
     @discardableResult
-    func addTeam(to teamID: UUID, index: Int? = nil) -> TeamViewData? {
+    func addTeam(to teamID: UUID, index _: Int? = nil) -> TeamViewData? {
         guard let round = round(id: teamID) else { return nil }
         let nextIndex = round.teams.count
         let team = TeamViewData(index: nextIndex)
@@ -44,6 +44,7 @@ final class GameStore {
 
     func startRound(_ index: Int) {
         game.rounds[index].status = .inProgress
+        game.rounds[index].teams.first?.status = .inProgress
     }
 
     func updateTeamLeader(_ leader: Player?, roundID: UUID, teamID: UUID) {
@@ -59,6 +60,16 @@ final class GameStore {
     func updateTeamVotes(_ votesByVoter: [Player: VoteType]?, roundID: UUID, teamID: UUID) {
         guard let votesByVoter else { return }
         team(id: teamID, in: roundID)?.votesByVoter = votesByVoter
+    }
+
+    func finishTeam(roundID: UUID, teamID: UUID) {
+        team(id: teamID, in: roundID)?.status = .finished
+        let selectedTeam = team(id: teamID, in: roundID) ?? TeamViewData(index: 0)
+        let approvedCount = Set(selectedTeam.votesByVoter.compactMap { $0.value == .approve ? $0.key : nil }).count
+        let rejectedCount = Set(selectedTeam.votesByVoter.compactMap { $0.value == .reject ? $0.key : nil }).count
+
+        let result = TeamVoteResult(isApproved: approvedCount > rejectedCount, approvedCount: approvedCount, rejectedCount: rejectedCount)
+        team(id: teamID, in: roundID)?.result = result
     }
 
     private func nextRoundIndex() -> Int {

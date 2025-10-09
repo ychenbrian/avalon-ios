@@ -98,7 +98,9 @@ struct GameView: View {
                     roundID: round.id,
                     teamID: team.id,
                     leader: team.leader,
+                    members: team.members,
                     players: store.players,
+                    votesByVoter: team.votesByVoter,
                     requiredTeamSize: round.requiredTeamSize,
                     onSave: { roundID, teamID, leader, members, votesByVoter in
                         store.updateTeamLeader(leader, roundID: roundID, teamID: teamID)
@@ -108,7 +110,7 @@ struct GameView: View {
                     },
                     onCancel: { withAnimation { newTeam = nil } }
                 )
-                .presentationDetents([.large])
+                .presentationDetents([.medium, .large])
             } else {
                 Color.clear.onAppear { newTeam = nil }
             }
