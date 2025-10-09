@@ -1,0 +1,161 @@
+import SwiftUI
+
+struct TeamFormSheet: View {
+    let players: [Player]
+    let onSave: (_ roundID: UUID, _ teamID: UUID, _ leader: Player?, _ members: [Player], _ votesByVoter: [Player: VoteType]) -> Void
+    let onCancel: () -> Void
+
+    @State private var draft: TeamFormDraft
+
+    private func toggleApprove(_ player: Player) {
+        if draft.votesByVoter[player] == .approve {
+            draft.castVote(voter: player, vote: .reject)
+        } else {
+            draft.castVote(voter: player, vote: .approve)
+        }
+    }
+
+    private func toggleReject(_ player: Player) {
+        if draft.votesByVoter[player] == .reject {
+            draft.castVote(voter: player, vote: .approve)
+        } else {
+            draft.castVote(voter: player, vote: .reject)
+        }
+    }
+
+    init(
+        roundID: UUID,
+        teamID: UUID,
+        leader: Player?,
+        players: [Player],
+        requiredTeamSize: Int,
+        onSave: @escaping (_ roundID: UUID, _ teamID: UUID, _ leader: Player?, _ members: [Player], _ votesByVoter: [Player: VoteType]) -> Void,
+        onCancel: @escaping () -> Void
+    ) {
+        self.players = players
+        self.onSave = onSave
+        self.onCancel = onCancel
+        _draft = .init(initialValue: .init(
+            roundID: roundID,
+            teamID: teamID,
+            leader: leader,
+            members: [],
+            requiredTeamSize: requiredTeamSize
+        ))
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                // Leader
+                Text("Select Leader")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 12)
+
+                PlayerGrid(
+                    players: self.players,
+                    selected: { draft.leader == $0 },
+                    action: { player in
+                        draft.leader = player
+                    }
+                )
+                .padding(.vertical, 12)
+
+                // Team
+                let teamCount = draft.members.count
+                let teamSize = draft.requiredTeamSize
+                Text("Select Provisional Team (\(teamCount)/\(teamSize))")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 8)
+
+                PlayerGrid(
+                    players: self.players,
+                    selected: { draft.members.contains($0) },
+                    action: { draft.toggleTeamMember($0) }
+                )
+                .padding(.vertical, 12)
+
+                Divider()
+
+                // Approvals
+                Text("Approvals")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 12)
+
+                PlayerGrid(
+                    players: self.players,
+                    selectedColor: .green,
+                    selected: { draft.votesByVoter[$0] == .approve },
+                    action: { toggleApprove($0) }
+                )
+                .padding(.vertical, 12)
+
+                // Rejects
+                Text("Rejects")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 8)
+
+                PlayerGrid(
+                    players: self.players,
+                    selectedColor: .red,
+                    selected: { draft.votesByVoter[$0] == .reject },
+                    action: { toggleReject($0) }
+                )
+                .padding(.vertical, 12)
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal)
+            .navigationTitle("Provisional Team")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        onCancel()
+                    }
+                    .foregroundStyle(.red)
+                    .accessibilityLabel("Cancel editing team vote")
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        onSave(
+                            draft.roundID,
+                            draft.teamID,
+                            draft.leader,
+                            Array(draft.members),
+                            draft.votesByVoter
+                        )
+                    }
+                    .foregroundStyle(.blue)
+                    .accessibilityLabel("Save team vote")
+                }
+            }
+            .interactiveDismissDisabled(false)
+        }
+    }
+}
+
+struct TeamFormSheetPreview: View {
+    private var teamVote = TeamVote.random(roundIndex: 0, teamIndex: 0)
+
+    var body: some View {
+        TeamFormSheet(
+            roundID: UUID(),
+            teamID: UUID(),
+            leader: nil,
+            players: Player.defaultPlayers,
+            requiredTeamSize: 4,
+            onSave: { _, _, _, _, _ in },
+            onCancel: {}
+        )
+        .presentationDetents([.medium, .large])
+    }
+}
+
+#Preview {
+    TeamFormSheetPreview()
+}

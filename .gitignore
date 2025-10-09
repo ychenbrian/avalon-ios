@@ -1,0 +1,50 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.xcworkspace/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Swift Package Manager
+/.build/
+Packages/
+Package.resolved
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# SwiftPM Xcode integration
+.swiftpm/xcode
+
+# Archives
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# User settings
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+
+# macOS
+.DS_Store
+
+# Playground files
+timeline.xctimeline
+playground.xcworkspace
+
+# Output / Logs
+*.log

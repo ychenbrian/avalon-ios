@@ -1,0 +1,6 @@
+
+// Enum
+
+"voting-type-approval" = "Approval";
+"voting-type-reject" = "Reject";
+"voting-type-abstain" = "Abstain";
