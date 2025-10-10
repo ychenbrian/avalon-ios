@@ -17,7 +17,7 @@ struct RoundCircle: View {
             Text("\(getStatusText())")
                 .font(.caption)
                 .bold()
-                .foregroundColor(round.result?.color ?? .secondary)
+                .foregroundColor(round.quest?.result?.color ?? .secondary)
                 .foregroundStyle(.secondary)
         }
         .padding(8)
@@ -28,7 +28,7 @@ struct RoundCircle: View {
 
     private func getStatusColor() -> Color {
         if round.status == .finished {
-            return round.status.color
+            return round.quest?.result?.color ?? .blue.opacity(0.7)
         } else if round.status == .inProgress {
             return .blue.opacity(0.7)
         }
@@ -37,7 +37,16 @@ struct RoundCircle: View {
 
     private func getStatusText() -> String {
         if round.status == .finished {
-            return round.result?.displayText ?? "N/A"
+            guard let quest = round.quest else { return "N/A" }
+
+            if quest.result == .fail {
+                let failVotes = quest.failVotes ?? 1
+                return failVotes == 1 ? "\(failVotes) Fail" : "\(failVotes) Fails"
+            } else if quest.result == .success {
+                return "Success"
+            } else {
+                return "N/A"
+            }
         } else if round.status == .inProgress {
             return "Progress"
         }

@@ -103,9 +103,7 @@ struct GameView: View {
                     votesByVoter: team.votesByVoter,
                     requiredTeamSize: round.requiredTeamSize,
                     onSave: { roundID, teamID, leader, members, votesByVoter in
-                        store.updateTeamLeader(leader, roundID: roundID, teamID: teamID)
-                        store.updateTeamMembers(members, roundID: roundID, teamID: teamID)
-                        store.updateTeamVotes(votesByVoter, roundID: roundID, teamID: teamID)
+                        store.updateTeam(roundID: roundID, teamID: teamID, leader: leader, members: members, votesByVoter: votesByVoter)
                         withAnimation { newTeam = nil }
                     },
                     onCancel: { withAnimation { newTeam = nil } }

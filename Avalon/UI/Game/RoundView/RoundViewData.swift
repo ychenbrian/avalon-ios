@@ -5,7 +5,7 @@ final class RoundViewData: Identifiable {
     let id: UUID
     var index: Int
     var status: RoundStatus = .notStarted
-    var result: QuestResult?
+    var quest: QuestViewData?
     var teams: [TeamViewData]
     var selectedTeamID: UUID?
 
@@ -23,7 +23,7 @@ final class RoundViewData: Identifiable {
         id = round.id
         index = round.index
         status = round.status
-        result = round.quest?.result
+        quest = QuestViewData(quest: round.quest)
         teams = round.teamVotes.map(TeamViewData.init(team:))
     }
 }

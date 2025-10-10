@@ -47,19 +47,26 @@ final class GameStore {
         game.rounds[index].teams.first?.status = .inProgress
     }
 
-    func updateTeamLeader(_ leader: Player?, roundID: UUID, teamID: UUID) {
-        guard let leader else { return }
-        team(id: teamID, in: roundID)?.leader = leader
-    }
+    func updateTeam(
+        roundID: UUID,
+        teamID: UUID,
+        leader: Player? = nil,
+        members: [Player]? = nil,
+        votesByVoter: [Player: VoteType]? = nil
+    ) {
+        guard let team = team(id: teamID, in: roundID) else { return }
 
-    func updateTeamMembers(_ members: [Player]?, roundID: UUID, teamID: UUID) {
-        guard let members else { return }
-        team(id: teamID, in: roundID)?.members = members
-    }
+        if let leader = leader {
+            team.leader = leader
+        }
 
-    func updateTeamVotes(_ votesByVoter: [Player: VoteType]?, roundID: UUID, teamID: UUID) {
-        guard let votesByVoter else { return }
-        team(id: teamID, in: roundID)?.votesByVoter = votesByVoter
+        if let members = members {
+            team.members = members
+        }
+
+        if let votesByVoter = votesByVoter {
+            team.votesByVoter = votesByVoter
+        }
     }
 
     func finishTeam(roundID: UUID, teamID: UUID) {
@@ -70,6 +77,17 @@ final class GameStore {
 
         let result = TeamVoteResult(isApproved: approvedCount > rejectedCount, approvedCount: approvedCount, rejectedCount: rejectedCount)
         team(id: teamID, in: roundID)?.result = result
+    }
+
+    func updateQuestResult(roundID: UUID, failCount: Int) {
+        round(id: roundID)?.status = .finished
+        var quest = QuestViewData(failCount: failCount)
+        if failCount >= round(id: roundID)?.requiredFails ?? 1 {
+            quest.result = .fail
+        } else {
+            quest.result = .success
+        }
+        round(id: roundID)?.quest = quest
     }
 
     private func nextRoundIndex() -> Int {

@@ -153,8 +153,6 @@ struct TeamFormSheet: View {
 }
 
 struct TeamFormSheetPreview: View {
-    private var teamVote = TeamVote.random(roundIndex: 0, teamIndex: 0)
-
     var body: some View {
         TeamFormSheet(
             roundID: UUID(),

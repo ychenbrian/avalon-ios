@@ -6,6 +6,7 @@ struct TeamDetailView: View {
     let teamID: UUID
 
     @State private var isEditingTeam = false
+    @State private var isEditingQuest = false
 
     private var team: TeamViewData? { store.team(id: teamID, in: roundID) }
 
@@ -25,9 +26,7 @@ struct TeamDetailView: View {
                 Text("Proposed Team")
                     .font(.headline)
                     .foregroundColor(.primary)
-                if let members = team?.members.sorted(by: { $0.index < $1.index }),
-                   !members.isEmpty
-                {
+                if let members = team?.members.sorted(by: { $0.index < $1.index }), !members.isEmpty {
                     HStack(spacing: 6) {
                         ForEach(members, id: \.id) { player in
                             overlayForPlayer(player)
@@ -75,17 +74,41 @@ struct TeamDetailView: View {
                     requiredTeamSize: round.requiredTeamSize,
                     showVotes: true,
                     onSave: { roundID, teamID, leader, members, votesByVoter in
-                        store.updateTeamLeader(leader, roundID: roundID, teamID: teamID)
-                        store.updateTeamMembers(members, roundID: roundID, teamID: teamID)
-                        store.updateTeamVotes(votesByVoter, roundID: roundID, teamID: teamID)
+                        store.updateTeam(roundID: roundID, teamID: teamID, leader: leader, members: members, votesByVoter: votesByVoter)
                         store.finishTeam(roundID: roundID, teamID: teamID)
-                        withAnimation { isEditingTeam = false }
+                        withAnimation {
+                            isEditingTeam = false
+                            isEditingQuest = true
+                        }
                     },
                     onCancel: { withAnimation { isEditingTeam = false } }
                 )
                 .presentationDetents([.large])
             } else {
                 Color.clear.onAppear { isEditingTeam = false }
+            }
+        }
+        .sheet(isPresented: $isEditingQuest) {
+            if let round = store.round(id: roundID), let team = store.team(id: teamID, in: roundID) {
+                QuestFormSheet(
+                    roundID: round.id,
+                    teamID: team.id,
+                    leader: team.leader,
+                    members: team.members,
+                    players: store.players,
+                    votesByVoter: team.votesByVoter,
+                    teamSize: round.requiredTeamSize,
+                    requiredFails: round.requiredFails,
+                    showVotes: true,
+                    onSave: { roundID, _, failCount in
+                        store.updateQuestResult(roundID: roundID, failCount: failCount)
+                        withAnimation { isEditingQuest = false }
+                    },
+                    onCancel: { withAnimation { isEditingQuest = false } }
+                )
+                .presentationDetents([.medium])
+            } else {
+                Color.clear.onAppear { isEditingQuest = false }
             }
         }
     }
