@@ -50,7 +50,9 @@ struct TeamFormSheet: View {
             requiredTeamSize: requiredTeamSize,
             votesByVoter: votesByVoter
         )
-        initialDraft.initialVotes()
+        if showVotes {
+            initialDraft.initialVotes()
+        }
 
         _draft = .init(initialValue: initialDraft)
     }

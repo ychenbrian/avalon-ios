@@ -9,7 +9,7 @@ struct RoundDetailView: View {
     private var selectedTeamID: UUID? { store.round(id: roundID)?.selectedTeamID }
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 20) {
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
                     if let round = store.round(id: roundID) {
@@ -24,6 +24,10 @@ struct RoundDetailView: View {
                         }
                     }
                 }
+            }
+
+            if let round = store.round(id: roundID), round.quest?.result != nil {
+                QuestView(roundID: roundID)
             }
 
             if let teamID = selectedTeamID {

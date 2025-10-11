@@ -11,7 +11,7 @@ struct TeamDetailView: View {
     private var team: TeamViewData? { store.team(id: teamID, in: roundID) }
 
     var body: some View {
-        List {
+        VStack(alignment: .leading, spacing: 20) {
             HStack(alignment: .center, spacing: 8) {
                 Text("Leader")
                     .font(.headline)
@@ -56,10 +56,10 @@ struct TeamDetailView: View {
                 isEditingTeam = true
             }
             .font(.headline)
-            .foregroundColor(.primary)
+            .foregroundColor(.blue)
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.secondary.opacity(0.2), lineWidth: 1))
         .sheet(isPresented: $isEditingTeam) {

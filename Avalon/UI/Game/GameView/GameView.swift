@@ -19,38 +19,38 @@ struct GameView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading) {
-                ScrollView(.horizontal) {
-                    HStack(spacing: 8) {
-                        ForEach(store.game.rounds) { round in
-                            RoundCircle(round: round, isSelected: selectedRoundID == round.id)
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    let status = availability(for: round)
-                                    switch status {
-                                    case .locked:
-                                        activeAlert = .cannotStart
-                                    case .next:
-                                        activeAlert = .confirmStart(round: round)
-                                    case .started:
-                                        withAnimation { store.game.selectedRoundID = round.id }
+            ScrollView {
+                VStack(alignment: .leading) {
+                    ScrollView(.horizontal) {
+                        HStack(spacing: 8) {
+                            ForEach(store.game.rounds) { round in
+                                RoundCircle(round: round, isSelected: selectedRoundID == round.id)
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        let status = availability(for: round)
+                                        switch status {
+                                        case .locked:
+                                            activeAlert = .cannotStart
+                                        case .next:
+                                            activeAlert = .confirmStart(round: round)
+                                        case .started:
+                                            withAnimation { store.game.selectedRoundID = round.id }
+                                        }
                                     }
-                                }
+                            }
                         }
                     }
-                }
 
-                if let id = selectedRoundID, let round = store.round(id: id) {
-                    RoundDetailView(roundID: round.id)
-                } else {
-                    ContentUnavailableView(
-                        "Select a round",
-                        systemImage: "train.side.front.car",
-                        description: Text("Tap a circle above.")
-                    )
+                    if let id = selectedRoundID, let round = store.round(id: id) {
+                        RoundDetailView(roundID: round.id)
+                    } else {
+                        ContentUnavailableView(
+                            "Select a round",
+                            systemImage: "train.side.front.car",
+                            description: Text("Tap a circle above.")
+                        )
+                    }
                 }
-
-                Spacer(minLength: 0)
             }
             .padding()
             .navigationTitle("\(store.game.name) - Round \((store.round(id: selectedRoundID ?? UUID())?.index ?? 0) + 1)")
