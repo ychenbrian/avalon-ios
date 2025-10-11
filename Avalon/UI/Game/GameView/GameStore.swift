@@ -13,6 +13,10 @@ final class GameStore {
     func team(id: UUID, in roundID: UUID) -> TeamViewData? { round(id: roundID)?.teams.first(where: { $0.id == id }) }
 
     // Intents (mutations)
+    func initialGame() {
+        game = GameViewData(game: AvalonGame.initial())
+    }
+
     @discardableResult
     func addRound(index: Int? = nil) -> RoundViewData {
         let index = index ?? nextRoundIndex()

@@ -54,7 +54,7 @@ struct RoundCircle: View {
     }
 }
 
-#Preview("Round – circle") {
+#Preview {
     HStack {
         ForEach(0 ..< 5) { i in
             let round = RoundViewData(round: GameRound.random(index: i))

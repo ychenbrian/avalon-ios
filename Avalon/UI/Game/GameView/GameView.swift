@@ -54,26 +54,33 @@ struct GameView: View {
             }
             .padding()
             .navigationTitle("\(store.game.name) - Round \((store.round(id: selectedRoundID ?? UUID())?.index ?? 0) + 1)")
-//            .toolbar {
-//                ToolbarItem(placement: .topBarTrailing) {
-//                    Button {
-//                        let new = store.addRound()
-//                        store.game.selectedRoundID = new.id
-//                    } label: {
-//                        Label("Add Round", systemImage: "plus")
-//                    }
-//                }
-//            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        activeAlert = .confirmNewGame
+                    } label: {
+                        Label("Add Round", systemImage: "plus")
+                    }
+                }
+            }
         }
         .alert(item: $activeAlert) { route in
             switch route {
+            case .confirmNewGame:
+                return Alert(
+                    title: Text("Start a new game"),
+                    message: Text("Do you want to finish the current one and start a new game?"),
+                    primaryButton: .default(Text("Confirm")) {
+                        store.initialGame()
+                    },
+                    secondaryButton: .cancel()
+                )
             case .cannotStart:
                 return Alert(
                     title: Text("Cannot start this round"),
                     message: Text("You can’t start this round yet."),
                     dismissButton: .default(Text("OK"))
                 )
-
             case let .confirmStart(round):
                 return Alert(
                     title: Text("Start new round?"),
