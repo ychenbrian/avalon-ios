@@ -40,7 +40,7 @@ struct QuestCircle: View {
             guard let result = quest.result else { return "N/A" }
 
             if result.type == .fail {
-                let failVotes = result.failVotes ?? 1
+                let failVotes = result.failCount ?? 1
                 return failVotes == 1 ? "\(failVotes) Fail" : "\(failVotes) Fails"
             } else if result.type == .success {
                 return "Success"

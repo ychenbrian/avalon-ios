@@ -17,35 +17,6 @@ final class GameStore {
         game = GameViewData(game: AvalonGame.initial())
     }
 
-    @discardableResult
-    func addQuest(index: Int? = nil) -> QuestViewData {
-        let index = index ?? game.quests.count
-        let quest = QuestViewData(index: index)
-        game.quests.append(quest)
-        return quest
-    }
-
-    func removeQuest(id: UUID) {
-        if let idx = game.quests.firstIndex(where: { $0.id == id }) {
-            game.quests.remove(at: idx)
-        }
-    }
-
-    @discardableResult
-    func addTeam(to teamID: UUID, index _: Int? = nil) -> TeamViewData? {
-        guard let quest = quest(id: teamID) else { return nil }
-        let nextIndex = quest.teams.count
-        let team = TeamViewData(index: nextIndex)
-        quest.teams.append(team)
-        return team
-    }
-
-    func removeTeam(_ teamID: UUID, from questID: UUID) {
-        guard let quest = quest(id: questID),
-              let idx = quest.teams.firstIndex(where: { $0.id == teamID }) else { return }
-        quest.teams.remove(at: idx)
-    }
-
     func startQuest(_ index: Int) {
         game.quests[index].status = .inProgress
         game.quests[index].teams.first?.status = .inProgress

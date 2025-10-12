@@ -59,11 +59,11 @@ extension AvalonGame {
     static func initial(
         players: [Player] = Player.defaultPlayers,
         quests: [Quest] = [
-            Quest.empty(index: 0, status: .inProgress),
-            Quest.empty(index: 1),
-            Quest.empty(index: 2),
-            Quest.empty(index: 3),
-            Quest.empty(index: 4),
+            Quest.initial(index: 0, status: .inProgress),
+            Quest.initial(index: 1),
+            Quest.initial(index: 2),
+            Quest.initial(index: 3),
+            Quest.initial(index: 4),
         ]
     ) -> AvalonGame {
         .init(players: players, quests: quests)
@@ -153,12 +153,23 @@ extension Quest {
         teamVotes: [Team] = Team.emptyTeamVotes(roundIndex: 0),
         quest: QuestResult? = nil
     ) -> Quest {
-        var teamVotes = teamVotes
-        if var firstVote = teamVotes.first {
-            firstVote.status = .inProgress
-            teamVotes[0] = firstVote
-        }
         return .init(index: index, status: status, quest: quest, teams: teamVotes)
+    }
+
+    static func initial(
+        index: Int,
+        status: QuestStatus = .notStarted,
+        teams: [Team] = Team.emptyTeamVotes(roundIndex: 0),
+        quest: QuestResult? = nil
+    ) -> Quest {
+        var teams = teams
+        if index == 0 {
+            if var firstTeam = teams.first {
+                firstTeam.status = .inProgress
+                teams[0] = firstTeam
+            }
+        }
+        return .init(index: index, status: status, quest: quest, teams: teams)
     }
 
     static func random(
@@ -193,7 +204,7 @@ extension QuestResult {
         type: ResultType = .success,
         failVotes: Int = 0
     ) -> QuestResult {
-        .init(leader: leader, team: team, type: type, failVotes: failVotes)
+        .init(leader: leader, team: team, type: type, failCount: failVotes)
     }
 
     static func random(
@@ -204,7 +215,7 @@ extension QuestResult {
             leader: Player.random(from: players),
             team: Player.randomTeam(from: players),
             type: ResultType.random(),
-            failVotes: failVotes
+            failCount: failVotes
         )
     }
 }

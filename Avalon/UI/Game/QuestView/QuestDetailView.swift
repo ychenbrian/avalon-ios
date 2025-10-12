@@ -21,11 +21,6 @@ struct QuestDetailView: View {
                         ForEach(quest.teams) { team in
                             TeamCircle(team: team, isSelected: selectedTeamID == team.id)
                                 .onTapGesture { store.quest(id: questID)?.selectedTeamID = team.id }
-                                .contextMenu {
-                                    Button(role: .destructive) { store.removeTeam(team.id, from: questID) } label: {
-                                        Label("Remove Team", systemImage: "trash")
-                                    }
-                                }
                         }
                     }
                 }

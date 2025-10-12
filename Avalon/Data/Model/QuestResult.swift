@@ -5,7 +5,7 @@ struct QuestResult: Equatable {
     var leader: Player?
     var team: [Player]
     var type: ResultType? = nil
-    var failVotes: Int = 0
+    var failCount: Int = 0
 }
 
 enum ResultType: String, Codable {
