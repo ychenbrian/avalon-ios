@@ -12,7 +12,7 @@ private struct TeamLocator: Identifiable, Equatable {
 struct GameView: View {
     @Environment(GameStore.self) private var store
 
-    @State private var activeAlert: NewQuestAlert?
+    @State private var activeAlert: GameViewAlert?
     @State private var newTeam: TeamLocator?
 
     private var selectedQuestID: UUID? { store.game.selectedQuestID }
@@ -54,12 +54,20 @@ struct GameView: View {
             }
             .padding()
             .navigationTitle("\(store.game.name) - Quest \((store.quest(id: selectedQuestID ?? UUID())?.index ?? 0) + 1)")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        activeAlert = .editGame
+                    } label: {
+                        Label("Edit Game", systemImage: "pencil")
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         activeAlert = .confirmNewGame
                     } label: {
-                        Label("Add Quest", systemImage: "plus")
+                        Label("New Game", systemImage: "plus")
                     }
                 }
             }
@@ -75,6 +83,8 @@ struct GameView: View {
                     },
                     secondaryButton: .cancel()
                 )
+            case .editGame:
+                return Alert(title: Text("Not implemented"))
             case .cannotStart:
                 return Alert(
                     title: Text("Cannot start this quest"),

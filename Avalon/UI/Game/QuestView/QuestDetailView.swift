@@ -9,7 +9,12 @@ struct QuestDetailView: View {
     private var selectedTeamID: UUID? { store.quest(id: questID)?.selectedTeamID }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Vote Track")
+                .padding(.top, 8)
+                .font(.headline)
+                .foregroundColor(.primary)
+            
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
                     if let quest = store.quest(id: questID) {

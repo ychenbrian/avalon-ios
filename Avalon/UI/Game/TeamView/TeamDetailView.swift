@@ -11,7 +11,7 @@ struct TeamDetailView: View {
     private var team: TeamViewData? { store.team(id: teamID, in: questID) }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .center, spacing: 8) {
                 Text("Leader")
                     .font(.headline)
