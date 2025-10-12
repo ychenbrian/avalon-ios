@@ -1,15 +1,15 @@
 import SwiftUI
 
-enum NewRoundAlert: Identifiable {
+enum NewQuestAlert: Identifiable {
     case confirmNewGame
     case cannotStart
-    case confirmStart(round: RoundViewData)
+    case confirmStart(quest: QuestViewData)
 
     var id: String {
         switch self {
         case .confirmNewGame: return "confirmNewGame"
         case .cannotStart: return "cannotStart"
-        case let .confirmStart(round): return "confirmStart-\(round.id)"
+        case let .confirmStart(quest): return "confirmStart-\(quest.id)"
         }
     }
 }

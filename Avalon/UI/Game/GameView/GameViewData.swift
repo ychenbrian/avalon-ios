@@ -4,20 +4,20 @@ import SwiftUI
 final class GameViewData: Identifiable {
     let id: UUID
     var name: String
-    var rounds: [RoundViewData]
-    var selectedRoundID: UUID?
+    var quests: [QuestViewData]
+    var selectedQuestID: UUID?
 
-    init(id: UUID = UUID(), name: String, rounds: [RoundViewData] = []) {
+    init(id: UUID = UUID(), name: String, quests: [QuestViewData] = []) {
         self.id = id
         self.name = name
-        self.rounds = rounds
-        selectedRoundID = rounds.first?.id
+        self.quests = quests
+        selectedQuestID = quests.first?.id
     }
 
     init(game: AvalonGame) {
         id = game.id
         name = "Game 1"
-        rounds = game.rounds.map(RoundViewData.init(round:))
-        selectedRoundID = rounds.first?.id
+        quests = game.quests.map(QuestViewData.init(quest:))
+        selectedQuestID = quests.first?.id
     }
 }

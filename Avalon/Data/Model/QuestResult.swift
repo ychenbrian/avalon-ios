@@ -1,14 +1,14 @@
 import Foundation
 import SwiftUI
 
-struct GameQuest: Equatable {
+struct QuestResult: Equatable {
     var leader: Player?
     var team: [Player]
-    var result: QuestResult? = nil
+    var type: ResultType? = nil
     var failVotes: Int = 0
 }
 
-enum QuestResult: String, Codable {
+enum ResultType: String, Codable {
     case success
     case fail
 

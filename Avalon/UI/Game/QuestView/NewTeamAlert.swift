@@ -2,7 +2,7 @@ import SwiftUI
 
 enum NewTeamAlert: Identifiable {
     case cannotStart
-    case confirmStart(teamVote: TeamVote)
+    case confirmStart(teamVote: Team)
 
     var id: String {
         switch self {

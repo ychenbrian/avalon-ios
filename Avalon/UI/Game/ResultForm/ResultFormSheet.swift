@@ -1,14 +1,14 @@
 import SwiftUI
 
-struct QuestFormSheet: View {
+struct ResultFormSheet: View {
     let players: [Player]
-    let onSave: (_ roundID: UUID, _ teamID: UUID, _ failCount: Int) -> Void
+    let onSave: (_ questID: UUID, _ failCount: Int) -> Void
     let onCancel: () -> Void
 
     @State private var draft: QuestFormDraft
 
     init(
-        roundID: UUID,
+        questID: UUID,
         teamID: UUID,
         leader: Player?,
         members: [Player],
@@ -17,7 +17,7 @@ struct QuestFormSheet: View {
         teamSize: Int,
         requiredFails: Int,
         showVotes _: Bool = false,
-        onSave: @escaping (_ roundID: UUID, _ teamID: UUID, _ failCount: Int) -> Void,
+        onSave: @escaping (_ questID: UUID, _ failCount: Int) -> Void,
         onCancel: @escaping () -> Void
     ) {
         self.players = players
@@ -25,7 +25,7 @@ struct QuestFormSheet: View {
         self.onCancel = onCancel
 
         let initialDraft = QuestFormDraft(
-            roundID: roundID,
+            questID: questID,
             teamID: teamID,
             leader: leader,
             members: Set(members),
@@ -91,7 +91,7 @@ struct QuestFormSheet: View {
                 Spacer(minLength: 0)
             }
             .padding(.horizontal)
-            .navigationTitle("Select Request Result")
+            .navigationTitle("Select Quest Result")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -104,8 +104,7 @@ struct QuestFormSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         onSave(
-                            draft.roundID,
-                            draft.teamID,
+                            draft.questID,
                             draft.failCount
                         )
                     }
@@ -142,10 +141,10 @@ struct QuestFormSheet: View {
     }
 }
 
-struct QuestFormSheetPreview: View {
+struct ResultFormSheetPreview: View {
     var body: some View {
-        QuestFormSheet(
-            roundID: UUID(),
+        ResultFormSheet(
+            questID: UUID(),
             teamID: UUID(),
             leader: Player.defaultPlayers[3],
             members: [Player.defaultPlayers[3], Player.defaultPlayers[6]],
@@ -153,7 +152,7 @@ struct QuestFormSheetPreview: View {
             votesByVoter: [:],
             teamSize: 4,
             requiredFails: 2,
-            onSave: { _, _, _ in },
+            onSave: { _, _ in },
             onCancel: {}
         )
         .presentationDetents([.medium, .large])
@@ -161,5 +160,5 @@ struct QuestFormSheetPreview: View {
 }
 
 #Preview {
-    QuestFormSheetPreview()
+    ResultFormSheetPreview()
 }

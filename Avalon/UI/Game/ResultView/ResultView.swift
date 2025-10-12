@@ -1,10 +1,10 @@
 import SwiftUI
 
-struct QuestView: View {
+struct ResultView: View {
     @Environment(GameStore.self) private var store
-    let roundID: UUID
+    let questID: UUID
 
-    private var round: RoundViewData? { store.round(id: roundID) }
+    private var quest: QuestViewData? { store.quest(id: questID) }
 
     var body: some View {
         VStack {
@@ -13,7 +13,7 @@ struct QuestView: View {
                     Text("Success")
                         .font(.caption)
                         .foregroundColor(.primary)
-                    Text("\((round?.requiredTeamSize ?? 0) - (round?.quest?.failVotes ?? 0))")
+                    Text("\((quest?.requiredTeamSize ?? 0) - (quest?.result?.failVotes ?? 0))")
                         .font(.title2.bold())
                         .frame(width: 48, height: 48)
                         .background(Circle().fill(.green))
@@ -27,7 +27,7 @@ struct QuestView: View {
                     Text("Fail")
                         .font(.caption)
                         .foregroundColor(.primary)
-                    Text("\(round?.quest?.failVotes ?? 0)")
+                    Text("\(quest?.result?.failVotes ?? 0)")
                         .font(.title2.bold())
                         .frame(width: 48, height: 48)
                         .background(Circle().fill(.red))
@@ -37,7 +37,7 @@ struct QuestView: View {
                         )
                 }
 
-                if let result = round?.quest?.result, let requiredFail = round?.requiredFails {
+                if let result = quest?.result?.type, let requiredFail = quest?.requiredFails {
                     VStack(spacing: 4) {
                         Text("\(requiredFail) Fail\(requiredFail == 1 ? "" : "s") Required")
                             .font(.caption)
@@ -64,9 +64,9 @@ struct QuestView: View {
 
 #Preview {
     let game = GameViewData(game: AvalonGame.random())
-    let round = game.rounds[0]
+    let quest = game.quests[0]
     let store = GameStore(game: game)
-    QuestView(roundID: round.id)
+    ResultView(questID: quest.id)
         .environment(store)
         .padding()
         .frame(maxWidth: 600)

@@ -1,7 +1,7 @@
 import Foundation
 
 struct TeamFormDraft: Equatable {
-    var roundID: UUID
+    var questID: UUID
     var teamID: UUID
     var leader: Player?
     var members: Set<Player>

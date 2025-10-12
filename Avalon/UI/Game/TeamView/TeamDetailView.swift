@@ -2,13 +2,13 @@ import SwiftUI
 
 struct TeamDetailView: View {
     @Environment(GameStore.self) private var store
-    let roundID: UUID
+    let questID: UUID
     let teamID: UUID
 
     @State private var isEditingTeam = false
     @State private var isEditingQuest = false
 
-    private var team: TeamViewData? { store.team(id: teamID, in: roundID) }
+    private var team: TeamViewData? { store.team(id: teamID, in: questID) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -63,19 +63,19 @@ struct TeamDetailView: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.secondary.opacity(0.2), lineWidth: 1))
         .sheet(isPresented: $isEditingTeam) {
-            if let round = store.round(id: roundID), let team = store.team(id: teamID, in: roundID) {
+            if let quest = store.quest(id: questID), let team = store.team(id: teamID, in: questID) {
                 TeamFormSheet(
-                    roundID: round.id,
+                    questID: questID,
                     teamID: team.id,
                     leader: team.leader,
                     members: team.members,
                     players: store.players,
                     votesByVoter: team.votesByVoter,
-                    requiredTeamSize: round.requiredTeamSize,
+                    requiredTeamSize: quest.requiredTeamSize,
                     showVotes: true,
-                    onSave: { roundID, teamID, leader, members, votesByVoter in
-                        store.updateTeam(roundID: roundID, teamID: teamID, leader: leader, members: members, votesByVoter: votesByVoter)
-                        store.finishTeam(roundID: roundID, teamID: teamID)
+                    onSave: { questID, teamID, leader, members, votesByVoter in
+                        store.updateTeam(questID: questID, teamID: teamID, leader: leader, members: members, votesByVoter: votesByVoter)
+                        store.finishTeam(questID: questID, teamID: teamID)
                         withAnimation {
                             isEditingTeam = false
                             isEditingQuest = true
@@ -89,19 +89,19 @@ struct TeamDetailView: View {
             }
         }
         .sheet(isPresented: $isEditingQuest) {
-            if let round = store.round(id: roundID), let team = store.team(id: teamID, in: roundID) {
-                QuestFormSheet(
-                    roundID: round.id,
+            if let quest = store.quest(id: questID), let team = store.team(id: teamID, in: questID) {
+                ResultFormSheet(
+                    questID: questID,
                     teamID: team.id,
                     leader: team.leader,
                     members: team.members,
                     players: store.players,
                     votesByVoter: team.votesByVoter,
-                    teamSize: round.requiredTeamSize,
-                    requiredFails: round.requiredFails,
+                    teamSize: quest.requiredTeamSize,
+                    requiredFails: quest.requiredFails,
                     showVotes: true,
-                    onSave: { roundID, _, failCount in
-                        store.updateQuestResult(roundID: roundID, failCount: failCount)
+                    onSave: { questID, failCount in
+                        store.updateQuestResult(questID: questID, failCount: failCount)
                         withAnimation { isEditingQuest = false }
                     },
                     onCancel: { withAnimation { isEditingQuest = false } }
@@ -151,9 +151,9 @@ struct TeamDetailView: View {
 
 #Preview {
     let game = GameViewData(game: AvalonGame.random())
-    let round = game.rounds[0]
+    let quest = game.quests[0]
     let store = GameStore(game: game)
-    TeamDetailView(roundID: round.id, teamID: round.teams.first?.id ?? UUID())
+    TeamDetailView(questID: quest.id, teamID: quest.teams.first?.id ?? UUID())
         .environment(store)
         .padding()
         .frame(maxWidth: 600)

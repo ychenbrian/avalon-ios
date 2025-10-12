@@ -3,18 +3,27 @@ import SwiftUI
 @Observable
 final class QuestViewData: Identifiable {
     let id: UUID
-    var result: QuestResult?
-    var failVotes: Int?
+    var index: Int
+    var status: QuestStatus = .notStarted
+    var result: ResultViewData?
+    var teams: [TeamViewData]
+    var selectedTeamID: UUID?
 
-    init(id: UUID = UUID(), result: QuestResult? = nil, failCount: Int) {
+    var requiredTeamSize: Int { [3, 4, 4, 5, 5][index] }
+    var requiredFails: Int { index == 3 ? 2 : 1 }
+
+    init(id: UUID = UUID(), index: Int, teams: [TeamViewData] = []) {
         self.id = id
-        self.result = result
-        failVotes = failCount
+        self.index = index
+        self.teams = teams
+        selectedTeamID = teams.first?.id
     }
 
-    init(quest: GameQuest?) {
-        id = UUID()
-        result = quest?.result
-        failVotes = quest?.failVotes
+    init(quest: Quest) {
+        id = quest.id
+        index = quest.index
+        status = quest.status
+        result = ResultViewData(quest: quest.quest)
+        teams = quest.teams.map(TeamViewData.init(team:))
     }
 }

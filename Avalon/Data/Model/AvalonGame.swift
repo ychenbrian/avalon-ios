@@ -6,8 +6,7 @@ struct AvalonGame: Identifiable {
     var startedAt: String?
     var finishedAt: String?
     var players: [Player]
-    var rounds: [GameRound]
-    var currentRound: Int = 0
+    var quests: [Quest]
     var status: GameStatus = .initial
     var result: GameResult?
 }

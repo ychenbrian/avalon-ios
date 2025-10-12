@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 public typealias PlayerID = UUID
-public typealias TeamVoteID = UUID
+public typealias TeamID = UUID
 
 public enum VoteType: String, Codable, CaseIterable, Equatable {
     case approve
@@ -11,17 +11,16 @@ public enum VoteType: String, Codable, CaseIterable, Equatable {
 
 // MARK: - Status & Result
 
-enum TeamVoteStatus: String, Codable, Equatable {
+enum TeamStatus: String, Codable, Equatable {
     case notStarted
     case inProgress
     case finished
 }
 
-struct TeamVoteResult: Codable, Equatable {
+struct TeamResult: Codable, Equatable {
     let isApproved: Bool
     let approvedCount: Int
     let rejectedCount: Int
-    /// Snapshot for audit/debug; truth still lives in `votes`
     let decidedAt: Date
 
     init(isApproved: Bool, approvedCount: Int, rejectedCount: Int, decidedAt: Date = Date()) {
@@ -46,41 +45,37 @@ struct TeamVoteResult: Codable, Equatable {
     }
 }
 
-// MARK: - TeamVote
+// MARK: - Team
 
-struct TeamVote: Identifiable, Codable, Equatable {
-    let id: TeamVoteID
+struct Team: Identifiable, Codable, Equatable {
+    let id: TeamID
     let roundIndex: Int
     let teamIndex: Int
 
-    var status: TeamVoteStatus
+    var status: TeamStatus
 
     var leaderID: PlayerID?
-    /// Proposed team members (player IDs). The leader may or may not be in the team depending on rules.
-    var teamMemberIDs: [PlayerID]
-
-    /// Map to prevent duplicate votes; last vote wins if you allow changes while voting.
+    var memberIDs: [PlayerID]
     var votesByVoter: [Player: VoteType]
 
-    /// Final result; non-nil only when `status == .finished`
-    var result: TeamVoteResult?
+    var result: TeamResult?
 
     init(
-        id: TeamVoteID = TeamVoteID(),
+        id: TeamID = TeamID(),
         roundIndex: Int,
         teamIndex: Int,
-        status: TeamVoteStatus = .notStarted,
+        status: TeamStatus = .notStarted,
         leaderID: PlayerID? = nil,
         teamMemberIDs: [PlayerID] = [],
         votesByVoter: [Player: VoteType] = [:],
-        result: TeamVoteResult? = nil
+        result: TeamResult? = nil
     ) {
         self.id = id
         self.roundIndex = roundIndex
         self.teamIndex = teamIndex
         self.status = status
         self.leaderID = leaderID
-        self.teamMemberIDs = teamMemberIDs
+        memberIDs = teamMemberIDs
         self.votesByVoter = votesByVoter
         self.result = result
     }
@@ -88,7 +83,7 @@ struct TeamVote: Identifiable, Codable, Equatable {
 
 // MARK: - Derived Properties & State Machine Helpers
 
-extension TeamVote {
+extension Team {
     var approvedVoters: Set<Player> {
         Set(votesByVoter.compactMap { $0.value == .approve ? $0.key : nil })
     }
@@ -100,7 +95,6 @@ extension TeamVote {
     var approvedCount: Int { approvedVoters.count }
     var rejectedCount: Int { rejectedVoters.count }
 
-    /// Tie-break rule defined here: strictly more approvals than rejections passes.
     var isApprovedByVotes: Bool { approvedCount > rejectedCount }
 
     var isFinished: Bool { status == .finished }

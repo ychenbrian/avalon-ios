@@ -1,23 +1,23 @@
 import SwiftUI
 
-struct RoundDetailView: View {
+struct QuestDetailView: View {
     @Environment(GameStore.self) private var store
-    let roundID: UUID
+    let questID: UUID
 
-    private var teams: [TeamViewData] { store.round(id: roundID)?.teams ?? [] }
-    private var roundIndex: Int { (store.round(id: roundID)?.index ?? 0) + 1 }
-    private var selectedTeamID: UUID? { store.round(id: roundID)?.selectedTeamID }
+    private var teams: [TeamViewData] { store.quest(id: questID)?.teams ?? [] }
+    private var roundIndex: Int { (store.quest(id: questID)?.index ?? 0) + 1 }
+    private var selectedTeamID: UUID? { store.quest(id: questID)?.selectedTeamID }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
-                    if let round = store.round(id: roundID) {
-                        ForEach(round.teams) { team in
+                    if let quest = store.quest(id: questID) {
+                        ForEach(quest.teams) { team in
                             TeamCircle(team: team, isSelected: selectedTeamID == team.id)
-                                .onTapGesture { store.round(id: roundID)?.selectedTeamID = team.id }
+                                .onTapGesture { store.quest(id: questID)?.selectedTeamID = team.id }
                                 .contextMenu {
-                                    Button(role: .destructive) { store.removeTeam(team.id, from: roundID) } label: {
+                                    Button(role: .destructive) { store.removeTeam(team.id, from: questID) } label: {
                                         Label("Remove Team", systemImage: "trash")
                                     }
                                 }
@@ -26,12 +26,12 @@ struct RoundDetailView: View {
                 }
             }
 
-            if let round = store.round(id: roundID), round.quest?.result != nil {
-                QuestView(roundID: roundID)
+            if store.quest(id: questID)?.result?.type != nil {
+                ResultView(questID: questID)
             }
 
             if let teamID = selectedTeamID {
-                TeamDetailView(roundID: roundID, teamID: teamID)
+                TeamDetailView(questID: questID, teamID: teamID)
             } else {
                 ContentUnavailableView("Select a team", systemImage: "door.left.hand.closed", description: Text("Tap a circle above."))
             }
@@ -39,7 +39,7 @@ struct RoundDetailView: View {
         .onAppear { selectFirstIfNeeded() }
         .onChange(of: teams.map(\.id)) {
             if let sel = selectedTeamID, !teams.contains(where: { $0.id == sel }) {
-                store.round(id: roundID)?.selectedTeamID = nil
+                store.quest(id: questID)?.selectedTeamID = nil
             }
             selectFirstIfNeeded()
         }
@@ -47,7 +47,7 @@ struct RoundDetailView: View {
 
     private func selectFirstIfNeeded() {
         if selectedTeamID == nil, let first = teams.first?.id {
-            store.round(id: roundID)?.selectedTeamID = first
+            store.quest(id: questID)?.selectedTeamID = first
         }
     }
 }
@@ -55,7 +55,7 @@ struct RoundDetailView: View {
 #Preview {
     let game = GameViewData(game: AvalonGame.random())
     let store = GameStore(game: game)
-    RoundDetailView(roundID: game.rounds[0].id)
+    QuestDetailView(questID: game.quests[0].id)
         .environment(store)
         .padding()
         .frame(maxWidth: 600)

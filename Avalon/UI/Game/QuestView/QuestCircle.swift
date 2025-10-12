@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct RoundCircle: View {
-    @Bindable var round: RoundViewData
+struct QuestCircle: View {
+    @Bindable var quest: QuestViewData
     var isSelected: Bool
 
     var body: some View {
@@ -10,44 +10,44 @@ struct RoundCircle: View {
                 Circle()
                     .fill(getStatusColor())
                     .frame(width: 52, height: 52)
-                Text("\(round.requiredTeamSize)")
+                Text("\(quest.requiredTeamSize)")
                     .font(.headline.bold())
                     .foregroundColor(.white)
             }
             Text("\(getStatusText())")
                 .font(.caption)
                 .bold()
-                .foregroundColor(round.quest?.result?.color ?? .secondary)
+                .foregroundColor(quest.result?.type?.color ?? .secondary)
                 .foregroundStyle(.secondary)
         }
         .padding(8)
         .background(isSelected ? Color.blue.opacity(0.1) : Color.clear)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .animation(.default, value: round.teams.count)
+        .animation(.default, value: quest.teams.count)
     }
 
     private func getStatusColor() -> Color {
-        if round.status == .finished {
-            return round.quest?.result?.color ?? .blue.opacity(0.7)
-        } else if round.status == .inProgress {
+        if quest.status == .finished {
+            return quest.result?.type?.color ?? .blue.opacity(0.7)
+        } else if quest.status == .inProgress {
             return .blue.opacity(0.7)
         }
         return .gray.opacity(0.5)
     }
 
     private func getStatusText() -> String {
-        if round.status == .finished {
-            guard let quest = round.quest else { return "N/A" }
+        if quest.status == .finished {
+            guard let result = quest.result else { return "N/A" }
 
-            if quest.result == .fail {
-                let failVotes = quest.failVotes ?? 1
+            if result.type == .fail {
+                let failVotes = result.failVotes ?? 1
                 return failVotes == 1 ? "\(failVotes) Fail" : "\(failVotes) Fails"
-            } else if quest.result == .success {
+            } else if result.type == .success {
                 return "Success"
             } else {
                 return "N/A"
             }
-        } else if round.status == .inProgress {
+        } else if quest.status == .inProgress {
             return "Progress"
         }
         return "N/A"
@@ -57,8 +57,8 @@ struct RoundCircle: View {
 #Preview {
     HStack {
         ForEach(0 ..< 5) { i in
-            let round = RoundViewData(round: GameRound.random(index: i))
-            RoundCircle(round: round, isSelected: [true, false].randomElement()!)
+            let quest = QuestViewData(quest: Quest.random(index: i))
+            QuestCircle(quest: quest, isSelected: [true, false].randomElement()!)
         }
     }
 }

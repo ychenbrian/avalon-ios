@@ -1,21 +1,21 @@
 import Observation
 import SwiftUI
 
-private enum RoundAvailability { case locked, next, started }
+private enum QuestAvailability { case locked, next, started }
 
 private struct TeamLocator: Identifiable, Equatable {
-    let roundIndex: Int
+    let questIndex: Int
     let teamIndex: Int
-    var id: String { "\(roundIndex)-\(teamIndex)" }
+    var id: String { "\(questIndex)-\(teamIndex)" }
 }
 
 struct GameView: View {
     @Environment(GameStore.self) private var store
 
-    @State private var activeAlert: NewRoundAlert?
+    @State private var activeAlert: NewQuestAlert?
     @State private var newTeam: TeamLocator?
 
-    private var selectedRoundID: UUID? { store.game.selectedRoundID }
+    private var selectedQuestID: UUID? { store.game.selectedQuestID }
 
     var body: some View {
         NavigationStack {
@@ -23,29 +23,29 @@ struct GameView: View {
                 VStack(alignment: .leading) {
                     ScrollView(.horizontal) {
                         HStack(spacing: 8) {
-                            ForEach(store.game.rounds) { round in
-                                RoundCircle(round: round, isSelected: selectedRoundID == round.id)
+                            ForEach(store.game.quests) { quest in
+                                QuestCircle(quest: quest, isSelected: selectedQuestID == quest.id)
                                     .contentShape(Rectangle())
                                     .onTapGesture {
-                                        let status = availability(for: round)
+                                        let status = availability(for: quest)
                                         switch status {
                                         case .locked:
                                             activeAlert = .cannotStart
                                         case .next:
-                                            activeAlert = .confirmStart(round: round)
+                                            activeAlert = .confirmStart(quest: quest)
                                         case .started:
-                                            withAnimation { store.game.selectedRoundID = round.id }
+                                            withAnimation { store.game.selectedQuestID = quest.id }
                                         }
                                     }
                             }
                         }
                     }
 
-                    if let id = selectedRoundID, let round = store.round(id: id) {
-                        RoundDetailView(roundID: round.id)
+                    if let id = selectedQuestID, let quest = store.quest(id: id) {
+                        QuestDetailView(questID: quest.id)
                     } else {
                         ContentUnavailableView(
-                            "Select a round",
+                            "Select a quest",
                             systemImage: "train.side.front.car",
                             description: Text("Tap a circle above.")
                         )
@@ -53,13 +53,13 @@ struct GameView: View {
                 }
             }
             .padding()
-            .navigationTitle("\(store.game.name) - Round \((store.round(id: selectedRoundID ?? UUID())?.index ?? 0) + 1)")
+            .navigationTitle("\(store.game.name) - Quest \((store.quest(id: selectedQuestID ?? UUID())?.index ?? 0) + 1)")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         activeAlert = .confirmNewGame
                     } label: {
-                        Label("Add Round", systemImage: "plus")
+                        Label("Add Quest", systemImage: "plus")
                     }
                 }
             }
@@ -77,40 +77,40 @@ struct GameView: View {
                 )
             case .cannotStart:
                 return Alert(
-                    title: Text("Cannot start this round"),
-                    message: Text("You can’t start this round yet."),
+                    title: Text("Cannot start this quest"),
+                    message: Text("You can’t start this quest yet."),
                     dismissButton: .default(Text("OK"))
                 )
-            case let .confirmStart(round):
+            case let .confirmStart(quest):
                 return Alert(
-                    title: Text("Start new round?"),
-                    message: Text("Do you want to start Round \(round.index + 1)?"),
+                    title: Text("Start new quest?"),
+                    message: Text("Do you want to start Quest \(quest.index + 1)?"),
                     primaryButton: .default(Text("Start")) {
-                        startRoundFlow(from: round)
+                        startQuestFlow(from: quest)
                     },
                     secondaryButton: .cancel()
                 )
             }
         }
         .sheet(item: $newTeam) { key in
-            let rIdx = key.roundIndex
+            let rIdx = key.questIndex
             let tIdx = key.teamIndex
 
-            if store.game.rounds.indices.contains(rIdx),
-               store.game.rounds[rIdx].teams.indices.contains(tIdx)
+            if store.game.quests.indices.contains(rIdx),
+               store.game.quests[rIdx].teams.indices.contains(tIdx)
             {
-                let round = store.game.rounds[rIdx]
-                let team = round.teams[tIdx]
+                let quest = store.game.quests[rIdx]
+                let team = quest.teams[tIdx]
                 TeamFormSheet(
-                    roundID: round.id,
+                    questID: quest.id,
                     teamID: team.id,
                     leader: team.leader,
                     members: team.members,
                     players: store.players,
                     votesByVoter: team.votesByVoter,
-                    requiredTeamSize: round.requiredTeamSize,
-                    onSave: { roundID, teamID, leader, members, votesByVoter in
-                        store.updateTeam(roundID: roundID, teamID: teamID, leader: leader, members: members, votesByVoter: votesByVoter)
+                    requiredTeamSize: quest.requiredTeamSize,
+                    onSave: { questID, teamID, leader, members, votesByVoter in
+                        store.updateTeam(questID: questID, teamID: teamID, leader: leader, members: members, votesByVoter: votesByVoter)
                         withAnimation { newTeam = nil }
                     },
                     onCancel: { withAnimation { newTeam = nil } }
@@ -121,26 +121,26 @@ struct GameView: View {
             }
         }
         .onAppear {
-            if selectedRoundID == nil { store.game.selectedRoundID = store.game.rounds.first?.id }
+            if selectedQuestID == nil { store.game.selectedQuestID = store.game.quests.first?.id }
         }
     }
 
-    private func availability(for round: RoundViewData) -> RoundAvailability {
-        if round.index == 0 || round.status != .notStarted { return .started }
-        let previousRound = store.game.rounds[round.index - 1]
-        if previousRound.status == .notStarted && round.status == .notStarted {
+    private func availability(for quest: QuestViewData) -> QuestAvailability {
+        if quest.index == 0 || quest.status != .notStarted { return .started }
+        let previousQuest = store.game.quests[quest.index - 1]
+        if previousQuest.status == .notStarted && quest.status == .notStarted {
             return .locked
         } else {
             return .next
         }
     }
 
-    private func startRoundFlow(from round: RoundViewData) {
-        store.startRound(round.index)
-        withAnimation { store.game.selectedRoundID = round.id }
+    private func startQuestFlow(from quest: QuestViewData) {
+        store.startQuest(quest.index)
+        withAnimation { store.game.selectedQuestID = quest.id }
 
-        if round.teams.first != nil {
-            newTeam = TeamLocator(roundIndex: round.index, teamIndex: 0)
+        if quest.teams.first != nil {
+            newTeam = TeamLocator(questIndex: quest.index, teamIndex: 0)
         }
     }
 }

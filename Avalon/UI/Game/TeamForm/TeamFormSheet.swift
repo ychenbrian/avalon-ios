@@ -3,7 +3,7 @@ import SwiftUI
 struct TeamFormSheet: View {
     let players: [Player]
     var showVotes: Bool
-    let onSave: (_ roundID: UUID, _ teamID: UUID, _ leader: Player?, _ members: [Player], _ votesByVoter: [Player: VoteType]) -> Void
+    let onSave: (_ questID: UUID, _ teamID: UUID, _ leader: Player?, _ members: [Player], _ votesByVoter: [Player: VoteType]) -> Void
     let onCancel: () -> Void
 
     @State private var draft: TeamFormDraft
@@ -25,7 +25,7 @@ struct TeamFormSheet: View {
     }
 
     init(
-        roundID: UUID,
+        questID: UUID,
         teamID: UUID,
         leader: Player?,
         members: [Player],
@@ -33,7 +33,7 @@ struct TeamFormSheet: View {
         votesByVoter: [Player: VoteType],
         requiredTeamSize: Int,
         showVotes: Bool = false,
-        onSave: @escaping (_ roundID: UUID, _ teamID: UUID, _ leader: Player?, _ members: [Player], _ votesByVoter: [Player: VoteType]) -> Void,
+        onSave: @escaping (_ questID: UUID, _ teamID: UUID, _ leader: Player?, _ members: [Player], _ votesByVoter: [Player: VoteType]) -> Void,
         onCancel: @escaping () -> Void
     ) {
         self.players = players
@@ -42,7 +42,7 @@ struct TeamFormSheet: View {
         self.onCancel = onCancel
 
         var initialDraft = TeamFormDraft(
-            roundID: roundID,
+            questID: questID,
             teamID: teamID,
             leader: leader,
             members: Set(members),
@@ -138,7 +138,7 @@ struct TeamFormSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         onSave(
-                            draft.roundID,
+                            draft.questID,
                             draft.teamID,
                             draft.leader,
                             Array(draft.members),
@@ -157,7 +157,7 @@ struct TeamFormSheet: View {
 struct TeamFormSheetPreview: View {
     var body: some View {
         TeamFormSheet(
-            roundID: UUID(),
+            questID: UUID(),
             teamID: UUID(),
             leader: nil,
             members: [],
