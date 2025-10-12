@@ -6,7 +6,7 @@ struct TeamDetailView: View {
     let teamID: UUID
 
     @State private var isEditingTeam = false
-    @State private var isEditingQuest = false
+    @State private var isEditingResult = false
 
     private var team: TeamViewData? { store.team(id: teamID, in: questID) }
 
@@ -52,11 +52,21 @@ struct TeamDetailView: View {
                     }
                 }
             }
-            Button("Edit Team") {
-                isEditingTeam = true
+            HStack {
+                Button("Edit Team") {
+                    isEditingTeam = true
+                }
+                .font(.headline)
+                .foregroundColor(.primary)
+                .buttonStyle(.glass)
+
+                Button("Edit Result") {
+                    isEditingResult = true
+                }
+                .font(.headline)
+                .foregroundColor(.primary)
+                .buttonStyle(.glass)
             }
-            .font(.headline)
-            .foregroundColor(.blue)
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -78,7 +88,7 @@ struct TeamDetailView: View {
                         store.finishTeam(questID: questID, teamID: teamID)
                         withAnimation {
                             isEditingTeam = false
-                            isEditingQuest = true
+                            isEditingResult = true
                         }
                     },
                     onCancel: { withAnimation { isEditingTeam = false } }
@@ -88,7 +98,7 @@ struct TeamDetailView: View {
                 Color.clear.onAppear { isEditingTeam = false }
             }
         }
-        .sheet(isPresented: $isEditingQuest) {
+        .sheet(isPresented: $isEditingResult) {
             if let quest = store.quest(id: questID), let team = store.team(id: teamID, in: questID) {
                 ResultFormSheet(
                     questID: questID,
@@ -102,13 +112,13 @@ struct TeamDetailView: View {
                     showVotes: true,
                     onSave: { questID, failCount in
                         store.updateQuestResult(questID: questID, failCount: failCount)
-                        withAnimation { isEditingQuest = false }
+                        withAnimation { isEditingResult = false }
                     },
-                    onCancel: { withAnimation { isEditingQuest = false } }
+                    onCancel: { withAnimation { isEditingResult = false } }
                 )
                 .presentationDetents([.medium])
             } else {
-                Color.clear.onAppear { isEditingQuest = false }
+                Color.clear.onAppear { isEditingResult = false }
             }
         }
     }

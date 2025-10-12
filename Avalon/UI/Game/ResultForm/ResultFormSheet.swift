@@ -42,9 +42,9 @@ struct ResultFormSheet: View {
         NavigationStack {
             VStack(spacing: 20) {
                 HStack(alignment: .center, spacing: 8) {
-                    Text("Leader:")
+                    Text("Leader")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.primary)
                     if let leader = draft.leader {
                         overlayForPlayer(leader)
                     } else {
@@ -57,7 +57,7 @@ struct ResultFormSheet: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Proposed Team")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.primary)
 
                     let members = draft.members.sorted(by: { $0.index < $1.index })
                     if !members.isEmpty {
@@ -73,9 +73,11 @@ struct ResultFormSheet: View {
                     }
                 }
 
+                Divider()
+
                 Text("Number of Fails")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.primary)
 
                 CountRadioGroup(
                     teamSize: draft.teamSize,

@@ -16,7 +16,6 @@ struct PlayerCircleToggle: View {
                         .fill(isSelected ? selectedColor : Color.gray.opacity(0.5))
                 )
                 .foregroundColor(.white)
-                .padding(2)
         }
         .accessibilityLabel("\(name)\(isSelected ? " selected" : "")")
     }

@@ -63,7 +63,7 @@ struct TeamFormSheet: View {
                 // Leader
                 Text("Select Leader")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.primary)
                     .padding(.top, 12)
 
                 PlayerGrid(
@@ -80,7 +80,7 @@ struct TeamFormSheet: View {
                 let teamSize = draft.requiredTeamSize
                 Text("Select Team (\(teamCount)/\(teamSize))")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.primary)
                     .padding(.top, 8)
 
                 PlayerGrid(
@@ -96,7 +96,7 @@ struct TeamFormSheet: View {
                     // Approvals
                     Text("Approvals")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.primary)
                         .padding(.top, 12)
 
                     PlayerGrid(
@@ -110,7 +110,7 @@ struct TeamFormSheet: View {
                     // Rejects
                     Text("Rejects")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.primary)
                         .padding(.top, 8)
 
                     PlayerGrid(
