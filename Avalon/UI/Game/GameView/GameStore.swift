@@ -22,6 +22,11 @@ final class GameStore {
         game.quests[index].teams.first?.status = .inProgress
     }
 
+    func startTeam(questID: UUID, teamID: UUID) {
+        team(id: teamID, in: questID)?.status = .inProgress
+        quest(id: questID)?.selectedTeamID = teamID
+    }
+
     func updateTeam(
         questID: UUID,
         teamID: UUID,

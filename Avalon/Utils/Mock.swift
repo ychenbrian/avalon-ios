@@ -122,21 +122,21 @@ extension Team {
 
     static func emptyTeamVotes(
         roundIndex: Int,
-        totalCount: Int = GameRules.teamVotesPerRound
+        totalCount: Int = GameRules.teamsPerQuest
     ) -> [Team] {
         (0 ..< totalCount).map { .empty(roundIndex: roundIndex, teamIndex: $0) }
     }
 
     static func randomTeamVotes(
         roundIndex: Int,
-        finishedIndex: Int = Int.random(in: 0 ... GameRules.teamVotesPerRound),
+        finishedIndex: Int = Int.random(in: 0 ... GameRules.teamsPerQuest),
         players: [Player] = Player.defaultPlayers,
-        count: Int = GameRules.teamVotesPerRound
+        count: Int = GameRules.teamsPerQuest
     ) -> [Team] {
         (0 ..< count).map {
             if $0 < finishedIndex {
                 return .random(roundIndex: roundIndex, teamIndex: $0, players: players, status: .finished, result: .random(isApproved: false))
-            } else if $0 == finishedIndex, finishedIndex <= GameRules.teamVotesPerRound - 1 {
+            } else if $0 == finishedIndex, finishedIndex <= GameRules.teamsPerQuest - 1 {
                 return .random(roundIndex: roundIndex, teamIndex: $0, players: players)
             }
             return .random(roundIndex: roundIndex, teamIndex: $0, players: players, status: .notStarted)
@@ -187,11 +187,11 @@ extension Quest {
     static func randomQuests(
         for players: [Player] = Player.defaultPlayers
     ) -> [Quest] {
-        (0 ..< GameRules.roundsPerGame).map { random(index: $0, players: players) }
+        (0 ..< GameRules.questsPerGame).map { random(index: $0, players: players) }
     }
 
     static func emptyQuests() -> [Quest] {
-        (0 ..< GameRules.roundsPerGame).map { .empty(index: $0) }
+        (0 ..< GameRules.questsPerGame).map { .empty(index: $0) }
     }
 }
 
