@@ -14,7 +14,7 @@ struct QuestDetailView: View {
                 .padding(.top, 8)
                 .font(.headline)
                 .foregroundColor(.primary)
-            
+
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
                     if let quest = store.quest(id: questID) {
