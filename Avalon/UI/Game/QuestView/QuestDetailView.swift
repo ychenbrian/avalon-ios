@@ -53,9 +53,8 @@ struct QuestDetailView: View {
 }
 
 #Preview {
-    let game = GameViewData(game: AvalonGame.random())
-    let store = GameStore(game: game)
-    QuestDetailView(questID: game.quests[0].id)
+    let store = GameStore(players: Player.randomTeam())
+    QuestDetailView(questID: store.game.quests[0].id)
         .environment(store)
         .padding()
         .frame(maxWidth: 600)

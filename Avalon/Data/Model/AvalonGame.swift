@@ -11,15 +11,6 @@ struct AvalonGame: Identifiable {
     var result: GameResult?
 }
 
-// MARK: - Game Rules
-
-enum GameRules {
-    static let defaultPlayerCount: Int = 10
-    static let questsPerGame: Int = 5
-    static let teamsPerQuest: Int = 5
-    static let defaultTeamSizeRange: Range<Int> = 3 ..< 6
-}
-
 // MARK: - Game Status
 
 enum GameStatus: String, Codable, Equatable {

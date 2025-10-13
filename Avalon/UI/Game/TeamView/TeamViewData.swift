@@ -23,10 +23,10 @@ final class TeamViewData: Identifiable {
         index = team.teamIndex
         status = team.status
         result = team.result
-        leader = Player.defaultPlayers.first { $0.id == team.leaderID }
+        leader = Player.defaultPlayers().first { $0.id == team.leaderID }
         var memberPlayers: [Player] = []
         for memberID in team.memberIDs {
-            memberPlayers.append(Player.defaultPlayers.first { $0.id == memberID } ?? Player.random())
+            memberPlayers.append(Player.defaultPlayers().first { $0.id == memberID } ?? Player.random())
         }
         members = memberPlayers
         votesByVoter = team.votesByVoter

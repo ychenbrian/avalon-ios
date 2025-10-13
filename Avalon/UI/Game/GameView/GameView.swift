@@ -14,6 +14,7 @@ struct GameView: View {
 
     @State private var activeAlert: GameViewAlert?
     @State private var newTeam: TeamLocator?
+    @State private var isEditingGame = false
 
     private var selectedQuestID: UUID? { store.game.selectedQuestID }
 
@@ -58,7 +59,7 @@ struct GameView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        activeAlert = .editGame
+                        isEditingGame = true
                     } label: {
                         Label("gameView.toolbar.editGame", systemImage: "pencil")
                     }
@@ -83,8 +84,6 @@ struct GameView: View {
                     },
                     secondaryButton: .cancel()
                 )
-            case .editGame:
-                return Alert(title: Text("common.notImplemented"))
             case .cannotStart:
                 return Alert(
                     title: Text("gameView.alert.cannotStart.title"),
@@ -132,6 +131,17 @@ struct GameView: View {
             } else {
                 Color.clear.onAppear { newTeam = nil }
             }
+        }
+        .sheet(isPresented: $isEditingGame) {
+            GameFormSheet(
+                numOfPlayers: store.players.count,
+                onSave: { numOfPlayers in
+                    store.updateNumOfPlayers(numOfPlayers)
+                    withAnimation { isEditingGame = false }
+                },
+                onCancel: { withAnimation { isEditingGame = false } }
+            )
+            .presentationDetents([.medium])
         }
         .onAppear {
             if selectedQuestID == nil { store.game.selectedQuestID = store.game.quests.first?.id }

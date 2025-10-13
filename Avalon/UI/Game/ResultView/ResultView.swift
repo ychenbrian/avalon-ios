@@ -67,10 +67,8 @@ struct ResultView: View {
 }
 
 #Preview {
-    let game = GameViewData(game: AvalonGame.random())
-    let quest = game.quests[0]
-    let store = GameStore(game: game)
-    ResultView(questID: quest.id)
+    let store = GameStore(players: Player.randomTeam())
+    ResultView(questID: store.game.quests.first?.id ?? UUID())
         .environment(store)
         .padding()
         .frame(maxWidth: 600)

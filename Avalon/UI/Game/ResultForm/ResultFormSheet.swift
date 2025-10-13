@@ -167,12 +167,13 @@ struct ResultFormSheet: View {
 
 struct ResultFormSheetPreview: View {
     var body: some View {
+        let players = Player.defaultPlayers()
         ResultFormSheet(
             questID: UUID(),
             teamID: UUID(),
-            leader: Player.defaultPlayers[3],
-            members: [Player.defaultPlayers[3], Player.defaultPlayers[6]],
-            players: Player.defaultPlayers,
+            leader: players[3],
+            members: [players[3], players[6]],
+            players: players,
             votesByVoter: [:],
             teamSize: 4,
             requiredFails: 2,

@@ -4,7 +4,7 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.injected) private var injected: DIContainer
-    @State private var store = GameStore(game: GameViewData(game: AvalonGame.initial()))
+    @State private var store = GameStore(players: Player.defaultPlayers(size: 7))
 
     var body: some View {
         TabView {

@@ -19,7 +19,7 @@ struct PlayerGrid: View {
     }
 
     var body: some View {
-        let middleIndex = players.count / 2
+        let middleIndex = (players.count + 1) / 2
         let firstHalf = Array(players.prefix(middleIndex))
         let secondHalf = Array(players.suffix(from: middleIndex))
         VStack(alignment: .leading, spacing: 16) {
@@ -51,6 +51,6 @@ struct PlayerGrid: View {
 
 #Preview {
     HStack {
-        PlayerGrid(players: Player.defaultPlayers, selected: { _ in [true, false].randomElement() ?? true }, action: { _ in })
+        PlayerGrid(players: Player.defaultPlayers(), selected: { _ in [true, false].randomElement() ?? true }, action: { _ in })
     }
 }

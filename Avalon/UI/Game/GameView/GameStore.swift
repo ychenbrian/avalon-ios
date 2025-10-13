@@ -4,9 +4,12 @@ import SwiftUI
 @Observable
 final class GameStore {
     var game: GameViewData
-    let players = Player.defaultPlayers
+    var players: [Player]
 
-    init(game: GameViewData) { self.game = game }
+    init(players: [Player]) {
+        game = GameViewData(game: AvalonGame.initial(players: players))
+        self.players = players
+    }
 
     // Queries
     func quest(id: UUID) -> QuestViewData? { game.quests.first(where: { $0.id == id }) }
@@ -14,7 +17,12 @@ final class GameStore {
 
     // Intents (mutations)
     func initialGame() {
-        game = GameViewData(game: AvalonGame.initial())
+        game = GameViewData(game: AvalonGame.initial(players: players))
+    }
+
+    func updateNumOfPlayers(_ number: Int) {
+        players = Player.defaultPlayers(size: number)
+        initialGame()
     }
 
     func startQuest(_ index: Int) {

@@ -181,21 +181,20 @@ struct TeamDetailView: View {
     }
 
     private func playerRows() -> [[Player]] {
-        var rows: [[Player]] = []
-        var index = 0
-        while index < store.players.count {
-            let end = min(index + 5, store.players.count)
-            rows.append(Array(store.players[index ..< end]))
-            index = end
-        }
-        return rows
+        let total = store.players.count
+        guard total > 0 else { return [] }
+
+        let firstRowCount = Int(ceil(Double(total) / 2.0))
+        let firstRow = Array(store.players.prefix(firstRowCount))
+        let secondRow = Array(store.players.suffix(total - firstRowCount))
+
+        return [firstRow, secondRow]
     }
 }
 
 #Preview {
-    let game = GameViewData(game: AvalonGame.random())
-    let quest = game.quests[0]
-    let store = GameStore(game: game)
+    let store = GameStore(players: Player.randomTeam())
+    let quest = store.game.quests[0]
     TeamDetailView(questID: quest.id, teamID: quest.teams.first?.id ?? UUID())
         .environment(store)
         .padding()

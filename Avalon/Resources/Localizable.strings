@@ -105,3 +105,14 @@
 "teamDetail.cannotEditTeam.title" = "Cannot edit this team";
 "teamDetail.cannotEditTeam.message" = "The quest has finished, you cannot edit any teams of this quest.";
 "teamDetail.cannotEditTeam.ok" = "OK";
+
+
+// MARK: - Game Form Sheet
+
+"gameForm.title" = "Game Settings";
+"gameForm.playerNumber.label" = "Number Of Players";
+"gameForm.playerNumber.warning" = "Change the number of players will reset the entire game.";
+"gameForm.cancel.button" = "Cancel";
+"gameForm.cancel.accessibility" = "Cancel editing game";
+"gameForm.save.button" = "Save";
+"gameForm.save.accessibility" = "Save game settings";

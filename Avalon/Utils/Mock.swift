@@ -2,10 +2,12 @@
 
 extension Player {
     /// Default pool of players used by convenience factories.
-    static let defaultPlayers: [Player] = (0 ..< GameRules.defaultPlayerCount).map(Player.init(index:))
+    static func defaultPlayers(size: Int = GameRules.defaultPlayerCount) -> [Player] {
+        return (0 ..< size).map(Player.init(index:))
+    }
 
     /// Returns a random player from the given pool (defaults to `defaultPlayers`).
-    static func random(from players: [Player] = defaultPlayers) -> Player {
+    static func random(from players: [Player] = defaultPlayers()) -> Player {
         players.randomElement() ?? players.first ?? Player(index: 0)
     }
 
@@ -15,7 +17,7 @@ extension Player {
     ///   - players: Player pool to draw from.
     static func randomTeam(
         size: Int? = nil,
-        from players: [Player] = defaultPlayers
+        from players: [Player] = defaultPlayers()
     ) -> [Player] {
         let teamSize = size ?? Int.random(in: GameRules.defaultTeamSizeRange)
         precondition(teamSize >= 0 && teamSize <= players.count, "Invalid team size: \(teamSize)")
@@ -25,7 +27,7 @@ extension Player {
     /// Returns players not in the provided `team`, computed against `players`.
     static func complement(
         of team: [Player],
-        in players: [Player] = defaultPlayers
+        in players: [Player] = defaultPlayers()
     ) -> [Player] {
         let picked = Set(team.map(\.index))
         return players.filter { !picked.contains($0.index) }
@@ -33,7 +35,7 @@ extension Player {
 
     /// Picks a random team and its complement from the given pool.
     static func randomTeamWithComplement(
-        from players: [Player] = defaultPlayers
+        from players: [Player] = defaultPlayers()
     ) -> (team: [Player], complement: [Player]) {
         let size = Int.random(in: 0 ... players.count)
         let team = randomTeam(size: size, from: players)
@@ -46,27 +48,27 @@ extension Player {
 
 extension AvalonGame {
     static func empty(
-        players: [Player] = Player.defaultPlayers,
+        players: [Player] = Player.defaultPlayers(),
         quests: [Quest] = []
     ) -> AvalonGame {
         .init(players: players, quests: quests)
     }
 
-    static func random(players: [Player] = Player.defaultPlayers) -> AvalonGame {
+    static func random(players: [Player] = Player.randomTeam()) -> AvalonGame {
         .init(players: players, quests: Quest.randomQuests(for: players))
     }
 
     static func initial(
-        players: [Player] = Player.defaultPlayers,
-        quests: [Quest] = [
-            Quest.initial(index: 0, status: .inProgress),
-            Quest.initial(index: 1),
-            Quest.initial(index: 2),
-            Quest.initial(index: 3),
-            Quest.initial(index: 4),
-        ]
+        players: [Player] = Player.defaultPlayers()
     ) -> AvalonGame {
-        .init(players: players, quests: quests)
+        let quests = [
+            Quest.initial(index: 0, numOfPlayers: players.count, status: .inProgress),
+            Quest.initial(index: 1, numOfPlayers: players.count),
+            Quest.initial(index: 2, numOfPlayers: players.count),
+            Quest.initial(index: 3, numOfPlayers: players.count),
+            Quest.initial(index: 4, numOfPlayers: players.count),
+        ]
+        return .init(players: players, quests: quests)
     }
 }
 
@@ -92,7 +94,7 @@ extension Team {
         roundIndex: Int,
         teamIndex: Int,
         teamSize: Int? = nil,
-        players: [Player] = Player.defaultPlayers,
+        players: [Player] = Player.defaultPlayers(),
         status: TeamStatus? = nil,
         result: TeamResult? = nil
     ) -> Team {
@@ -130,7 +132,7 @@ extension Team {
     static func randomTeams(
         roundIndex: Int,
         finishedIndex: Int = Int.random(in: 0 ... GameRules.teamsPerQuest),
-        players: [Player] = Player.defaultPlayers,
+        players: [Player] = Player.defaultPlayers(),
         count: Int = GameRules.teamsPerQuest
     ) -> [Team] {
         (0 ..< count).map {
@@ -149,15 +151,17 @@ extension Team {
 extension Quest {
     static func empty(
         index: Int,
+        numOfPlayers: Int,
         status: QuestStatus = .notStarted,
         teams: [Team] = Team.emptyTeams(roundIndex: 0),
         quest: QuestResult? = nil
     ) -> Quest {
-        return .init(index: index, status: status, quest: quest, teams: teams)
+        return .init(index: index, numOfPlayers: numOfPlayers, status: status, quest: quest, teams: teams)
     }
 
     static func initial(
         index: Int,
+        numOfPlayers: Int,
         status: QuestStatus = .notStarted,
         teams: [Team] = Team.emptyTeams(roundIndex: 0),
         quest: QuestResult? = nil
@@ -169,15 +173,16 @@ extension Quest {
                 teams[0] = firstTeam
             }
         }
-        return .init(index: index, status: status, quest: quest, teams: teams)
+        return .init(index: index, numOfPlayers: numOfPlayers, status: status, quest: quest, teams: teams)
     }
 
     static func random(
         index: Int,
-        players: [Player] = Player.defaultPlayers
+        players: [Player] = Player.randomTeam()
     ) -> Quest {
         .init(
             index: index,
+            numOfPlayers: players.count,
             status: QuestStatus.random(),
             quest: QuestResult.random(players: players),
             teams: Team.randomTeams(roundIndex: index)
@@ -185,13 +190,13 @@ extension Quest {
     }
 
     static func randomQuests(
-        for players: [Player] = Player.defaultPlayers
+        for players: [Player] = Player.defaultPlayers()
     ) -> [Quest] {
         (0 ..< GameRules.questsPerGame).map { random(index: $0, players: players) }
     }
 
     static func emptyQuests() -> [Quest] {
-        (0 ..< GameRules.questsPerGame).map { .empty(index: $0) }
+        (0 ..< GameRules.questsPerGame).map { .empty(index: $0, numOfPlayers: Int.random(in: 5 ... 10)) }
     }
 }
 
@@ -208,7 +213,7 @@ extension QuestResult {
     }
 
     static func random(
-        players: [Player] = Player.defaultPlayers
+        players: [Player] = Player.defaultPlayers()
     ) -> QuestResult {
         let failVotes = Int.random(in: 0 ... 4)
         return .init(
@@ -239,7 +244,7 @@ extension TeamStatus {
 extension TeamResult {
     static func random(
         isApproved: Bool? = nil,
-        players: [Player] = Player.defaultPlayers
+        players: [Player] = Player.defaultPlayers()
     ) -> TeamResult {
         let total = players.count
         let approvedCount: Int

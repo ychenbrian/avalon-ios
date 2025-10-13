@@ -165,7 +165,7 @@ struct TeamFormSheetPreview: View {
             teamID: UUID(),
             leader: nil,
             members: [],
-            players: Player.defaultPlayers,
+            players: Player.defaultPlayers(),
             votesByVoter: [:],
             requiredTeamSize: 4,
             onSave: { _, _, _, _, _ in },
