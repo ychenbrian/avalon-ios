@@ -14,8 +14,8 @@ enum ResultType: String, Codable {
 
     var displayText: String {
         switch self {
-        case .success: return "Success"
-        case .fail: return "Fail"
+        case .success: return String(localized: "quest.result.success")
+        case .fail: return String(localized: "quest.result.fail")
         }
     }
 
@@ -28,8 +28,8 @@ enum ResultType: String, Codable {
 
     var accessibilityLabel: String {
         switch self {
-        case .success: return "Quest Success"
-        case .fail: return "Quest Fail"
+        case .success: return String(localized: "quest.result.success.accessibility")
+        case .fail: return String(localized: "quest.result.fail.accessibility")
         }
     }
 }

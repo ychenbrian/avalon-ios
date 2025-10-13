@@ -14,7 +14,7 @@ struct TeamCircle: View {
                     .font(.headline.bold())
                     .foregroundColor(.white)
             }
-            Text("\(displayText)")
+            Text(displayText)
                 .font(.caption)
                 .bold()
                 .foregroundColor(team.result?.color ?? .secondary)
@@ -40,13 +40,13 @@ struct TeamCircle: View {
 
     private var displayText: String {
         switch team.status {
-        case .notStarted: return "N/A"
-        case .inProgress: return "Progress"
+        case .notStarted: return String(localized: "common.na")
+        case .inProgress: return String(localized: "quest.status.inProgress")
         case .finished:
             if let result = team.result {
                 return result.displayText
             } else {
-                return "Error"
+                return String(localized: "common.na")
             }
         }
     }

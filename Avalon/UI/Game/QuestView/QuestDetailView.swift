@@ -10,7 +10,7 @@ struct QuestDetailView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Vote Track")
+            Text("questDetailView.voteTrack.title")
                 .padding(.top, 8)
                 .font(.headline)
                 .foregroundColor(.primary)
@@ -33,7 +33,7 @@ struct QuestDetailView: View {
             if let teamID = selectedTeamID {
                 TeamDetailView(questID: questID, teamID: teamID)
             } else {
-                ContentUnavailableView("Select a team", systemImage: "door.left.hand.closed", description: Text("Tap a circle above."))
+                ContentUnavailableView("questDetailView.unavailable.title", systemImage: "door.left.hand.closed", description: Text("questDetailView.unavailable.description"))
             }
         }
         .onAppear { selectFirstIfNeeded() }

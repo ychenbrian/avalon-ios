@@ -61,7 +61,7 @@ struct TeamFormSheet: View {
         NavigationStack {
             VStack(spacing: 0) {
                 // Leader
-                Text("Select Leader")
+                Text("teamForm.leader.label")
                     .font(.subheadline)
                     .foregroundStyle(.primary)
                     .padding(.top, 12)
@@ -78,7 +78,7 @@ struct TeamFormSheet: View {
                 // Team
                 let teamCount = draft.members.count
                 let teamSize = draft.requiredTeamSize
-                Text("Select Team (\(teamCount)/\(teamSize))")
+                Text(String(format: NSLocalizedString("teamForm.team.label", comment: ""), teamCount, teamSize))
                     .font(.subheadline)
                     .foregroundStyle(.primary)
                     .padding(.top, 8)
@@ -94,7 +94,7 @@ struct TeamFormSheet: View {
                     Divider()
 
                     // Approvals
-                    Text("Approvals")
+                    Text("teamForm.approvals.label")
                         .font(.subheadline)
                         .foregroundStyle(.primary)
                         .padding(.top, 12)
@@ -108,7 +108,7 @@ struct TeamFormSheet: View {
                     .padding(.vertical, 12)
 
                     // Rejects
-                    Text("Rejects")
+                    Text("teamForm.rejects.label")
                         .font(.subheadline)
                         .foregroundStyle(.primary)
                         .padding(.top, 8)
@@ -125,18 +125,20 @@ struct TeamFormSheet: View {
                 Spacer(minLength: 0)
             }
             .padding(.horizontal)
-            .navigationTitle("Select Team")
+            .navigationTitle("teamForm.title")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button {
                         onCancel()
+                    } label: {
+                        Text("teamForm.cancel.button")
                     }
                     .foregroundStyle(.red)
-                    .accessibilityLabel("Cancel editing team vote")
+                    .accessibilityLabel(String(localized: "teamForm.cancel.accessibility"))
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button {
                         onSave(
                             draft.questID,
                             draft.teamID,
@@ -144,9 +146,11 @@ struct TeamFormSheet: View {
                             Array(draft.members),
                             draft.votesByVoter
                         )
+                    } label: {
+                        Text("teamForm.save.button")
                     }
                     .foregroundStyle(.blue)
-                    .accessibilityLabel("Save team vote")
+                    .accessibilityLabel(String(localized: "teamForm.save.accessibility"))
                 }
             }
             .interactiveDismissDisabled(false)

@@ -47,20 +47,20 @@ struct ResultFormSheet: View {
         NavigationStack {
             VStack(spacing: 20) {
                 HStack(alignment: .center, spacing: 8) {
-                    Text("Leader")
+                    Text("resultForm.leader.label")
                         .font(.subheadline)
                         .foregroundStyle(.primary)
                     if let leader = draft.leader {
                         overlayForPlayer(leader)
                     } else {
-                        Text("No leader yet")
+                        Text("resultForm.leader.none")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Proposed Team")
+                    Text("resultForm.proposedTeam.label")
                         .font(.subheadline)
                         .foregroundStyle(.primary)
 
@@ -72,7 +72,7 @@ struct ResultFormSheet: View {
                             }
                         }
                     } else {
-                        Text("No members yet")
+                        Text("resultForm.proposedTeam.none")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -80,7 +80,7 @@ struct ResultFormSheet: View {
 
                 Divider()
 
-                Text("Number of Fails")
+                Text("resultForm.failCount.label")
                     .font(.subheadline)
                     .foregroundStyle(.primary)
 
@@ -98,8 +98,10 @@ struct ResultFormSheet: View {
                 if draft.hasFinished {
                     Divider()
 
-                    Button("Clear Result") {
+                    Button {
                         onClearResult()
+                    } label: {
+                        Text("resultForm.clearResult.button")
                     }
                     .font(.headline)
                     .foregroundColor(.white)
@@ -109,25 +111,29 @@ struct ResultFormSheet: View {
                 Spacer(minLength: 0)
             }
             .padding(.horizontal)
-            .navigationTitle("Select Quest Result")
+            .navigationTitle("resultForm.title")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button {
                         onCancel()
+                    } label: {
+                        Text("resultForm.cancel.button")
                     }
                     .foregroundStyle(.red)
-                    .accessibilityLabel("Cancel editing quest result")
+                    .accessibilityLabel(String(localized: "resultForm.cancel.accessibility"))
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button {
                         onSave(
                             draft.questID,
                             draft.failCount
                         )
+                    } label: {
+                        Text("resultForm.save.button")
                     }
                     .foregroundStyle(.blue)
-                    .accessibilityLabel("Save quest result")
+                    .accessibilityLabel(String(localized: "resultForm.save.accessibility"))
                 }
             }
             .interactiveDismissDisabled(false)

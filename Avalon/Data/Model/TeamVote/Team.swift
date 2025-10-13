@@ -32,8 +32,8 @@ struct TeamResult: Codable, Equatable {
 
     var displayText: String {
         switch isApproved {
-        case true: return "Approve"
-        case false: return "Reject"
+        case true: return String(localized: "team.result.approve")
+        case false: return String(localized: "team.result.reject")
         }
     }
 

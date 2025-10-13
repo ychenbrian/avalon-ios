@@ -14,7 +14,7 @@ struct QuestCircle: View {
                     .font(.headline.bold())
                     .foregroundColor(.white)
             }
-            Text("\(getStatusText())")
+            Text(getStatusText())
                 .font(.caption)
                 .bold()
                 .foregroundColor(quest.result?.type?.color ?? .secondary)
@@ -37,20 +37,26 @@ struct QuestCircle: View {
 
     private func getStatusText() -> String {
         if quest.status == .finished {
-            guard let result = quest.result else { return "N/A" }
+            guard let result = quest.result else { return String(localized: "common.na") }
 
             if result.type == .fail {
                 let failVotes = result.failCount ?? 1
-                return failVotes == 1 ? "\(failVotes) Fail" : "\(failVotes) Fails"
+                if failVotes == 1 {
+                    return String(localized: "quest.result.fail.singular")
+                        .replacingOccurrences(of: "%d", with: "\(failVotes)")
+                } else {
+                    return String(localized: "quest.result.fail.plural")
+                        .replacingOccurrences(of: "%d", with: "\(failVotes)")
+                }
             } else if result.type == .success {
-                return "Success"
+                return String(localized: "quest.result.success")
             } else {
-                return "N/A"
+                return String(localized: "common.na")
             }
         } else if quest.status == .inProgress {
-            return "Progress"
+            return String(localized: "quest.status.inProgress")
         }
-        return "N/A"
+        return String(localized: "common.na")
     }
 }
 

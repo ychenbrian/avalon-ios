@@ -14,17 +14,18 @@ struct TeamDetailView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .center, spacing: 8) {
-                Text("Leader")
+                Text("teamDetail.leader.label")
                     .font(.headline)
                     .foregroundColor(.primary)
                 if let leader = team?.leader {
                     overlayForPlayer(leader)
                 } else {
-                    Text("No leader yet").foregroundStyle(.secondary)
+                    Text("teamDetail.leader.none")
+                        .foregroundStyle(.secondary)
                 }
             }
             VStack(alignment: .leading, spacing: 8) {
-                Text("Proposed Team")
+                Text("teamDetail.proposedTeam.label")
                     .font(.headline)
                     .foregroundColor(.primary)
                 if let members = team?.members.sorted(by: { $0.index < $1.index }), !members.isEmpty {
@@ -34,12 +35,12 @@ struct TeamDetailView: View {
                         }
                     }
                 } else {
-                    Text("No members yet")
+                    Text("teamDetail.proposedTeam.none")
                         .foregroundStyle(.secondary)
                 }
             }
             VStack(alignment: .leading, spacing: 4) {
-                Text("Votes")
+                Text("teamDetail.votes.label")
                     .font(.headline)
                     .foregroundColor(.primary)
                 VStack(alignment: .leading, spacing: 4) {
@@ -54,7 +55,7 @@ struct TeamDetailView: View {
                 }
             }
             HStack {
-                Button("Edit Team") {
+                Button {
                     if let quest = store.quest(id: questID) {
                         if quest.status != .finished {
                             isEditingTeam = true
@@ -62,13 +63,17 @@ struct TeamDetailView: View {
                             activeAlert = .cannotEditTeam
                         }
                     }
+                } label: {
+                    Text("teamDetail.editTeam.button")
                 }
                 .font(.headline)
                 .foregroundColor(.primary)
                 .buttonStyle(.glass)
 
-                Button("Edit Result") {
+                Button {
                     isEditingResult = true
+                } label: {
+                    Text("teamDetail.editResult.button")
                 }
                 .font(.headline)
                 .foregroundColor(.primary)
@@ -83,9 +88,9 @@ struct TeamDetailView: View {
             switch route {
             case .cannotEditTeam:
                 return Alert(
-                    title: Text("Cannot edit this team"),
-                    message: Text("The quest has finished, you cannot edit any teams of this quest."),
-                    dismissButton: .default(Text("OK"))
+                    title: Text("teamDetail.cannotEditTeam.title"),
+                    message: Text("teamDetail.cannotEditTeam.message"),
+                    dismissButton: .default(Text("teamDetail.cannotEditTeam.ok"))
                 )
             }
         }

@@ -1,6 +1,107 @@
+/* Localizable.strings */
 
-// Enum
+// MARK: - Error View
 
-"voting-type-approval" = "Approval";
-"voting-type-reject" = "Reject";
-"voting-type-abstain" = "Abstain";
+"error.view.title" = "An Error Occurred";
+"error.view.retryButton" = "Retry";
+
+
+// MARK: - Common Buttons
+
+"common.ok" = "OK";
+"common.confirm" = "Confirm";
+"common.start" = "Start";
+"common.notImplemented" = "Not implemented";
+"common.na" = "N/A";
+
+
+// MARK: - Enum
+
+"quest.status.notStarted" = "Not Started";
+"quest.status.inProgress" = "Progress";
+"quest.status.finished" = "Finished";
+
+"quest.result.success" = "Success";
+"quest.result.fail" = "Fail";
+"quest.result.fail.singular" = "%d Fail";
+"quest.result.fail.plural" = "%d Fails";
+"quest.result.success.accessibility" = "Quest Success";
+"quest.result.fail.accessibility" = "Quest Fail";
+
+"team.result.approve" = "Approve";
+"team.result.reject" = "Reject";
+
+
+// MARK: - Game View
+
+"gameView.unavailable.title" = "Select a quest";
+"gameView.unavailable.description" = "Tap a circle above.";
+
+"gameView.navigation.titleFormat" = "%@ - Quest %d";
+
+"gameView.toolbar.editGame" = "Edit Game";
+"gameView.toolbar.newGame" = "New Game";
+
+"gameView.alert.newGame.title" = "Start a new game";
+"gameView.alert.newGame.message" = "Do you want to finish the current one and start a new game?";
+"gameView.alert.cannotStart.title" = "Cannot start this quest";
+"gameView.alert.cannotStart.message" = "You can’t start this quest yet.";
+"gameView.alert.confirmStart.title" = "Start new quest?";
+"gameView.alert.confirmStart.messageFormat" = "Do you want to start Quest %d?";
+
+
+// MARK: - Quest Detail View
+
+"questDetailView.voteTrack.title" = "Vote Track";
+"questDetailView.unavailable.title" = "Select a team";
+"questDetailView.unavailable.description" = "Tap a circle above.";
+
+
+// MARK: - Result Form Sheet
+
+"resultForm.title" = "Select Quest Result";
+"resultForm.leader.label" = "Leader";
+"resultForm.leader.none" = "No leader yet";
+"resultForm.proposedTeam.label" = "Proposed Team";
+"resultForm.proposedTeam.none" = "No members yet";
+"resultForm.failCount.label" = "Number of Fails";
+"resultForm.clearResult.button" = "Clear Result";
+"resultForm.cancel.button" = "Cancel";
+"resultForm.cancel.accessibility" = "Cancel editing quest result";
+"resultForm.save.button" = "Save";
+"resultForm.save.accessibility" = "Save quest result";
+
+
+// MARK: - Result View
+
+"resultView.success.label" = "Success";
+"resultView.fail.label" = "Fail";
+"resultView.failRequired.singular.label" = "%d Fail Required";
+"resultView.failRequired.plural.label" = "%d Fails Required";
+
+
+// MARK: - Team Form Sheet
+
+"teamForm.title" = "Select Team";
+"teamForm.leader.label" = "Select Leader";
+"teamForm.team.label" = "Select Team (%d/%d)";
+"teamForm.approvals.label" = "Approvals";
+"teamForm.rejects.label" = "Rejects";
+"teamForm.cancel.button" = "Cancel";
+"teamForm.cancel.accessibility" = "Cancel editing team vote";
+"teamForm.save.button" = "Save";
+"teamForm.save.accessibility" = "Save team vote";
+
+
+// MARK: - Team Detail View
+
+"teamDetail.leader.label" = "Leader";
+"teamDetail.leader.none" = "No leader yet";
+"teamDetail.proposedTeam.label" = "Proposed Team";
+"teamDetail.proposedTeam.none" = "No members yet";
+"teamDetail.votes.label" = "Votes";
+"teamDetail.editTeam.button" = "Edit Team";
+"teamDetail.editResult.button" = "Edit Result";
+"teamDetail.cannotEditTeam.title" = "Cannot edit this team";
+"teamDetail.cannotEditTeam.message" = "The quest has finished, you cannot edit any teams of this quest.";
+"teamDetail.cannotEditTeam.ok" = "OK";

@@ -18,7 +18,6 @@ struct CountRadioButton: View {
                 .foregroundColor(.white)
                 .padding(2)
         }
-        .accessibilityLabel("\(name) failed quests\(isSelected ? " selected" : "")")
     }
 }
 

@@ -45,9 +45,9 @@ struct GameView: View {
                         QuestDetailView(questID: quest.id)
                     } else {
                         ContentUnavailableView(
-                            "Select a quest",
+                            "gameView.unavailable.title",
                             systemImage: "train.side.front.car",
-                            description: Text("Tap a circle above.")
+                            description: Text("gameView.unavailable.description")
                         )
                     }
                 }
@@ -60,14 +60,14 @@ struct GameView: View {
                     Button {
                         activeAlert = .editGame
                     } label: {
-                        Label("Edit Game", systemImage: "pencil")
+                        Label("gameView.toolbar.editGame", systemImage: "pencil")
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         activeAlert = .confirmNewGame
                     } label: {
-                        Label("New Game", systemImage: "plus")
+                        Label("gameView.toolbar.newGame", systemImage: "plus")
                     }
                 }
             }
@@ -76,26 +76,29 @@ struct GameView: View {
             switch route {
             case .confirmNewGame:
                 return Alert(
-                    title: Text("Start a new game"),
-                    message: Text("Do you want to finish the current one and start a new game?"),
-                    primaryButton: .default(Text("Confirm")) {
+                    title: Text("gameView.alert.newGame.title"),
+                    message: Text("gameView.alert.newGame.message"),
+                    primaryButton: .default(Text("common.confirm")) {
                         store.initialGame()
                     },
                     secondaryButton: .cancel()
                 )
             case .editGame:
-                return Alert(title: Text("Not implemented"))
+                return Alert(title: Text("common.notImplemented"))
             case .cannotStart:
                 return Alert(
-                    title: Text("Cannot start this quest"),
-                    message: Text("You can’t start this quest yet."),
-                    dismissButton: .default(Text("OK"))
+                    title: Text("gameView.alert.cannotStart.title"),
+                    message: Text("gameView.alert.cannotStart.message"),
+                    dismissButton: .default(Text("common.ok"))
                 )
             case let .confirmStart(quest):
+                let messageFormat = NSLocalizedString("gameView.alert.confirmStart.messageFormat", comment: "Alert message for starting a specific quest")
+                let message = String(format: messageFormat, quest.index + 1)
+
                 return Alert(
-                    title: Text("Start new quest?"),
-                    message: Text("Do you want to start Quest \(quest.index + 1)?"),
-                    primaryButton: .default(Text("Start")) {
+                    title: Text("gameView.alert.confirmStart.title"),
+                    message: Text(message),
+                    primaryButton: .default(Text("common.start")) {
                         startQuestFlow(from: quest)
                     },
                     secondaryButton: .cancel()

@@ -10,7 +10,7 @@ struct ResultView: View {
         VStack {
             HStack(spacing: 12) {
                 VStack(spacing: 4) {
-                    Text("Success")
+                    Text("resultView.success.label")
                         .font(.caption)
                         .foregroundColor(.primary)
                     Text("\((quest?.requiredTeamSize ?? 0) - (quest?.result?.failCount ?? 0))")
@@ -24,7 +24,7 @@ struct ResultView: View {
                 }
 
                 VStack(spacing: 4) {
-                    Text("Fail")
+                    Text("resultView.fail.label")
                         .font(.caption)
                         .foregroundColor(.primary)
                     Text("\(quest?.result?.failCount ?? 0)")
@@ -39,7 +39,11 @@ struct ResultView: View {
 
                 if let result = quest?.result?.type, let requiredFail = quest?.requiredFails {
                     VStack(spacing: 4) {
-                        Text("\(requiredFail) Fail\(requiredFail == 1 ? "" : "s") Required")
+                        Text(String(
+                            localized: requiredFail == 1
+                                ? "resultView.failRequired.singular.label"
+                                : "resultView.failRequired.plural.label"
+                        ).replacingOccurrences(of: "%d", with: "\(requiredFail)"))
                             .font(.caption)
                             .foregroundColor(.primary)
 
