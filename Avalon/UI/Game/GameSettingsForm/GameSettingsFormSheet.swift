@@ -1,10 +1,10 @@
 import SwiftUI
 
-struct GameFormSheet: View {
+struct GameSettingsFormSheet: View {
     let onSave: (_ numOfPlayers: Int) -> Void
     let onCancel: () -> Void
 
-    @State private var draft: GameFormDraft
+    @State private var draft: GameSettingsFormDraft
 
     init(
         numOfPlayers: Int,
@@ -14,7 +14,7 @@ struct GameFormSheet: View {
         self.onSave = onSave
         self.onCancel = onCancel
 
-        let initialDraft = GameFormDraft(numOfPlayers: numOfPlayers)
+        let initialDraft = GameSettingsFormDraft(numOfPlayers: numOfPlayers)
 
         _draft = .init(initialValue: initialDraft)
     }
@@ -22,7 +22,7 @@ struct GameFormSheet: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Text("gameForm.playerNumber.label")
+                Text("gameSettingsForm.playerNumber.label")
                     .font(.subheadline)
                     .foregroundStyle(.primary)
 
@@ -36,7 +36,7 @@ struct GameFormSheet: View {
                     }
                 )
 
-                Text("gameForm.playerNumber.warning")
+                Text("gameSettingsForm.playerNumber.warning")
                     .font(.subheadline)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .foregroundColor(.red)
@@ -44,26 +44,26 @@ struct GameFormSheet: View {
                 Spacer(minLength: 0)
             }
             .padding(.horizontal)
-            .navigationTitle("gameForm.title")
+            .navigationTitle("gameSettingsForm.title")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
                         onCancel()
                     } label: {
-                        Text("gameForm.cancel.button")
+                        Text("gameSettingsForm.cancel.button")
                     }
                     .foregroundStyle(.red)
-                    .accessibilityLabel(String(localized: "gameForm.cancel.accessibility"))
+                    .accessibilityLabel(String(localized: "gameSettingsForm.cancel.accessibility"))
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
                         onSave(draft.numOfPlayers)
                     } label: {
-                        Text("gameForm.save.button")
+                        Text("gameSettingsForm.save.button")
                     }
                     .foregroundStyle(.blue)
-                    .accessibilityLabel(String(localized: "gameForm.save.accessibility"))
+                    .accessibilityLabel(String(localized: "gameSettingsForm.save.accessibility"))
                 }
             }
             .interactiveDismissDisabled(false)
@@ -71,9 +71,9 @@ struct GameFormSheet: View {
     }
 }
 
-struct GameFormSheetPreview: View {
+struct GameSettingsFormSheetPreview: View {
     var body: some View {
-        GameFormSheet(
+        GameSettingsFormSheet(
             numOfPlayers: 10,
             onSave: { _ in },
             onCancel: {}
@@ -83,5 +83,5 @@ struct GameFormSheetPreview: View {
 }
 
 #Preview {
-    GameFormSheetPreview()
+    GameSettingsFormSheetPreview()
 }

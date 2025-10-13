@@ -7,6 +7,7 @@ struct TeamDetailView: View {
 
     @State private var isEditingTeam = false
     @State private var isEditingResult = false
+    @State private var isGameFinish = false
     @State private var activeAlert: TeamDetailAlert?
 
     private var team: TeamViewData? { store.team(id: teamID, in: questID) }
@@ -140,8 +141,13 @@ struct TeamDetailView: View {
                     requiredFails: quest.requiredFails,
                     failCount: quest.result?.failCount,
                     onSave: { questID, failCount in
-                        store.updateQuestResult(questID: questID, failCount: failCount)
-                        withAnimation { isEditingResult = false }
+                        let gameFinish = store.updateQuestResult(questID: questID, failCount: failCount)
+                        withAnimation {
+                            isEditingResult = false
+                            if gameFinish {
+                                isGameFinish = true
+                            }
+                        }
                     },
                     onCancel: { withAnimation { isEditingResult = false } },
                     onClearResult: { withAnimation {
@@ -153,6 +159,18 @@ struct TeamDetailView: View {
             } else {
                 Color.clear.onAppear { isEditingResult = false }
             }
+        }
+        .sheet(isPresented: $isGameFinish) {
+            GameFinishFormSheet(
+                status: store.game.status,
+                result: nil,
+                onFinish: { _ in
+                    withAnimation {
+                        isGameFinish = false
+                    }
+                }
+            )
+            .presentationDetents([.medium])
         }
     }
 

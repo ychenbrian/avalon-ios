@@ -18,7 +18,7 @@ struct NumberRadioGroup: View {
     var body: some View {
         HStack {
             ForEach(range, id: \.self) { i in
-                NumberRadioButton(
+                TextRadioButton(
                     text: "\(i)",
                     isSelected: selected(i),
                     selectedColor: .blue

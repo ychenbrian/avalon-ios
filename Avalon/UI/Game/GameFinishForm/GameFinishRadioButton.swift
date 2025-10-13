@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct NumberRadioButton: View {
+struct GameFinishRadioButton: View {
     let text: String
     let isSelected: Bool
     let selectedColor: Color
@@ -10,16 +10,17 @@ struct NumberRadioButton: View {
         Button(action: action) {
             Text(text)
                 .font(.headline)
-                .frame(width: 48, height: 48)
+                .frame(maxWidth: .infinity, minHeight: 48)
+                .padding(.horizontal, 16)
+                .foregroundColor(.white)
                 .background(
-                    Circle()
+                    Capsule()
                         .fill(isSelected ? selectedColor : Color.gray.opacity(0.5))
                 )
-                .foregroundColor(.white)
         }
     }
 }
 
 #Preview {
-    NumberRadioButton(text: "1", isSelected: false, selectedColor: Color.blue, action: {})
+    GameFinishRadioButton(text: "Finish with 3 Fails", isSelected: false, selectedColor: Color.blue, action: {})
 }

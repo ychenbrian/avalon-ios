@@ -31,6 +31,10 @@
 "team.result.approve" = "Approve";
 "team.result.reject" = "Reject";
 
+"game.result.goodWin.assistanationFail" = "Evil Win: Assistanation Success";
+"game.result.evilWin.threeFailedQuests" = "Evil Win: Three Failed Quests";
+"game.result.evilWin.assistanationSuccess" = "Good Win: Assistanation Fail";
+
 
 // MARK: - Game View
 
@@ -107,12 +111,21 @@
 "teamDetail.cannotEditTeam.ok" = "OK";
 
 
-// MARK: - Game Form Sheet
+// MARK: - Game Settings Form Sheet
 
-"gameForm.title" = "Game Settings";
-"gameForm.playerNumber.label" = "Number Of Players";
-"gameForm.playerNumber.warning" = "Change the number of players will reset the entire game.";
-"gameForm.cancel.button" = "Cancel";
-"gameForm.cancel.accessibility" = "Cancel editing game";
-"gameForm.save.button" = "Save";
-"gameForm.save.accessibility" = "Save game settings";
+"gameSettingsForm.title" = "Game Settings";
+"gameSettingsForm.playerNumber.label" = "Number Of Players";
+"gameSettingsForm.playerNumber.warning" = "Change the number of players will reset the entire game.";
+"gameSettingsForm.cancel.button" = "Cancel";
+"gameSettingsForm.cancel.accessibility" = "Cancel editing game";
+"gameSettingsForm.save.button" = "Save";
+"gameSettingsForm.save.accessibility" = "Save game settings";
+
+
+// MARK: - Game Finish Form Sheet
+
+"gameFinishForm.title" = "Finish Game";
+"gameFinishForm.threeSuccess.label" = "Three Successes";
+"gameFinishForm.threeFail.label" = "Three Fails";
+"gameFinishForm.finish.button" = "Finish";
+"gameFinishForm.finish.accessibility" = "Finish the game";

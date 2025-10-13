@@ -11,11 +11,9 @@ final class GameStore {
         self.players = players
     }
 
-    // Queries
     func quest(id: UUID) -> QuestViewData? { game.quests.first(where: { $0.id == id }) }
     func team(id: UUID, in questID: UUID) -> TeamViewData? { quest(id: questID)?.teams.first(where: { $0.id == id }) }
 
-    // Intents (mutations)
     func initialGame() {
         game = GameViewData(game: AvalonGame.initial(players: players))
     }
@@ -67,7 +65,8 @@ final class GameStore {
         team(id: teamID, in: questID)?.result = result
     }
 
-    func updateQuestResult(questID: UUID, failCount: Int) {
+    @discardableResult
+    func updateQuestResult(questID: UUID, failCount: Int) -> Bool {
         quest(id: questID)?.status = .finished
         let result = ResultViewData(failCount: failCount)
         if failCount >= quest(id: questID)?.requiredFails ?? 1 {
@@ -76,10 +75,31 @@ final class GameStore {
             result.type = .success
         }
         quest(id: questID)?.result = result
+
+        return checkGameFinish()
     }
 
     func clearQuestResult(questID: UUID) {
         quest(id: questID)?.status = .inProgress
         quest(id: questID)?.result = nil
+    }
+
+    // MARK: - Private
+
+    private func checkGameFinish() -> Bool {
+        let quests = game.quests
+        let successCount = quests.filter { $0.result?.type == .success }.count
+        let failCount = quests.filter { $0.result?.type == .fail }.count
+
+        if successCount >= 3 {
+            game.status = .finishWithThreeSuccesses
+            return true
+        }
+        if failCount >= 3 {
+            game.status = .finishWithThreeFails
+            return true
+        }
+        game.status = .inProgress
+        return false
     }
 }

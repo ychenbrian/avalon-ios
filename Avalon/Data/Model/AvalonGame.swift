@@ -7,36 +7,62 @@ struct AvalonGame: Identifiable {
     var finishedAt: String?
     var players: [Player]
     var quests: [Quest]
-    var status: GameStatus = .initial
+    var status: GameStatus = .inProgress
     var result: GameResult?
 }
 
 // MARK: - Game Status
 
 enum GameStatus: String, Codable, Equatable {
-    case initial
     case inProgress
-    case finish
+    case finishWithThreeSuccesses
+    case finishWithThreeFails
+    case finishWithEarlyAssassin
 
     var color: Color {
         switch self {
-        case .initial: return .gray.opacity(0.3)
         case .inProgress: return .blue
-        case .finish: return .green
+        case .finishWithThreeSuccesses: return .yellow
+        case .finishWithThreeFails: return .red
+        case .finishWithEarlyAssassin: return .red
         }
     }
 }
 
-enum GameResult: String, Codable, Equatable {
-    case goodWinByQuest
+// MARK: - Game Result
+
+enum GameResult: String, Codable, Equatable, CaseIterable {
     case goodWinByFailedAss
     case evilWinByQuest
     case evilWinByAssassin
 
     var color: Color {
         switch self {
-        case .goodWinByQuest, .goodWinByFailedAss: return .green
-        case .evilWinByQuest, .evilWinByAssassin: return .red
+        case .goodWinByFailedAss:
+            return .green
+        case .evilWinByQuest, .evilWinByAssassin:
+            return .red
         }
+    }
+
+    private var localizationKey: String {
+        switch self {
+        case .goodWinByFailedAss:
+            return "game.result.goodWin.assistanationFail"
+        case .evilWinByQuest:
+            return "game.result.evilWin.threeFailedQuests"
+        case .evilWinByAssassin:
+            return "game.result.evilWin.assistanationSuccess"
+        }
+    }
+
+    var displayText: String {
+        String(localized: String.LocalizationValue(localizationKey))
+    }
+
+    init?(displayText: String) {
+        self.init(rawValue: Self.allCases.first {
+            $0.displayText == displayText
+        }?.rawValue ?? "")
     }
 }

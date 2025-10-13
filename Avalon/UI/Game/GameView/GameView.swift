@@ -133,7 +133,7 @@ struct GameView: View {
             }
         }
         .sheet(isPresented: $isEditingGame) {
-            GameFormSheet(
+            GameSettingsFormSheet(
                 numOfPlayers: store.players.count,
                 onSave: { numOfPlayers in
                     store.updateNumOfPlayers(numOfPlayers)

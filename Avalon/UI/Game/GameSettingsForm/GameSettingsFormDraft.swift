@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct GameFormDraft: Equatable {
+struct GameSettingsFormDraft: Equatable {
     var numOfPlayers: Int
 
     mutating func setNumberOfPlayers(_ number: Int) {
