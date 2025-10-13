@@ -443,6 +443,27 @@ struct GameStoreTests {
         #expect(updatedQuest?.result?.failCount == 5)
     }
 
+    @Test("Clear quest result")
+    func clearQuestResult() {
+        let game = GameViewData(game: AvalonGame.initial())
+        let store = GameStore(game: game)
+        let randomQuestIndex = Int.random(in: 0 ..< 5)
+        let quest = store.game.quests[randomQuestIndex]
+        let failCount = Int.random(in: 0 ..< quest.requiredFails)
+
+        store.updateQuestResult(questID: quest.id, failCount: failCount)
+
+        let updatedQuest = store.quest(id: quest.id)
+        #expect(updatedQuest?.status == .finished)
+        #expect(updatedQuest?.result?.type == .success)
+
+        store.clearQuestResult(questID: quest.id)
+
+        let clearedQuest = store.quest(id: quest.id)
+        #expect(clearedQuest?.status == .inProgress)
+        #expect(clearedQuest?.result == nil)
+    }
+
     // MARK: - Integration Tests
 
     @Test("Complete successful quest flow")

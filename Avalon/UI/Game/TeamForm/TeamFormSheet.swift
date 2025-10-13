@@ -90,9 +90,9 @@ struct TeamFormSheet: View {
                 )
                 .padding(.vertical, 12)
 
-                Divider()
-
                 if showVotes {
+                    Divider()
+
                     // Approvals
                     Text("Approvals")
                         .font(.subheadline)

@@ -7,6 +7,7 @@ struct TeamDetailView: View {
 
     @State private var isEditingTeam = false
     @State private var isEditingResult = false
+    @State private var activeAlert: TeamDetailAlert?
 
     private var team: TeamViewData? { store.team(id: teamID, in: questID) }
 
@@ -54,7 +55,13 @@ struct TeamDetailView: View {
             }
             HStack {
                 Button("Edit Team") {
-                    isEditingTeam = true
+                    if let quest = store.quest(id: questID) {
+                        if quest.status != .finished {
+                            isEditingTeam = true
+                        } else {
+                            activeAlert = .cannotEditTeam
+                        }
+                    }
                 }
                 .font(.headline)
                 .foregroundColor(.primary)
@@ -72,6 +79,16 @@ struct TeamDetailView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.secondary.opacity(0.2), lineWidth: 1))
+        .alert(item: $activeAlert) { route in
+            switch route {
+            case .cannotEditTeam:
+                return Alert(
+                    title: Text("Cannot edit this team"),
+                    message: Text("The quest has finished, you cannot edit any teams of this quest."),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
+        }
         .sheet(isPresented: $isEditingTeam) {
             if let quest = store.quest(id: questID), let team = store.team(id: teamID, in: questID) {
                 TeamFormSheet(
@@ -116,12 +133,16 @@ struct TeamDetailView: View {
                     votesByVoter: team.votesByVoter,
                     teamSize: quest.requiredTeamSize,
                     requiredFails: quest.requiredFails,
-                    showVotes: true,
+                    failCount: quest.result?.failCount,
                     onSave: { questID, failCount in
                         store.updateQuestResult(questID: questID, failCount: failCount)
                         withAnimation { isEditingResult = false }
                     },
-                    onCancel: { withAnimation { isEditingResult = false } }
+                    onCancel: { withAnimation { isEditingResult = false } },
+                    onClearResult: { withAnimation {
+                        isEditingResult = false
+                        store.clearQuestResult(questID: questID)
+                    } }
                 )
                 .presentationDetents([.medium])
             } else {

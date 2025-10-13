@@ -8,14 +8,14 @@ struct ResultView: View {
 
     var body: some View {
         VStack {
-            HStack(spacing: 16) {
+            HStack(spacing: 12) {
                 VStack(spacing: 4) {
                     Text("Success")
                         .font(.caption)
                         .foregroundColor(.primary)
                     Text("\((quest?.requiredTeamSize ?? 0) - (quest?.result?.failCount ?? 0))")
-                        .font(.title2.bold())
-                        .frame(width: 48, height: 48)
+                        .font(.body.bold())
+                        .frame(width: 40, height: 40)
                         .background(Circle().fill(.green))
                         .foregroundColor(.white)
                         .overlay(
@@ -28,8 +28,8 @@ struct ResultView: View {
                         .font(.caption)
                         .foregroundColor(.primary)
                     Text("\(quest?.result?.failCount ?? 0)")
-                        .font(.title2.bold())
-                        .frame(width: 48, height: 48)
+                        .font(.body.bold())
+                        .frame(width: 40, height: 40)
                         .background(Circle().fill(.red))
                         .foregroundColor(.white)
                         .overlay(
@@ -44,9 +44,9 @@ struct ResultView: View {
                             .foregroundColor(.primary)
 
                         Text(result.displayText)
-                            .font(.headline)
-                            .frame(height: 48)
-                            .padding(.horizontal, 24)
+                            .font(.body.bold())
+                            .frame(height: 40)
+                            .padding(.horizontal, 16)
                             .foregroundColor(.white)
                             .background(
                                 Capsule()

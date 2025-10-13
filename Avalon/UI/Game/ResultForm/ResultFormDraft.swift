@@ -9,7 +9,8 @@ struct QuestFormDraft: Equatable {
     var votesByVoter: [Player: VoteType]
     var teamSize: Int
     var requiredFails: Int
-    var failCount: Int = 0
+    var failCount: Int
+    var hasFinished: Bool = false
 
     mutating func setFailCount(_ count: Int) {
         failCount = count

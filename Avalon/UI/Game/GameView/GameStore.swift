@@ -69,4 +69,9 @@ final class GameStore {
         }
         quest(id: questID)?.result = result
     }
+
+    func clearQuestResult(questID: UUID) {
+        quest(id: questID)?.status = .inProgress
+        quest(id: questID)?.result = nil
+    }
 }

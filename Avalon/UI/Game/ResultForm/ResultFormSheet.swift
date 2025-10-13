@@ -4,6 +4,7 @@ struct ResultFormSheet: View {
     let players: [Player]
     let onSave: (_ questID: UUID, _ failCount: Int) -> Void
     let onCancel: () -> Void
+    let onClearResult: () -> Void
 
     @State private var draft: QuestFormDraft
 
@@ -16,13 +17,15 @@ struct ResultFormSheet: View {
         votesByVoter: [Player: VoteType],
         teamSize: Int,
         requiredFails: Int,
-        showVotes _: Bool = false,
+        failCount: Int? = nil,
         onSave: @escaping (_ questID: UUID, _ failCount: Int) -> Void,
-        onCancel: @escaping () -> Void
+        onCancel: @escaping () -> Void,
+        onClearResult: @escaping () -> Void
     ) {
         self.players = players
         self.onSave = onSave
         self.onCancel = onCancel
+        self.onClearResult = onClearResult
 
         let initialDraft = QuestFormDraft(
             questID: questID,
@@ -32,7 +35,9 @@ struct ResultFormSheet: View {
             players: players,
             votesByVoter: votesByVoter,
             teamSize: teamSize,
-            requiredFails: requiredFails
+            requiredFails: requiredFails,
+            failCount: failCount ?? 0,
+            hasFinished: failCount != nil
         )
 
         _draft = .init(initialValue: initialDraft)
@@ -89,6 +94,17 @@ struct ResultFormSheet: View {
                         draft.failCount = count
                     }
                 )
+
+                if draft.hasFinished {
+                    Divider()
+
+                    Button("Clear Result") {
+                        onClearResult()
+                    }
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .buttonStyle(.glassProminent)
+                }
 
                 Spacer(minLength: 0)
             }
@@ -154,8 +170,10 @@ struct ResultFormSheetPreview: View {
             votesByVoter: [:],
             teamSize: 4,
             requiredFails: 2,
+            failCount: 1,
             onSave: { _, _ in },
-            onCancel: {}
+            onCancel: {},
+            onClearResult: {}
         )
         .presentationDetents([.medium, .large])
     }
