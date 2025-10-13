@@ -15,6 +15,7 @@ struct GameView: View {
     @State private var activeAlert: GameViewAlert?
     @State private var newTeam: TeamLocator?
     @State private var isEditingGame = false
+    @State private var isGameFinish = false
 
     private var selectedQuestID: UUID? { store.game.selectedQuestID }
 
@@ -62,6 +63,13 @@ struct GameView: View {
                         isEditingGame = true
                     } label: {
                         Label("gameView.toolbar.editGame", systemImage: "pencil")
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isGameFinish = true
+                    } label: {
+                        Label("gameView.toolbar.startAssistanation", systemImage: "drop.fill")
                     }
                 }
             }
@@ -137,6 +145,18 @@ struct GameView: View {
         }
         .onAppear {
             if selectedQuestID == nil { store.game.selectedQuestID = store.game.quests.first?.id }
+        }
+        .sheet(isPresented: $isGameFinish) {
+            GameFinishFormSheet(
+                status: .finishWithEarlyAssassin,
+                result: nil,
+                onFinish: { _ in
+                    withAnimation {
+                        isGameFinish = false
+                    }
+                }
+            )
+            .presentationDetents([.medium])
         }
     }
 

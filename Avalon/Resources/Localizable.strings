@@ -42,6 +42,7 @@
 "gameView.unavailable.description" = "Tap a circle above.";
 "gameView.navigation.titleFormat" = "%@ - Quest %d";
 "gameView.toolbar.editGame" = "Edit Game";
+"gameView.toolbar.startAssistanation" = "Start Assistanation";
 
 "gameView.alert.cannotStart.title" = "Cannot start this quest";
 "gameView.alert.cannotStart.message" = "You can’t start this quest yet.";
@@ -124,5 +125,6 @@
 "gameFinishForm.title" = "Finish Game";
 "gameFinishForm.threeSuccess.label" = "Three Successes";
 "gameFinishForm.threeFail.label" = "Three Fails";
+"gameFinishForm.earlyAssassin.label" = "Early Assistanation";
 "gameFinishForm.finish.button" = "Finish";
 "gameFinishForm.finish.accessibility" = "Finish the game";

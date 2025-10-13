@@ -9,7 +9,7 @@ struct QuestDetailView: View {
     private var selectedTeamID: UUID? { store.quest(id: questID)?.selectedTeamID }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("questDetailView.voteTrack.title")
                 .padding(.top, 8)
                 .font(.headline)

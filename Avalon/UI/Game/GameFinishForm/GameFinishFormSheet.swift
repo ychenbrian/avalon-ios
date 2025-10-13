@@ -55,12 +55,14 @@ struct GameFinishFormSheet: View {
             return String(localized: "gameFinishForm.threeSuccess.label")
         } else if draft.status == .finishWithThreeFails {
             return String(localized: "gameFinishForm.threeSuccess.label")
+        } else if draft.status == .finishWithEarlyAssassin {
+            return String(localized: "gameFinishForm.earlyAssassin.label")
         }
         return String(localized: "gameFinishForm.title")
     }
 
     private func getResultOptions() -> [String] {
-        if draft.status == .finishWithThreeSuccesses {
+        if draft.status == .finishWithThreeSuccesses || draft.status == .finishWithEarlyAssassin {
             return [
                 GameResult.goodWinByFailedAss.displayText,
                 GameResult.evilWinByAssassin.displayText,
