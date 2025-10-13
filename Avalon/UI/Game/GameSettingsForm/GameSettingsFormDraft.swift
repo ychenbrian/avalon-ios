@@ -1,9 +1,17 @@
 import SwiftUI
 
 struct GameSettingsFormDraft: Equatable {
-    var numOfPlayers: Int
+    let numOfPlayers: Int
+    var updatedNumber: Int
+    var hasUpdated: Bool = false
 
     mutating func setNumberOfPlayers(_ number: Int) {
-        numOfPlayers = number
+        if numOfPlayers != number {
+            hasUpdated = true
+        } else {
+            hasUpdated = false
+        }
+
+        updatedNumber = number
     }
 }

@@ -40,14 +40,9 @@
 
 "gameView.unavailable.title" = "Select a quest";
 "gameView.unavailable.description" = "Tap a circle above.";
-
 "gameView.navigation.titleFormat" = "%@ - Quest %d";
-
 "gameView.toolbar.editGame" = "Edit Game";
-"gameView.toolbar.newGame" = "New Game";
 
-"gameView.alert.newGame.title" = "Start a new game";
-"gameView.alert.newGame.message" = "Do you want to finish the current one and start a new game?";
 "gameView.alert.cannotStart.title" = "Cannot start this quest";
 "gameView.alert.cannotStart.message" = "You can’t start this quest yet.";
 "gameView.alert.confirmStart.title" = "Start new quest?";
@@ -116,6 +111,8 @@
 "gameSettingsForm.title" = "Game Settings";
 "gameSettingsForm.playerNumber.label" = "Number Of Players";
 "gameSettingsForm.playerNumber.warning" = "Change the number of players will reset the entire game.";
+"gameSettingsForm.startNewGame.button" = "Start New Game";
+"gameSettingsForm.startNewGame.warning" = "Start a new game will end the current one.";
 "gameSettingsForm.cancel.button" = "Cancel";
 "gameSettingsForm.cancel.accessibility" = "Cancel editing game";
 "gameSettingsForm.save.button" = "Save";

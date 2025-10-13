@@ -19,7 +19,8 @@ struct ResultView: View {
                         .background(Circle().fill(.green))
                         .foregroundColor(.white)
                         .overlay(
-                            Circle().stroke(Color.white, lineWidth: 2)
+                            Circle()
+                                .stroke(Color.white, lineWidth: 2)
                         )
                 }
 
@@ -33,7 +34,8 @@ struct ResultView: View {
                         .background(Circle().fill(.red))
                         .foregroundColor(.white)
                         .overlay(
-                            Circle().stroke(Color.white, lineWidth: 2)
+                            Circle()
+                                .stroke(Color.white, lineWidth: 2)
                         )
                 }
 
@@ -55,7 +57,6 @@ struct ResultView: View {
                             .background(
                                 Capsule()
                                     .fill(result.color)
-                                    .shadow(radius: 4)
                             )
                             .accessibilityLabel(result.accessibilityLabel)
                     }

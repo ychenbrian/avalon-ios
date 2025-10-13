@@ -1,20 +1,26 @@
 import SwiftUI
 
 struct GameSettingsFormSheet: View {
-    let onSave: (_ numOfPlayers: Int) -> Void
+    let onSave: (_ numOfPlayers: Int, _ hasUpdated: Bool) -> Void
     let onCancel: () -> Void
+    let onNewGame: () -> Void
 
     @State private var draft: GameSettingsFormDraft
 
     init(
         numOfPlayers: Int,
-        onSave: @escaping (_ numOfPlayers: Int) -> Void,
-        onCancel: @escaping () -> Void
+        onSave: @escaping (_ numOfPlayers: Int, _ hasUpdated: Bool) -> Void,
+        onCancel: @escaping () -> Void,
+        onNewGame: @escaping () -> Void
     ) {
         self.onSave = onSave
         self.onCancel = onCancel
+        self.onNewGame = onNewGame
 
-        let initialDraft = GameSettingsFormDraft(numOfPlayers: numOfPlayers)
+        let initialDraft = GameSettingsFormDraft(
+            numOfPlayers: numOfPlayers,
+            updatedNumber: numOfPlayers
+        )
 
         _draft = .init(initialValue: initialDraft)
     }
@@ -29,14 +35,33 @@ struct GameSettingsFormSheet: View {
                 NumberRadioGroup(
                     range: GameRules.defaultTeamSizeRange,
                     selected: { number in
-                        number == draft.numOfPlayers
+                        number == draft.updatedNumber
                     },
                     action: { number in
-                        draft.numOfPlayers = number
+                        draft.setNumberOfPlayers(number)
                     }
                 )
 
-                Text("gameSettingsForm.playerNumber.warning")
+                if draft.hasUpdated {
+                    Text("gameSettingsForm.playerNumber.warning")
+                        .font(.subheadline)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .foregroundColor(.red)
+                }
+
+                Divider()
+                    .padding()
+
+                Button {
+                    onNewGame()
+                } label: {
+                    Text("gameSettingsForm.startNewGame.button")
+                }
+                .font(.headline)
+                .foregroundColor(.white)
+                .buttonStyle(.glassProminent)
+
+                Text("gameSettingsForm.startNewGame.warning")
                     .font(.subheadline)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .foregroundColor(.red)
@@ -58,7 +83,10 @@ struct GameSettingsFormSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
-                        onSave(draft.numOfPlayers)
+                        onSave(
+                            draft.updatedNumber,
+                            draft.hasUpdated
+                        )
                     } label: {
                         Text("gameSettingsForm.save.button")
                     }
@@ -75,8 +103,9 @@ struct GameSettingsFormSheetPreview: View {
     var body: some View {
         GameSettingsFormSheet(
             numOfPlayers: 10,
-            onSave: { _ in },
-            onCancel: {}
+            onSave: { _, _ in },
+            onCancel: {},
+            onNewGame: {}
         )
         .presentationDetents([.medium])
     }

@@ -64,26 +64,10 @@ struct GameView: View {
                         Label("gameView.toolbar.editGame", systemImage: "pencil")
                     }
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        activeAlert = .confirmNewGame
-                    } label: {
-                        Label("gameView.toolbar.newGame", systemImage: "plus")
-                    }
-                }
             }
         }
         .alert(item: $activeAlert) { route in
             switch route {
-            case .confirmNewGame:
-                return Alert(
-                    title: Text("gameView.alert.newGame.title"),
-                    message: Text("gameView.alert.newGame.message"),
-                    primaryButton: .default(Text("common.confirm")) {
-                        store.initialGame()
-                    },
-                    secondaryButton: .cancel()
-                )
             case .cannotStart:
                 return Alert(
                     title: Text("gameView.alert.cannotStart.title"),
@@ -135,11 +119,19 @@ struct GameView: View {
         .sheet(isPresented: $isEditingGame) {
             GameSettingsFormSheet(
                 numOfPlayers: store.players.count,
-                onSave: { numOfPlayers in
-                    store.updateNumOfPlayers(numOfPlayers)
-                    withAnimation { isEditingGame = false }
+                onSave: { numOfPlayers, hasUpdated in
+                    withAnimation {
+                        isEditingGame = false
+                        if hasUpdated {
+                            store.updateNumOfPlayers(numOfPlayers)
+                        }
+                    }
                 },
-                onCancel: { withAnimation { isEditingGame = false } }
+                onCancel: { withAnimation { isEditingGame = false } },
+                onNewGame: {
+                    withAnimation { isEditingGame = false }
+                    store.initialGame()
+                }
             )
             .presentationDetents([.medium])
         }
