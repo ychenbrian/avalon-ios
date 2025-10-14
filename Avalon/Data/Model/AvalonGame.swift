@@ -15,16 +15,18 @@ struct AvalonGame: Identifiable {
 
 enum GameStatus: String, Codable, Equatable {
     case inProgress
-    case finishWithThreeSuccesses
-    case finishWithThreeFails
-    case finishWithEarlyAssassin
+    case threeSuccesses
+    case threeFails
+    case earlyAssassin
+    case complete
 
     var color: Color {
         switch self {
         case .inProgress: return .blue
-        case .finishWithThreeSuccesses: return .yellow
-        case .finishWithThreeFails: return .red
-        case .finishWithEarlyAssassin: return .red
+        case .threeSuccesses: return .yellow
+        case .threeFails: return .red
+        case .earlyAssassin: return .red
+        case .complete: return .green
         }
     }
 }

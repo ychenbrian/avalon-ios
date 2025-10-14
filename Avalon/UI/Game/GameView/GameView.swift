@@ -16,6 +16,7 @@ struct GameView: View {
     @State private var newTeam: TeamLocator?
     @State private var isEditingGame = false
     @State private var isGameFinish = false
+    @State private var showFinishAlert = false
 
     private var selectedQuestID: UUID? { store.game.selectedQuestID }
 
@@ -73,6 +74,9 @@ struct GameView: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            if selectedQuestID == nil { store.game.selectedQuestID = store.game.quests.first?.id }
         }
         .alert(item: $activeAlert) { route in
             switch route {
@@ -143,20 +147,29 @@ struct GameView: View {
             )
             .presentationDetents([.medium])
         }
-        .onAppear {
-            if selectedQuestID == nil { store.game.selectedQuestID = store.game.quests.first?.id }
-        }
         .sheet(isPresented: $isGameFinish) {
             GameFinishFormSheet(
-                status: .finishWithEarlyAssassin,
+                status: .earlyAssassin,
                 result: nil,
-                onFinish: { _ in
+                onFinish: { result in
                     withAnimation {
                         isGameFinish = false
+                        store.game.result = result
+                        showFinishAlert = true
                     }
                 }
             )
             .presentationDetents([.medium])
+        }
+        .alert("gameFinish.title", isPresented: $showFinishAlert) {
+            Button("gameFinish.newGame.button", role: .cancel) {
+                withAnimation { store.initialGame() }
+            }
+            Button("gameFinish.viewGame.button") {
+                // TODO: Show the finished game's detail
+            }
+        } message: {
+            Text(getFinishMessage())
         }
     }
 
@@ -177,5 +190,24 @@ struct GameView: View {
         if quest.teams.first != nil {
             newTeam = TeamLocator(questIndex: quest.index, teamIndex: 0)
         }
+    }
+
+    private func getFinishMessage() -> String {
+        guard let result = store.game.result else {
+            return String(localized: "gameFinish.message.unknown")
+        }
+
+        let message: String
+
+        switch result {
+        case .goodWinByFailedAss:
+            message = String(localized: "gameFinish.message.goodWin")
+        case .evilWinByQuest:
+            message = String(localized: "gameFinish.message.evilWinQuest")
+        case .evilWinByAssassin:
+            message = String(localized: "gameFinish.message.evilWinAssassin")
+        }
+
+        return "\(message)\n\n\(result.displayText)"
     }
 }

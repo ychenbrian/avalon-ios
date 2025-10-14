@@ -92,11 +92,11 @@ final class GameStore {
         let failCount = quests.filter { $0.result?.type == .fail }.count
 
         if successCount >= 3 {
-            game.status = .finishWithThreeSuccesses
+            game.status = .threeSuccesses
             return true
         }
         if failCount >= 3 {
-            game.status = .finishWithThreeFails
+            game.status = .threeFails
             return true
         }
         game.status = .inProgress

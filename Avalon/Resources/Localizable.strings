@@ -31,9 +31,9 @@
 "team.result.approve" = "Approve";
 "team.result.reject" = "Reject";
 
-"game.result.goodWin.assistanationFail" = "Evil Win: Assistanation Success";
+"game.result.goodWin.assistanationFail" = "Good Win: Assistanation Fail";
 "game.result.evilWin.threeFailedQuests" = "Evil Win: Three Failed Quests";
-"game.result.evilWin.assistanationSuccess" = "Good Win: Assistanation Fail";
+"game.result.evilWin.assistanationSuccess" = "Evil Win: Assistanation Success";
 
 
 // MARK: - Game View
@@ -128,3 +128,13 @@
 "gameFinishForm.earlyAssassin.label" = "Early Assistanation";
 "gameFinishForm.finish.button" = "Finish";
 "gameFinishForm.finish.accessibility" = "Finish the game";
+
+
+// MARK: - Game Finish Alert
+"gameFinish.title" = "🏆 Game Complete! 🏆";
+"gameFinish.newGame.button" = "Start New Game";
+"gameFinish.viewGame.button" = "Review Game";
+"gameFinish.message.unknown" = "The game has ended!";
+"gameFinish.message.goodWin" = "Victory for the Loyal Servants of Arthur!";
+"gameFinish.message.evilWinQuest" = "The Minions of Mordred triumph!";
+"gameFinish.message.evilWinAssassin" = "The Assassin strikes Merlin!";

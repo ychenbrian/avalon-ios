@@ -51,23 +51,23 @@ struct GameFinishFormSheet: View {
     }
 
     private func getTitleString() -> String {
-        if draft.status == .finishWithThreeSuccesses {
+        if draft.status == .threeSuccesses {
             return String(localized: "gameFinishForm.threeSuccess.label")
-        } else if draft.status == .finishWithThreeFails {
+        } else if draft.status == .threeFails {
             return String(localized: "gameFinishForm.threeSuccess.label")
-        } else if draft.status == .finishWithEarlyAssassin {
+        } else if draft.status == .earlyAssassin {
             return String(localized: "gameFinishForm.earlyAssassin.label")
         }
         return String(localized: "gameFinishForm.title")
     }
 
     private func getResultOptions() -> [String] {
-        if draft.status == .finishWithThreeSuccesses || draft.status == .finishWithEarlyAssassin {
+        if draft.status == .threeSuccesses || draft.status == .earlyAssassin {
             return [
                 GameResult.goodWinByFailedAss.displayText,
                 GameResult.evilWinByAssassin.displayText,
             ]
-        } else if draft.status == .finishWithThreeFails {
+        } else if draft.status == .threeFails {
             return [
                 GameResult.evilWinByQuest.displayText,
             ]
@@ -79,7 +79,7 @@ struct GameFinishFormSheet: View {
 struct GameFinishFormSheetPreview: View {
     var body: some View {
         GameFinishFormSheet(
-            status: .finishWithThreeSuccesses,
+            status: .threeSuccesses,
             result: nil,
             onFinish: { _ in }
         )
