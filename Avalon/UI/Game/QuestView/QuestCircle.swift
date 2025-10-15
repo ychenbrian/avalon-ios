@@ -40,7 +40,7 @@ struct QuestCircle: View {
             guard let result = quest.result else { return String(localized: "common.na") }
 
             if result.type == .fail {
-                let failVotes = result.failCount ?? 1
+                let failVotes = result.failCount
                 if failVotes == 1 {
                     return String(localized: "quest.result.fail.singular")
                         .replacingOccurrences(of: "%d", with: "\(failVotes)")

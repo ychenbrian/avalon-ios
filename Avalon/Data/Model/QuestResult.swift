@@ -2,8 +2,7 @@ import Foundation
 import SwiftUI
 
 struct QuestResult: Equatable {
-    var leader: Player?
-    var team: [Player]
+    var id: UUID = .init()
     var type: ResultType? = nil
     var failCount: Int = 0
 }

@@ -16,6 +16,13 @@ final class GameStore {
 
     func initialGame() {
         game = GameViewData(game: AvalonGame.initial(players: players))
+        game.startedAt = Date().toISOString()
+    }
+
+    func finishGame(_ result: GameResult? = .goodWinByFailedAss) {
+        game.result = result
+        game.status = .complete
+        game.finishedAt = Date().toISOString()
     }
 
     func updateNumOfPlayers(_ number: Int) {
@@ -57,7 +64,7 @@ final class GameStore {
 
     func finishTeam(questID: UUID, teamID: UUID) {
         team(id: teamID, in: questID)?.status = .finished
-        let selectedTeam = team(id: teamID, in: questID) ?? TeamViewData(index: 0)
+        let selectedTeam = team(id: teamID, in: questID) ?? TeamViewData(roundIndex: 0, teamIndex: 0)
         let approvedCount = Set(selectedTeam.votesByVoter.compactMap { $0.value == .approve ? $0.key : nil }).count
         let rejectedCount = Set(selectedTeam.votesByVoter.compactMap { $0.value == .reject ? $0.key : nil }).count
 

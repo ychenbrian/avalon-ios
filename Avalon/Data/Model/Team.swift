@@ -9,40 +9,12 @@ public enum VoteType: String, Codable, CaseIterable, Equatable {
     case reject
 }
 
-// MARK: - Status & Result
+// MARK: - Status
 
 enum TeamStatus: String, Codable, Equatable {
     case notStarted
     case inProgress
     case finished
-}
-
-struct TeamResult: Codable, Equatable {
-    let isApproved: Bool
-    let approvedCount: Int
-    let rejectedCount: Int
-    let decidedAt: Date
-
-    init(isApproved: Bool, approvedCount: Int, rejectedCount: Int, decidedAt: Date = Date()) {
-        self.isApproved = isApproved
-        self.approvedCount = approvedCount
-        self.rejectedCount = rejectedCount
-        self.decidedAt = decidedAt
-    }
-
-    var displayText: String {
-        switch isApproved {
-        case true: return String(localized: "team.result.approve")
-        case false: return String(localized: "team.result.reject")
-        }
-    }
-
-    var color: Color {
-        switch isApproved {
-        case true: return .green
-        case false: return .red
-        }
-    }
 }
 
 // MARK: - Team
@@ -66,7 +38,7 @@ struct Team: Identifiable, Codable, Equatable {
         teamIndex: Int,
         status: TeamStatus = .notStarted,
         leaderID: PlayerID? = nil,
-        teamMemberIDs: [PlayerID] = [],
+        memberIDs: [PlayerID] = [],
         votesByVoter: [Player: VoteType] = [:],
         result: TeamResult? = nil
     ) {
@@ -75,7 +47,7 @@ struct Team: Identifiable, Codable, Equatable {
         self.teamIndex = teamIndex
         self.status = status
         self.leaderID = leaderID
-        memberIDs = teamMemberIDs
+        self.memberIDs = memberIDs
         self.votesByVoter = votesByVoter
         self.result = result
     }
@@ -94,8 +66,6 @@ extension Team {
 
     var approvedCount: Int { approvedVoters.count }
     var rejectedCount: Int { rejectedVoters.count }
-
     var isApprovedByVotes: Bool { approvedCount > rejectedCount }
-
     var isFinished: Bool { status == .finished }
 }

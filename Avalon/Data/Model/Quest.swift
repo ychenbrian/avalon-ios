@@ -2,11 +2,11 @@ import Foundation
 import SwiftUI
 
 struct Quest: Identifiable, Equatable {
-    let id = UUID()
-    let index: Int
-    let numOfPlayers: Int
+    var id = UUID()
+    var index: Int
+    var numOfPlayers: Int
     var status: QuestStatus = .notStarted
-    var quest: QuestResult?
+    var result: QuestResult?
     var teams: [Team]
 
     static func == (lhs: Quest, rhs: Quest) -> Bool {

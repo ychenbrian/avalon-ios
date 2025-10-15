@@ -26,7 +26,18 @@ final class QuestViewData: Identifiable {
         index = quest.index
         status = quest.status
         numOfPlayers = quest.numOfPlayers
-        result = ResultViewData(quest: quest.quest)
+        result = ResultViewData(quest: quest.result)
         teams = quest.teams.map(TeamViewData.init(team:))
+    }
+
+    func toQuest() -> Quest {
+        Quest(
+            id: id,
+            index: index,
+            numOfPlayers: numOfPlayers,
+            status: status,
+            result: result?.toQuestResult(),
+            teams: teams.map { $0.toTeam() }
+        )
     }
 }

@@ -10,7 +10,7 @@ struct TeamCircle: View {
                 Circle()
                     .fill(fillColor)
                     .frame(width: 52, height: 52)
-                Text("\(team.index + 1)")
+                Text("\(team.teamIndex + 1)")
                     .font(.headline.bold())
                     .foregroundColor(.white)
             }

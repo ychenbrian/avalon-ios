@@ -56,7 +56,7 @@ struct GameView: View {
                 }
             }
             .padding()
-            .navigationTitle("\(store.game.name) - Quest \((store.quest(id: selectedQuestID ?? UUID())?.index ?? 0) + 1)")
+            .navigationTitle("\(store.game.name ?? "Game 1") - Quest \((store.quest(id: selectedQuestID ?? UUID())?.index ?? 0) + 1)")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -154,7 +154,7 @@ struct GameView: View {
                 onFinish: { result in
                     withAnimation {
                         isGameFinish = false
-                        store.game.result = result
+                        store.finishGame(result)
                         showFinishAlert = true
                     }
                 }

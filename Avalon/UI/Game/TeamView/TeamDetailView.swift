@@ -114,7 +114,7 @@ struct TeamDetailView: View {
                             if store.team(id: teamID, in: questID)?.result?.isApproved == true {
                                 isEditingResult = true
                             } else {
-                                let teamIndex = store.team(id: teamID, in: questID)?.index ?? 0
+                                let teamIndex = store.team(id: teamID, in: questID)?.teamIndex ?? 0
                                 if teamIndex + 1 < GameRules.teamsPerQuest, let nextTeam = store.quest(id: questID)?.teams[teamIndex + 1] {
                                     store.startTeam(questID: questID, teamID: nextTeam.id)
                                 }

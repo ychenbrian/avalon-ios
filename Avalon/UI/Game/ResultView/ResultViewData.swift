@@ -4,7 +4,7 @@ import SwiftUI
 final class ResultViewData: Identifiable {
     let id: UUID
     var type: ResultType?
-    var failCount: Int?
+    var failCount: Int
 
     init(id: UUID = UUID(), type: ResultType? = nil, failCount: Int) {
         self.id = id
@@ -15,6 +15,14 @@ final class ResultViewData: Identifiable {
     init(quest: QuestResult?) {
         id = UUID()
         type = quest?.type
-        failCount = quest?.failCount
+        failCount = quest?.failCount ?? 0
+    }
+
+    func toQuestResult() -> QuestResult? {
+        QuestResult(
+            id: id,
+            type: type,
+            failCount: failCount
+        )
     }
 }

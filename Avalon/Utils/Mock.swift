@@ -84,7 +84,7 @@ extension Team {
             teamIndex: teamIndex,
             status: .notStarted,
             leaderID: nil,
-            teamMemberIDs: [],
+            memberIDs: [],
             votesByVoter: [:],
             result: nil
         )
@@ -114,7 +114,7 @@ extension Team {
             teamIndex: teamIndex,
             status: teamVoteStatus,
             leaderID: leader,
-            teamMemberIDs: team,
+            memberIDs: team,
             votesByVoter: votes,
             result: result
         )
@@ -156,7 +156,7 @@ extension Quest {
         teams: [Team] = Team.emptyTeams(roundIndex: 0),
         quest: QuestResult? = nil
     ) -> Quest {
-        return .init(index: index, numOfPlayers: numOfPlayers, status: status, quest: quest, teams: teams)
+        return .init(index: index, numOfPlayers: numOfPlayers, status: status, result: quest, teams: teams)
     }
 
     static func initial(
@@ -173,7 +173,7 @@ extension Quest {
                 teams[0] = firstTeam
             }
         }
-        return .init(index: index, numOfPlayers: numOfPlayers, status: status, quest: quest, teams: teams)
+        return .init(index: index, numOfPlayers: numOfPlayers, status: status, result: quest, teams: teams)
     }
 
     static func random(
@@ -184,7 +184,7 @@ extension Quest {
             index: index,
             numOfPlayers: players.count,
             status: QuestStatus.random(),
-            quest: QuestResult.random(players: players),
+            result: QuestResult.random(),
             teams: Team.randomTeams(roundIndex: index)
         )
     }
@@ -204,21 +204,15 @@ extension Quest {
 
 extension QuestResult {
     static func empty(
-        leader: Player? = nil,
-        team: [Player] = [],
         type: ResultType = .success,
         failVotes: Int = 0
     ) -> QuestResult {
-        .init(leader: leader, team: team, type: type, failCount: failVotes)
+        .init(type: type, failCount: failVotes)
     }
 
-    static func random(
-        players: [Player] = Player.defaultPlayers()
-    ) -> QuestResult {
+    static func random() -> QuestResult {
         let failVotes = Int.random(in: 0 ... 4)
         return .init(
-            leader: Player.random(from: players),
-            team: Player.randomTeam(from: players),
             type: ResultType.random(),
             failCount: failVotes
         )
