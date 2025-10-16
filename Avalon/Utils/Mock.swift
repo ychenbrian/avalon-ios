@@ -3,7 +3,7 @@
 extension Player {
     /// Default pool of players used by convenience factories.
     static func defaultPlayers(size: Int = GameRules.defaultPlayerCount) -> [Player] {
-        return (0 ..< size).map(Player.init(index:))
+        return (0 ..< size).map { Player(index: $0) }
     }
 
     /// Returns a random player from the given pool (defaults to `defaultPlayers`).
@@ -101,9 +101,9 @@ extension Team {
         let leader = players.randomElement()?.id
         let team = Player.randomTeam(size: teamSize, from: players).map(\.id)
 
-        var votes: [Player: VoteType] = [:]
+        var votes: [PlayerID: VoteType] = [:]
         for p in players {
-            votes[p] = Bool.random() ? .approve : .reject
+            votes[p.id] = Bool.random() ? .approve : .reject
         }
 
         let teamVoteStatus = status ?? TeamStatus.random()
@@ -168,7 +168,7 @@ extension Quest {
     ) -> Quest {
         var teams = teams
         if index == 0 {
-            if var firstTeam = teams.first {
+            if let firstTeam = teams.first {
                 firstTeam.status = .inProgress
                 teams[0] = firstTeam
             }

@@ -9,9 +9,9 @@ final class TeamViewData: Identifiable {
     var result: TeamResult?
     var leader: Player?
     var members: [Player]
-    var votesByVoter: [Player: VoteType]
+    var votesByVoter: [PlayerID: VoteType]
 
-    init(id: UUID = UUID(), roundIndex: Int, teamIndex: Int, leader: Player? = nil, members: [Player] = [], votesByVoter: [Player: VoteType] = [:]) {
+    init(id: UUID = UUID(), roundIndex: Int, teamIndex: Int, leader: Player? = nil, members: [Player] = [], votesByVoter: [PlayerID: VoteType] = [:]) {
         self.id = id
         self.roundIndex = roundIndex
         self.teamIndex = teamIndex

@@ -14,7 +14,7 @@ struct ResultFormSheet: View {
         leader: Player?,
         members: [Player],
         players: [Player],
-        votesByVoter: [Player: VoteType],
+        votesByVoter: [PlayerID: VoteType],
         teamSize: Int,
         requiredFails: Int,
         failCount: Int? = nil,
@@ -141,7 +141,7 @@ struct ResultFormSheet: View {
     }
 
     private func overlayForPlayer(_ player: Player) -> some View {
-        let vote = draft.votesByVoter[player]
+        let vote = draft.votesByVoter[player.id]
         return AnyView(
             PlayerCircle(name: "\(player.index + 1)")
                 .overlay(

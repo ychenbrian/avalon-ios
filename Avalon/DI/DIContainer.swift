@@ -20,12 +20,18 @@ extension DIContainer {
         let images: ImagesWebRepository
     }
 
+    struct DBRepositories {
+        let games: GamesDBRepository
+    }
+
     struct Interactors {
         let images: ImagesInteractor
+        let games: GamesInteractor
         let userPermissions: UserPermissionsInteractor
 
         static var stub: Self {
             .init(images: StubImagesInteractor(),
+                  games: StubGamesInteractor(),
                   userPermissions: StubUserPermissionsInteractor())
         }
     }
@@ -38,5 +44,14 @@ extension EnvironmentValues {
 extension View {
     func inject(_ container: DIContainer) -> some View {
         return environment(\.injected, container)
+    }
+}
+
+extension DIContainer {
+    static var preview: DIContainer {
+        DIContainer(
+            appState: AppState(),
+            interactors: .stub
+        )
     }
 }

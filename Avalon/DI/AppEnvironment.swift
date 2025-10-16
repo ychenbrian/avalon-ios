@@ -12,25 +12,12 @@ struct AppEnvironment {
 extension AppEnvironment {
     static func bootstrap() -> AppEnvironment {
         let appState = Store<AppState>(AppState())
-        /*
-          To see the deep linking in action:
 
-          1. Launch the app in iOS 13.4 simulator (or newer)
-          2. Subscribe on Push Notifications with "Allow Push" button
-          3. Minimize the app
-          4. Drag & drop "push_with_deeplink.apns" into the Simulator window
-          5. Tap on the push notification
-
-          Alternatively, just copy the code below before the "return" and launch:
-
-             DispatchQueue.main.async {
-                 deepLinksHandler.open(deepLink: .showCountryFlag(alpha3Code: "AFG"))
-             }
-         */
         let session = configuredURLSession()
         let webRepositories = configuredWebRepositories(session: session)
         let modelContainer = configuredModelContainer()
-        let interactors = configuredInteractors(appState: appState, webRepositories: webRepositories)
+        let dbRepositories = configuredDBRepositories(modelContainer: modelContainer)
+        let interactors = configuredInteractors(appState: appState, webRepositories: webRepositories, dbRepositories: dbRepositories)
         let diContainer = DIContainer(appState: appState, interactors: interactors)
         let deepLinksHandler = RealDeepLinksHandler(container: diContainer)
         let pushNotificationsHandler = RealPushNotificationsHandler(deepLinksHandler: deepLinksHandler)
@@ -58,6 +45,11 @@ extension AppEnvironment {
         return URLSession(configuration: configuration)
     }
 
+    private static func configuredDBRepositories(modelContainer: ModelContainer) -> DIContainer.DBRepositories {
+        let mainDBRepository = MainDBRepository(modelContainer: modelContainer)
+        return .init(games: mainDBRepository)
+    }
+
     private static func configuredModelContainer() -> ModelContainer {
         do {
             return try ModelContainer.appModelContainer()
@@ -74,9 +66,12 @@ extension AppEnvironment {
 
     private static func configuredInteractors(
         appState: Store<AppState>,
-        webRepositories: DIContainer.WebRepositories
+        webRepositories: DIContainer.WebRepositories,
+        dbRepositories: DIContainer.DBRepositories
     ) -> DIContainer.Interactors {
         let images = RealImagesInteractor(webRepository: webRepositories.images)
+        let games = RealGamesInteractor(
+            dbRepository: dbRepositories.games)
         let userPermissions = RealUserPermissionsInteractor(
             appState: appState, openAppSettings: {
                 URL(string: UIApplication.openSettingsURLString).flatMap {
@@ -85,6 +80,6 @@ extension AppEnvironment {
             }
         )
 
-        return .init(images: images, userPermissions: userPermissions)
+        return .init(images: images, games: games, userPermissions: userPermissions)
     }
 }

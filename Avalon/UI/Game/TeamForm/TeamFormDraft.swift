@@ -8,7 +8,7 @@ struct TeamFormDraft: Equatable {
     var players: [Player]
     var requiredTeamSize: Int
     var showVotes: Bool = false
-    var votesByVoter: [Player: VoteType]
+    var votesByVoter: [PlayerID: VoteType]
 
     mutating func setLeader(_ player: Player?) {
         leader = player
@@ -23,7 +23,7 @@ struct TeamFormDraft: Equatable {
     }
 
     mutating func castVote(voter: Player, vote: VoteType) {
-        votesByVoter[voter] = vote
+        votesByVoter[voter.id] = vote
     }
 
     mutating func initialVotes() {

@@ -1,11 +1,13 @@
+import SwiftData
 import SwiftUI
 
-struct Player: Identifiable, Hashable, Codable {
-    let id: UUID
-    let index: Int
+@Model
+final class Player {
+    var id: UUID
+    var index: Int
 
-    init(index: Int) {
-        id = UUID()
+    init(id: UUID = UUID(), index: Int) {
+        self.id = id
         self.index = index
     }
 }

@@ -6,7 +6,7 @@ struct QuestFormDraft: Equatable {
     var leader: Player?
     var members: Set<Player>
     var players: [Player]
-    var votesByVoter: [Player: VoteType]
+    var votesByVoter: [PlayerID: VoteType]
     var teamSize: Int
     var requiredFails: Int
     var failCount: Int

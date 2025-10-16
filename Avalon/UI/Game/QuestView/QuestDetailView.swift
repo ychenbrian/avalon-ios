@@ -53,7 +53,8 @@ struct QuestDetailView: View {
 }
 
 #Preview {
-    let store = GameStore(players: Player.randomTeam())
+    let container = DIContainer.preview
+    let store = GameStore(players: Player.randomTeam(), container: container)
     QuestDetailView(questID: store.game.quests[0].id)
         .environment(store)
         .padding()

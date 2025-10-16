@@ -73,6 +73,15 @@ struct GameView: View {
                         Label("gameView.toolbar.startAssistanation", systemImage: "drop.fill")
                     }
                 }
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        Task {
+                            try await store.queryGames()
+                        }
+                    } label: {
+                        Label("gameView.toolbar.startAssistanation", systemImage: "drop.fill")
+                    }
+                }
             }
         }
         .onAppear {

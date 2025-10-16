@@ -3,13 +3,13 @@ import SwiftUI
 struct TeamFormSheet: View {
     let players: [Player]
     var showVotes: Bool
-    let onSave: (_ questID: UUID, _ teamID: UUID, _ leader: Player?, _ members: [Player], _ votesByVoter: [Player: VoteType]) -> Void
+    let onSave: (_ questID: UUID, _ teamID: UUID, _ leader: Player?, _ members: [Player], _ votesByVoter: [PlayerID: VoteType]) -> Void
     let onCancel: () -> Void
 
     @State private var draft: TeamFormDraft
 
     private func toggleApprove(_ player: Player) {
-        if draft.votesByVoter[player] == .approve {
+        if draft.votesByVoter[player.id] == .approve {
             draft.castVote(voter: player, vote: .reject)
         } else {
             draft.castVote(voter: player, vote: .approve)
@@ -17,7 +17,7 @@ struct TeamFormSheet: View {
     }
 
     private func toggleReject(_ player: Player) {
-        if draft.votesByVoter[player] == .reject {
+        if draft.votesByVoter[player.id] == .reject {
             draft.castVote(voter: player, vote: .approve)
         } else {
             draft.castVote(voter: player, vote: .reject)
@@ -30,10 +30,10 @@ struct TeamFormSheet: View {
         leader: Player?,
         members: [Player],
         players: [Player],
-        votesByVoter: [Player: VoteType],
+        votesByVoter: [PlayerID: VoteType],
         requiredTeamSize: Int,
         showVotes: Bool = false,
-        onSave: @escaping (_ questID: UUID, _ teamID: UUID, _ leader: Player?, _ members: [Player], _ votesByVoter: [Player: VoteType]) -> Void,
+        onSave: @escaping (_ questID: UUID, _ teamID: UUID, _ leader: Player?, _ members: [Player], _ votesByVoter: [PlayerID: VoteType]) -> Void,
         onCancel: @escaping () -> Void
     ) {
         self.players = players
@@ -102,7 +102,7 @@ struct TeamFormSheet: View {
                     PlayerGrid(
                         players: self.players,
                         selectedColor: .green,
-                        selected: { draft.votesByVoter[$0] == .approve },
+                        selected: { draft.votesByVoter[$0.id] == .approve },
                         action: { toggleApprove($0) }
                     )
                     .padding(.vertical, 12)
@@ -116,7 +116,7 @@ struct TeamFormSheet: View {
                     PlayerGrid(
                         players: self.players,
                         selectedColor: .red,
-                        selected: { draft.votesByVoter[$0] == .reject },
+                        selected: { draft.votesByVoter[$0.id] == .reject },
                         action: { toggleReject($0) }
                     )
                     .padding(.vertical, 12)

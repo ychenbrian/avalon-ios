@@ -1,33 +1,26 @@
 import Foundation
+import SwiftData
 import SwiftUI
 
-struct AvalonGame: Identifiable {
-    var id = UUID()
+@Model
+final class AvalonGame {
+    var id: UUID
     var name: String?
     var startedAt: String?
     var finishedAt: String?
     var players: [Player]
     var quests: [Quest]
-    var status: GameStatus = .inProgress
+    var status: GameStatus
     var result: GameResult?
-}
 
-// MARK: - Game Status
-
-enum GameStatus: String, Codable, Equatable {
-    case inProgress
-    case threeSuccesses
-    case threeFails
-    case earlyAssassin
-    case complete
-
-    var color: Color {
-        switch self {
-        case .inProgress: return .blue
-        case .threeSuccesses: return .yellow
-        case .threeFails: return .red
-        case .earlyAssassin: return .red
-        case .complete: return .green
-        }
+    init(id: UUID = UUID(), name: String? = nil, startedAt: String? = nil, finishedAt: String? = nil, players: [Player] = [], quests: [Quest] = [], status: GameStatus = .inProgress, result: GameResult? = nil) {
+        self.id = id
+        self.name = name
+        self.startedAt = startedAt
+        self.finishedAt = finishedAt
+        self.players = players
+        self.quests = quests
+        self.status = status
+        self.result = result
     }
 }

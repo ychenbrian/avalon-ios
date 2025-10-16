@@ -1,10 +1,12 @@
+import SwiftData
 import SwiftUI
 
-struct TeamResult: Codable, Equatable {
-    let isApproved: Bool
-    let approvedCount: Int
-    let rejectedCount: Int
-    let decidedAt: Date
+@Model
+final class TeamResult {
+    var isApproved: Bool
+    var approvedCount: Int
+    var rejectedCount: Int
+    var decidedAt: Date
 
     init(isApproved: Bool, approvedCount: Int, rejectedCount: Int, decidedAt: Date = Date()) {
         self.isApproved = isApproved

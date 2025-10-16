@@ -1,35 +1,19 @@
 import Foundation
+import SwiftData
 import SwiftUI
 
 public typealias PlayerID = UUID
 public typealias TeamID = UUID
 
-public enum VoteType: String, Codable, CaseIterable, Equatable {
-    case approve
-    case reject
-}
-
-// MARK: - Status
-
-enum TeamStatus: String, Codable, Equatable {
-    case notStarted
-    case inProgress
-    case finished
-}
-
-// MARK: - Team
-
-struct Team: Identifiable, Codable, Equatable {
-    let id: TeamID
-    let roundIndex: Int
-    let teamIndex: Int
-
+@Model
+final class Team {
+    var id: TeamID
+    var roundIndex: Int
+    var teamIndex: Int
     var status: TeamStatus
-
     var leaderID: PlayerID?
     var memberIDs: [PlayerID]
-    var votesByVoter: [Player: VoteType]
-
+    var votesByVoter: [PlayerID: VoteType]
     var result: TeamResult?
 
     init(
@@ -39,7 +23,7 @@ struct Team: Identifiable, Codable, Equatable {
         status: TeamStatus = .notStarted,
         leaderID: PlayerID? = nil,
         memberIDs: [PlayerID] = [],
-        votesByVoter: [Player: VoteType] = [:],
+        votesByVoter: [PlayerID: VoteType] = [:],
         result: TeamResult? = nil
     ) {
         self.id = id
@@ -51,16 +35,12 @@ struct Team: Identifiable, Codable, Equatable {
         self.votesByVoter = votesByVoter
         self.result = result
     }
-}
 
-// MARK: - Derived Properties & State Machine Helpers
-
-extension Team {
-    var approvedVoters: Set<Player> {
+    var approvedVoters: Set<PlayerID> {
         Set(votesByVoter.compactMap { $0.value == .approve ? $0.key : nil })
     }
 
-    var rejectedVoters: Set<Player> {
+    var rejectedVoters: Set<PlayerID> {
         Set(votesByVoter.compactMap { $0.value == .reject ? $0.key : nil })
     }
 

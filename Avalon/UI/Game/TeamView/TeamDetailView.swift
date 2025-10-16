@@ -175,7 +175,7 @@ struct TeamDetailView: View {
     }
 
     private func overlayForPlayer(_ player: Player) -> some View {
-        let vote = team?.votesByVoter[player]
+        let vote = team?.votesByVoter[player.id]
         return AnyView(
             PlayerCircle(name: "\(player.index + 1)")
                 .overlay(
@@ -211,7 +211,8 @@ struct TeamDetailView: View {
 }
 
 #Preview {
-    let store = GameStore(players: Player.randomTeam())
+    let container = DIContainer.preview
+    let store = GameStore(players: Player.randomTeam(), container: container)
     let quest = store.game.quests[0]
     TeamDetailView(questID: quest.id, teamID: quest.teams.first?.id ?? UUID())
         .environment(store)

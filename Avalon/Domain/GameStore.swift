@@ -5,10 +5,12 @@ import SwiftUI
 final class GameStore {
     var game: GameViewData
     var players: [Player]
+    private let container: DIContainer
 
-    init(players: [Player]) {
+    init(players: [Player], container: DIContainer) {
         game = GameViewData(game: AvalonGame.initial(players: players))
         self.players = players
+        self.container = container
     }
 
     func quest(id: UUID) -> QuestViewData? { game.quests.first(where: { $0.id == id }) }
@@ -45,7 +47,7 @@ final class GameStore {
         teamID: UUID,
         leader: Player? = nil,
         members: [Player]? = nil,
-        votesByVoter: [Player: VoteType]? = nil
+        votesByVoter: [PlayerID: VoteType]? = nil
     ) {
         guard let team = team(id: teamID, in: questID) else { return }
 
@@ -108,5 +110,11 @@ final class GameStore {
         }
         game.status = .inProgress
         return false
+    }
+
+    // MARK: - Persistence
+
+    func queryGames() async {
+        try? await container.interactors.games.refreshGamesList()
     }
 }

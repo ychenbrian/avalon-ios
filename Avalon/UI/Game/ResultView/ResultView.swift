@@ -68,7 +68,8 @@ struct ResultView: View {
 }
 
 #Preview {
-    let store = GameStore(players: Player.randomTeam())
+    let container = DIContainer.preview
+    let store = GameStore(players: Player.randomTeam(), container: container)
     ResultView(questID: store.game.quests.first?.id ?? UUID())
         .environment(store)
         .padding()

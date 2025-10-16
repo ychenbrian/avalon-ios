@@ -24,7 +24,7 @@ final class QuestViewData: Identifiable {
     init(quest: Quest) {
         id = quest.id
         index = quest.index
-        status = quest.status
+        status = quest.status ?? .notStarted
         numOfPlayers = quest.numOfPlayers
         result = ResultViewData(quest: quest.result)
         teams = quest.teams.map(TeamViewData.init(team:))

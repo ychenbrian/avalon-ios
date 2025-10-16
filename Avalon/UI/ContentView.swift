@@ -4,12 +4,12 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.injected) private var injected: DIContainer
-    @State private var store = GameStore(players: Player.defaultPlayers(size: 7))
+    @State private var gameStore: GameStore?
 
     var body: some View {
         TabView {
             GameView()
-                .environment(store)
+                .environment(gameStore)
                 .tabItem {
                     Label("Game", systemImage: "gamecontroller")
                 }
@@ -28,6 +28,11 @@ struct ContentView: View {
                 .tabItem {
                     Label("Settings", systemImage: "gearshape")
                 }
+        }
+        .onAppear {
+            if gameStore == nil {
+                gameStore = GameStore(players: Player.defaultPlayers(size: 7), container: .init(appState: AppState(), interactors: .stub))
+            }
         }
     }
 }
