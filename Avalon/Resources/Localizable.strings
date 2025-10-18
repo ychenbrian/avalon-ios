@@ -6,13 +6,18 @@
 "error.view.retryButton" = "Retry";
 
 
-// MARK: - Common Buttons
+// MARK: - Common
 
 "common.ok" = "OK";
 "common.confirm" = "Confirm";
 "common.start" = "Start";
 "common.notImplemented" = "Not implemented";
 "common.na" = "N/A";
+
+
+// MARK: - Game
+
+"game.namePrefix" = "Game";
 
 
 // MARK: - Enum
@@ -111,6 +116,7 @@
 
 "gameSettingsForm.title" = "Game Settings";
 "gameSettingsForm.playerNumber.label" = "Number Of Players";
+"gameSettingsForm.gameName.label" = "Game Name";
 "gameSettingsForm.playerNumber.warning" = "Change the number of players will reset the entire game.";
 "gameSettingsForm.startNewGame.button" = "Start New Game";
 "gameSettingsForm.startNewGame.warning" = "Start a new game will end the current one.";

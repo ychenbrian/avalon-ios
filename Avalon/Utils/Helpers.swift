@@ -27,3 +27,10 @@ struct PreviewBinding<T, Content: View>: View {
 
     var body: some View { content($value) }
 }
+
+// MARK: - Reference Generator
+
+func generateReference(prefix: String = String(localized: "game.namePrefix")) -> String {
+    let chars = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+    return "\(prefix) \(String((0 ..< 6).map { _ in chars.randomElement()! }))"
+}

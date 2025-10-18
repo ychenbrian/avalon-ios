@@ -56,7 +56,7 @@ struct GameView: View {
                 }
             }
             .padding()
-            .navigationTitle("\(store.game.name ?? "Game 1") - Quest \((store.quest(id: selectedQuestID ?? UUID())?.index ?? 0) + 1)")
+            .navigationTitle(store.game.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -139,19 +139,22 @@ struct GameView: View {
         }
         .sheet(isPresented: $isEditingGame) {
             GameSettingsFormSheet(
+                gameName: store.game.name,
                 numOfPlayers: store.players.count,
-                onSave: { numOfPlayers, hasUpdated in
+                onSave: { numOfPlayers, gameName in
                     withAnimation {
                         isEditingGame = false
-                        if hasUpdated {
-                            store.updateNumOfPlayers(numOfPlayers)
-                        }
                     }
+                    if let number = numOfPlayers {
+                        store.updateNumOfPlayers(number)
+                    }
+                    store.updateGameDetails(gameName: gameName)
                 },
                 onCancel: { withAnimation { isEditingGame = false } },
-                onNewGame: {
+                onNewGame: { gameName in
                     withAnimation { isEditingGame = false }
                     store.initialGame()
+                    store.updateGameDetails(gameName: gameName)
                 }
             )
             .presentationDetents([.medium])

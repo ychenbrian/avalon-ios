@@ -5,7 +5,7 @@ import SwiftUI
 @Model
 final class AvalonGame {
     var id: UUID
-    var name: String?
+    var name: String
     var startedAt: String?
     var finishedAt: String?
     var players: [Player]
@@ -13,7 +13,7 @@ final class AvalonGame {
     var status: GameStatus
     var result: GameResult?
 
-    init(id: UUID = UUID(), name: String? = nil, startedAt: String? = nil, finishedAt: String? = nil, players: [Player] = [], quests: [Quest] = [], status: GameStatus = .inProgress, result: GameResult? = nil) {
+    init(id: UUID = UUID(), name: String = generateReference(), startedAt: String? = nil, finishedAt: String? = nil, players: [Player] = [], quests: [Quest] = [], status: GameStatus = .inProgress, result: GameResult? = nil) {
         self.id = id
         self.name = name
         self.startedAt = startedAt

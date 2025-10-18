@@ -32,6 +32,10 @@ final class GameStore {
         initialGame()
     }
 
+    func updateGameDetails(gameName: String) {
+        game.name = gameName
+    }
+
     func startQuest(_ index: Int) {
         game.quests[index].status = .inProgress
         game.quests[index].teams.first?.status = .inProgress

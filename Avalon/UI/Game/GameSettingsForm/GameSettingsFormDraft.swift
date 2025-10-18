@@ -1,17 +1,24 @@
 import SwiftUI
 
 struct GameSettingsFormDraft: Equatable {
+    var gameName: String
     let numOfPlayers: Int
     var updatedNumber: Int
-    var hasUpdated: Bool = false
+
+    var hasNumOfPlayersUpdate: Bool {
+        numOfPlayers != updatedNumber
+    }
 
     mutating func setNumberOfPlayers(_ number: Int) {
-        if numOfPlayers != number {
-            hasUpdated = true
-        } else {
-            hasUpdated = false
-        }
-
+        guard GameRules.defaultTeamSizeRange.contains(number) else { return }
         updatedNumber = number
+    }
+
+    mutating func resetNumberOfPlayers() {
+        updatedNumber = numOfPlayers
+    }
+
+    mutating func updateGameName(_ name: String) {
+        gameName = name
     }
 }

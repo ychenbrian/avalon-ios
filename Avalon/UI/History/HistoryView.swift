@@ -84,7 +84,7 @@ private extension HistoryView {
         }
         List(games, id: \.id) { game in
             NavigationLink(value: game) {
-                Text("\(game.name ?? "Game")")
+                Text("\(game.name ?? "Game 1")")
             }
         }
         .refreshable {

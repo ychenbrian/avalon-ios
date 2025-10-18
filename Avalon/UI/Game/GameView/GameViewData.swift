@@ -3,7 +3,7 @@ import SwiftUI
 @Observable
 final class GameViewData: Identifiable {
     let id: UUID
-    var name: String?
+    var name: String
     var startedAt: String?
     var finishedAt: String?
     var players: [Player]
@@ -12,7 +12,7 @@ final class GameViewData: Identifiable {
     var quests: [QuestViewData]
     var selectedQuestID: UUID?
 
-    init(id: UUID = UUID(), name: String?, players: [Player], status: GameStatus = .inProgress, result: GameResult? = nil, quests: [QuestViewData] = []) {
+    init(id: UUID = UUID(), name: String = generateReference(), players: [Player], status: GameStatus = .inProgress, result: GameResult? = nil, quests: [QuestViewData] = []) {
         self.id = id
         self.players = players
         self.name = name

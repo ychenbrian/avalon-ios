@@ -1,23 +1,25 @@
 import SwiftUI
 
 struct GameSettingsFormSheet: View {
-    let onSave: (_ numOfPlayers: Int, _ hasUpdated: Bool) -> Void
+    let onSave: (_ numOfPlayers: Int?, _ gameName: String) -> Void
     let onCancel: () -> Void
-    let onNewGame: () -> Void
+    let onNewGame: (_ gameName: String) -> Void
 
     @State private var draft: GameSettingsFormDraft
 
     init(
+        gameName: String,
         numOfPlayers: Int,
-        onSave: @escaping (_ numOfPlayers: Int, _ hasUpdated: Bool) -> Void,
+        onSave: @escaping (_ numOfPlayers: Int?, _ gameName: String) -> Void,
         onCancel: @escaping () -> Void,
-        onNewGame: @escaping () -> Void
+        onNewGame: @escaping (_ gameName: String) -> Void
     ) {
         self.onSave = onSave
         self.onCancel = onCancel
         self.onNewGame = onNewGame
 
         let initialDraft = GameSettingsFormDraft(
+            gameName: gameName,
             numOfPlayers: numOfPlayers,
             updatedNumber: numOfPlayers
         )
@@ -42,7 +44,7 @@ struct GameSettingsFormSheet: View {
                     }
                 )
 
-                if draft.hasUpdated {
+                if draft.hasNumOfPlayersUpdate {
                     Text("gameSettingsForm.playerNumber.warning")
                         .font(.subheadline)
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -52,8 +54,26 @@ struct GameSettingsFormSheet: View {
                 Divider()
                     .padding()
 
+                Text("gameSettingsForm.gameName.label")
+                    .font(.subheadline)
+                    .foregroundStyle(.primary)
+
+                let nameBinding = Binding<String>(
+                    get: { draft.gameName },
+                    set: { newValue in
+                        draft.updateGameName(newValue)
+                    }
+                )
+
+                TextFieldView(
+                    text: nameBinding
+                )
+
+                Divider()
+                    .padding()
+
                 Button {
-                    onNewGame()
+                    onNewGame(draft.gameName)
                 } label: {
                     Text("gameSettingsForm.startNewGame.button")
                 }
@@ -84,8 +104,8 @@ struct GameSettingsFormSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
                         onSave(
-                            draft.updatedNumber,
-                            draft.hasUpdated
+                            draft.hasNumOfPlayersUpdate ? draft.updatedNumber : nil,
+                            draft.gameName
                         )
                     } label: {
                         Text("gameSettingsForm.save.button")
@@ -102,10 +122,11 @@ struct GameSettingsFormSheet: View {
 struct GameSettingsFormSheetPreview: View {
     var body: some View {
         GameSettingsFormSheet(
+            gameName: "Game 1",
             numOfPlayers: 10,
             onSave: { _, _ in },
             onCancel: {},
-            onNewGame: {}
+            onNewGame: { _ in }
         )
         .presentationDetents([.medium])
     }
