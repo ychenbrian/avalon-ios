@@ -26,7 +26,7 @@ struct GameView: View {
                 VStack(alignment: .leading) {
                     ScrollView(.horizontal) {
                         HStack(spacing: 8) {
-                            ForEach(store.game.quests) { quest in
+                            ForEach(store.game.quests ?? []) { quest in
                                 QuestCircle(quest: quest, isSelected: selectedQuestID == quest.id)
                                     .contentShape(Rectangle())
                                     .onTapGesture {
@@ -56,7 +56,7 @@ struct GameView: View {
                 }
             }
             .padding()
-            .navigationTitle(store.game.name.isEmpty ? String(localized: "game.untitledGame") : store.game.name)
+            .navigationTitle(store.game.name.isEmpty == true ? String(localized: "game.untitledGame") : store.game.name ?? "")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -76,8 +76,8 @@ struct GameView: View {
             }
         }
         .onAppear {
-            if selectedQuestID == nil {
-                store.game.selectedQuestID = store.game.quests.last(where: { $0.status != .notStarted })?.id
+            Task {
+                await store.validateGame()
             }
         }
         .alert(item: $activeAlert) { route in
@@ -143,8 +143,10 @@ struct GameView: View {
                 },
                 onCancel: { withAnimation { isEditingGame = false } },
                 onNewGame: {
-                    withAnimation { isEditingGame = false }
-                    store.createNewGame()
+                    withAnimation {
+                        isEditingGame = false
+                        store.createNewGame()
+                    }
                 }
             )
             .presentationDetents([.medium])

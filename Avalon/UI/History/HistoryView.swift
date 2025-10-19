@@ -29,6 +29,11 @@ struct HistoryView: View {
                     }, sort: \AvalonGame.startedAt)
                 }
                 .navigationTitle("History")
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        EditButton()
+                    }
+                }
         }
         .onReceive(routingUpdate) { self.routingState = $0 }
         .flipsForRightToLeftLayoutDirection(true)
@@ -79,41 +84,61 @@ private extension HistoryView {
     @ViewBuilder
     func loadedView() -> some View {
         if games.isEmpty {
-            Text("historyView.noMatchFound")
+            Text("historyView.noGamesFound")
                 .font(.footnote)
-        }
-        List(games, id: \.id) { game in
-            NavigationLink(value: game) {
-                Text(game.name.isEmpty ? String(localized: "game.untitledGame") : game.name)
+        } else {
+            List {
+                ForEach(games, id: \.id) { game in
+                    NavigationLink(value: game) {
+                        Text(game.name.isEmpty ? String(localized: "game.untitledGame") : game.name)
+                    }
+                }
+                .onDelete(perform: deleteGames)
             }
-        }
-        .refreshable {
-            loadGamesList(forceReload: true)
-        }
-        .navigationDestination(for: AvalonGame.self) { _ in
-            // TODO: navigate to game details screen
-        }
-        .onChange(of: routingState.gameID, initial: true) { _, gameID in
-            guard let gameID,
-                  let game = games.first(where: { $0.id == gameID })
-            else { return }
-            navigationPath.append(game)
-        }
-        .onChange(of: navigationPath) { _, path in
-            if !path.isEmpty {
-                routingBinding.wrappedValue.gameID = nil
+            .refreshable {
+                loadGamesList(forceReload: true)
+            }
+            .navigationDestination(for: AvalonGame.self) { _ in
+                // TODO: navigate to game details screen
+            }
+            .onChange(of: routingState.gameID, initial: true) { _, gameID in
+                guard let gameID,
+                      let game = games.first(where: { $0.id == gameID })
+                else { return }
+                navigationPath.append(game)
+            }
+            .onChange(of: navigationPath) { _, path in
+                if !path.isEmpty {
+                    routingBinding.wrappedValue.gameID = nil
+                }
             }
         }
     }
 }
 
-// MARK: - Side Effects
+// MARK: - Database
 
 private extension HistoryView {
     private func loadGamesList(forceReload: Bool) {
         guard forceReload || games.isEmpty else { return }
         $gamesState.load {
             // TODO: refresh the game list
+        }
+    }
+
+    private func deleteGames(at offsets: IndexSet) {
+        Task {
+            for index in offsets {
+                let game = games[index]
+                do {
+                    try await injected.interactors.games.deleteGame(
+                        GameViewData(game: game)
+                    )
+                    games.removeAll { $0.id == game.id }
+                } catch {
+                    print("Failed to delete game: \(error)")
+                }
+            }
         }
     }
 }

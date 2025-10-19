@@ -5,7 +5,10 @@ protocol GamesDBRepository {
     func insert(game: AvalonGame) async throws -> PersistentIdentifier
     func store(games: [AvalonGame]) async throws
     func getLastUnfinishedGame() async throws -> AvalonGame?
+    func exists(id: PersistentIdentifier) async throws -> Bool
     func update(with gameData: GameViewData) async throws
+    func delete(id: PersistentIdentifier) async throws
+    func deleteAll() async throws
 }
 
 extension MainDBRepository: GamesDBRepository {
@@ -34,6 +37,16 @@ extension MainDBRepository: GamesDBRepository {
         return games.filter { $0.startedAt != nil }.first
     }
 
+    func exists(id: PersistentIdentifier) async throws -> Bool {
+        let descriptor = FetchDescriptor<AvalonGame>()
+        do {
+            let games = try modelContext.fetch(descriptor)
+            return games.contains(where: { $0.persistentModelID == id })
+        } catch {
+            return false
+        }
+    }
+
     func update(with gameData: GameViewData) async throws {
         guard let persistentID = gameData.persistentModelID else {
             throw GamesError.missingPersistentID
@@ -50,6 +63,20 @@ extension MainDBRepository: GamesDBRepository {
         existingGame.status = gameData.status
         existingGame.result = gameData.result
 
+        try modelContext.save()
+    }
+
+    func delete(id: PersistentIdentifier) async throws {
+        guard let gameToDelete = modelContext.model(for: id) as? AvalonGame else {
+            throw GamesError.gameNotFound
+        }
+
+        modelContext.delete(gameToDelete)
+        try modelContext.save()
+    }
+
+    func deleteAll() async throws {
+        try modelContext.delete(model: AvalonGame.self)
         try modelContext.save()
     }
 }

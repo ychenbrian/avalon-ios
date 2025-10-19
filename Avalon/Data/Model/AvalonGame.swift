@@ -13,7 +13,7 @@ final class AvalonGame: Sendable {
     var status: GameStatus
     var result: GameResult?
 
-    init(id: UUID = UUID(), name: String = generateReference(), startedAt: String? = nil, finishedAt: String? = nil, players: [Player] = [], quests: [Quest] = [], status: GameStatus = .inProgress, result: GameResult? = nil) {
+    init(id: UUID = UUID(), name: String = generateReference(), startedAt: String? = nil, finishedAt: String? = nil, players: [Player] = [], quests: [Quest] = [], status: GameStatus = .initial, result: GameResult? = nil) {
         self.id = id
         self.name = name
         self.startedAt = startedAt

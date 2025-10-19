@@ -21,6 +21,8 @@ final class GameStore {
 
     func team(id: UUID, in questID: UUID) -> TeamViewData? { quest(id: questID)?.teams.first(where: { $0.id == id }) }
 
+    // MARK: - Game Lifecycle
+
     func initialGame() {
         Task {
             if let lastGame = await getLastUnfinishedGame() {
@@ -32,7 +34,7 @@ final class GameStore {
     }
 
     func createNewGame() {
-        game = GameViewData(game: AvalonGame.initial(players: players))
+        game = GameViewData(game: AvalonGame.initial(players: players, status: .inProgress))
         game.startedAt = Date().toISOString()
         Task {
             await insertGame()
@@ -47,9 +49,33 @@ final class GameStore {
         }
     }
 
+    func validateGame() async {
+        if game.status == .initial {
+            return
+        }
+        guard game.persistentModelID != nil else {
+            createNewGame()
+            return
+        }
+
+        do {
+            let exists = try await container.interactors.games.gameExists(game)
+            if !exists {
+                createNewGame()
+            }
+        } catch {
+            print("Failed to validate game: \(error)")
+            createNewGame()
+        }
+    }
+
+    // MARK: - Game Modifications
+
     func updateNumOfPlayers(_ number: Int) {
         players = Player.defaultPlayers(size: number)
-        createNewGame()
+        Task {
+            createNewGame()
+        }
     }
 
     func updateGameDetails(gameName: String) {

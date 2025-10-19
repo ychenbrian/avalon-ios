@@ -150,4 +150,4 @@
 
 // MARK: - History View
 
-"historyView.noMatchFound" = "No matches found";
+"historyView.noGamesFound" = "No games found";

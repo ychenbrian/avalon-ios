@@ -59,7 +59,8 @@ extension AvalonGame {
     }
 
     static func initial(
-        players: [Player] = Player.defaultPlayers()
+        players: [Player] = Player.defaultPlayers(),
+        status: GameStatus = .initial
     ) -> AvalonGame {
         let quests = [
             Quest.initial(index: 0, numOfPlayers: players.count, status: .inProgress),
@@ -68,7 +69,7 @@ extension AvalonGame {
             Quest.initial(index: 3, numOfPlayers: players.count),
             Quest.initial(index: 4, numOfPlayers: players.count),
         ]
-        return .init(players: players, quests: quests)
+        return .init(players: players, quests: quests, status: status)
     }
 }
 
