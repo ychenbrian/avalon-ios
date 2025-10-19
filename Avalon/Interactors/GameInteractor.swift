@@ -3,14 +3,14 @@ import SwiftUI
 protocol GamesInteractor {
     func insertGame(_ gameData: GameViewData) async throws
     func getLastUnfinishedGame() async throws -> GameViewData?
-    func save() async throws
+    func updateGame(_ gameData: GameViewData) async throws
 }
 
 struct RealGamesInteractor: GamesInteractor {
     let dbRepository: GamesDBRepository
 
-    func insertGame(_ game: GameViewData) async throws {
-        let savedGame = game.toAvalonGame()
+    func insertGame(_ gameData: GameViewData) async throws {
+        let savedGame = gameData.toAvalonGame()
         try await dbRepository.insert(game: savedGame)
     }
 
@@ -22,8 +22,8 @@ struct RealGamesInteractor: GamesInteractor {
         }
     }
 
-    func save() async throws {
-        try await dbRepository.save()
+    func updateGame(_ gameData: GameViewData) async throws {
+        try await dbRepository.update(with: gameData)
     }
 }
 
@@ -34,5 +34,5 @@ struct StubGamesInteractor: GamesInteractor {
         return nil
     }
 
-    func save() async throws {}
+    func updateGame(_: GameViewData) async throws {}
 }

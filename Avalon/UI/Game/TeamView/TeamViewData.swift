@@ -20,13 +20,13 @@ final class TeamViewData: Identifiable {
         self.votesByVoter = votesByVoter
     }
 
-    init(team: Team) {
+    init(team: Team, players: [Player]) {
         id = team.id
         roundIndex = team.roundIndex
         teamIndex = team.teamIndex
         status = team.status
         result = team.result
-        leader = Player.defaultPlayers().first { $0.id == team.leaderID }
+        leader = players.first { $0.id == team.leaderID }
         var memberPlayers: [Player] = []
         for memberID in team.memberIDs {
             memberPlayers.append(Player.defaultPlayers().first { $0.id == memberID } ?? Player.random())

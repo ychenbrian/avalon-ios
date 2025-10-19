@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 
 @Observable
@@ -11,6 +12,7 @@ final class GameViewData: Identifiable {
     var result: GameResult?
     var quests: [QuestViewData]
     var selectedQuestID: UUID?
+    var persistentModelID: PersistentIdentifier?
 
     init(id: UUID = UUID(), name: String = generateReference(), players: [Player], status: GameStatus = .inProgress, result: GameResult? = nil, quests: [QuestViewData] = []) {
         self.id = id
@@ -18,8 +20,10 @@ final class GameViewData: Identifiable {
         self.name = name
         self.status = status
         self.result = result
-        self.quests = quests
-        selectedQuestID = quests.first(where: { $0.index == 0 })?.id
+        let sortedQuests = quests.sorted { $0.index < $1.index }
+        self.quests = sortedQuests
+        selectedQuestID = sortedQuests.last(where: { $0.status != .notStarted })?.id
+        persistentModelID = nil
     }
 
     init(game: AvalonGame) {
@@ -30,8 +34,10 @@ final class GameViewData: Identifiable {
         players = game.players
         status = game.status
         result = game.result
-        quests = game.quests.map(QuestViewData.init(quest:))
-        selectedQuestID = quests.first(where: { $0.index == 0 })?.id
+        let sortedQuests = game.quests.sorted { $0.index < $1.index }
+        quests = sortedQuests.map { QuestViewData(quest: $0, players: game.players) }
+        selectedQuestID = sortedQuests.last(where: { $0.status != .notStarted })?.id
+        persistentModelID = game.persistentModelID
     }
 
     func toAvalonGame() -> AvalonGame {

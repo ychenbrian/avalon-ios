@@ -63,7 +63,7 @@ struct QuestCircle: View {
 #Preview {
     HStack {
         ForEach(0 ..< 5) { i in
-            let quest = QuestViewData(quest: Quest.random(index: i))
+            let quest = QuestViewData(quest: Quest.random(index: i), players: Player.defaultPlayers())
             QuestCircle(quest: quest, isSelected: [true, false].randomElement()!)
         }
     }

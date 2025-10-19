@@ -17,18 +17,20 @@ final class QuestViewData: Identifiable {
         self.id = id
         self.index = index
         self.numOfPlayers = numOfPlayers
-        self.teams = teams
-        selectedTeamID = teams.first(where: { $0.teamIndex == 0 })?.id
+        let sortedTeams = teams.sorted { $0.teamIndex < $1.teamIndex }
+        self.teams = sortedTeams
+        selectedTeamID = sortedTeams.last(where: { $0.status != .notStarted })?.id
     }
 
-    init(quest: Quest) {
+    init(quest: Quest, players: [Player]) {
         id = quest.id
         index = quest.index
         status = quest.status ?? .notStarted
         numOfPlayers = quest.numOfPlayers
         result = ResultViewData(quest: quest.result)
-        teams = quest.teams.map(TeamViewData.init(team:))
-        selectedTeamID = quest.teams.first(where: { $0.teamIndex == 0 })?.id
+        let sortedTeams = quest.teams.sorted { $0.teamIndex < $1.teamIndex }
+        teams = sortedTeams.map { TeamViewData(team: $0, players: players) }
+        selectedTeamID = sortedTeams.last(where: { $0.status != .notStarted })?.id
     }
 
     func toQuest() -> Quest {

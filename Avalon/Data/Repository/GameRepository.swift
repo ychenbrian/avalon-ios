@@ -5,7 +5,7 @@ protocol GamesDBRepository {
     func insert(game: AvalonGame) async throws
     func store(games: [AvalonGame]) async throws
     func getLastUnfinishedGame() async throws -> AvalonGame?
-    func save() async throws
+    func update(with gameData: GameViewData) async throws
 }
 
 extension MainDBRepository: GamesDBRepository {
@@ -29,14 +29,30 @@ extension MainDBRepository: GamesDBRepository {
         )
 
         let games = try modelContext.fetch(descriptor)
-        for game in games {
-            print("Game: \(game.name), startedAt: \(game.startedAt ?? "Null")")
-        }
-
         return games.filter { $0.startedAt != nil }.first
     }
 
-    func save() async throws {
+    func update(with gameData: GameViewData) async throws {
+        guard let persistentID = gameData.persistentModelID else {
+            throw GamesError.missingPersistentID
+        }
+        guard let existingGame = modelContext.model(for: persistentID) as? AvalonGame else {
+            throw GamesError.gameNotFound
+        }
+
+        existingGame.name = gameData.name
+        existingGame.startedAt = gameData.startedAt
+        existingGame.finishedAt = gameData.finishedAt
+        existingGame.players = gameData.players
+        existingGame.quests = gameData.quests.map { $0.toQuest() }
+        existingGame.status = gameData.status
+        existingGame.result = gameData.result
+
         try modelContext.save()
     }
+}
+
+enum GamesError: Error {
+    case missingPersistentID
+    case gameNotFound
 }

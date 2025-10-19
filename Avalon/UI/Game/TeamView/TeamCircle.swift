@@ -55,7 +55,7 @@ struct TeamCircle: View {
 #Preview {
     HStack {
         ForEach(0 ..< 5) { i in
-            let team = TeamViewData(team: Team.random(roundIndex: 0, teamIndex: i))
+            let team = TeamViewData(team: Team.random(roundIndex: 0, teamIndex: i), players: Player.defaultPlayers())
             TeamCircle(team: team, isSelected: [true, false].randomElement()!)
         }
     }

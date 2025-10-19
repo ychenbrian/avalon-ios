@@ -26,7 +26,7 @@ struct GameView: View {
                 VStack(alignment: .leading) {
                     ScrollView(.horizontal) {
                         HStack(spacing: 8) {
-                            ForEach(store.game.quests.sorted { $0.index < $1.index }) { quest in
+                            ForEach(store.game.quests) { quest in
                                 QuestCircle(quest: quest, isSelected: selectedQuestID == quest.id)
                                     .contentShape(Rectangle())
                                     .onTapGesture {
@@ -84,7 +84,7 @@ struct GameView: View {
         }
         .onAppear {
             if selectedQuestID == nil {
-                store.game.selectedQuestID = store.game.quests.first(where: { $0.index == 0 })?.id
+                store.game.selectedQuestID = store.game.quests.last(where: { $0.status != .notStarted })?.id
             }
         }
         .alert(item: $activeAlert) { route in

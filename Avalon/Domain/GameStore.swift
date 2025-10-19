@@ -6,6 +6,7 @@ final class GameStore {
     var game: GameViewData
     var players: [Player]
     private let container: DIContainer
+    private var saveTask: Task<Void, Never>?
 
     init(players: [Player], container: DIContainer) {
         self.players = players
@@ -39,9 +40,11 @@ final class GameStore {
     }
 
     func finishGame(_ result: GameResult? = .goodWinByFailedAss) {
-        game.result = result
-        game.status = .complete
-        game.finishedAt = Date().toISOString()
+        modifyAndSave {
+            game.result = result
+            game.status = .complete
+            game.finishedAt = Date().toISOString()
+        }
     }
 
     func updateNumOfPlayers(_ number: Int) {
@@ -50,17 +53,23 @@ final class GameStore {
     }
 
     func updateGameDetails(gameName: String) {
-        game.name = gameName
+        modifyAndSave {
+            game.name = gameName
+        }
     }
 
     func startQuest(_ index: Int) {
-        game.quests.first(where: { $0.index == index })?.status = .inProgress
-        game.quests.first(where: { $0.index == index })?.teams.first(where: { $0.teamIndex == 0 })?.status = .inProgress
+        modifyAndSave {
+            game.quests.first(where: { $0.index == index })?.status = .inProgress
+            game.quests.first(where: { $0.index == index })?.teams.first(where: { $0.teamIndex == 0 })?.status = .inProgress
+        }
     }
 
     func startTeam(questID: UUID, teamID: UUID) {
-        team(id: teamID, in: questID)?.status = .inProgress
-        quest(id: questID)?.selectedTeamID = teamID
+        modifyAndSave {
+            team(id: teamID, in: questID)?.status = .inProgress
+            quest(id: questID)?.selectedTeamID = teamID
+        }
     }
 
     func updateTeam(
@@ -70,52 +79,60 @@ final class GameStore {
         members: [Player]? = nil,
         votesByVoter: [PlayerID: VoteType]? = nil
     ) {
-        guard let team = team(id: teamID, in: questID) else { return }
+        modifyAndSave {
+            guard let team = team(id: teamID, in: questID) else { return }
 
-        if let leader = leader {
-            team.leader = leader
-        }
+            if let leader = leader {
+                team.leader = leader
+            }
 
-        if let members = members {
-            team.members = members
-        }
+            if let members = members {
+                team.members = members
+            }
 
-        if let votesByVoter = votesByVoter {
-            team.votesByVoter = votesByVoter
+            if let votesByVoter = votesByVoter {
+                team.votesByVoter = votesByVoter
+            }
         }
     }
 
     func finishTeam(questID: UUID, teamID: UUID) {
-        team(id: teamID, in: questID)?.status = .finished
-        let selectedTeam = team(id: teamID, in: questID) ?? TeamViewData(roundIndex: 0, teamIndex: 0)
-        let approvedCount = Set(selectedTeam.votesByVoter.compactMap { $0.value == .approve ? $0.key : nil }).count
-        let rejectedCount = Set(selectedTeam.votesByVoter.compactMap { $0.value == .reject ? $0.key : nil }).count
+        modifyAndSave {
+            team(id: teamID, in: questID)?.status = .finished
+            let selectedTeam = team(id: teamID, in: questID) ?? TeamViewData(roundIndex: 0, teamIndex: 0)
+            let approvedCount = Set(selectedTeam.votesByVoter.compactMap { $0.value == .approve ? $0.key : nil }).count
+            let rejectedCount = Set(selectedTeam.votesByVoter.compactMap { $0.value == .reject ? $0.key : nil }).count
 
-        let result = TeamResult(isApproved: approvedCount > rejectedCount, approvedCount: approvedCount, rejectedCount: rejectedCount)
-        team(id: teamID, in: questID)?.result = result
+            let result = TeamResult(isApproved: approvedCount > rejectedCount, approvedCount: approvedCount, rejectedCount: rejectedCount)
+            team(id: teamID, in: questID)?.result = result
+        }
     }
 
     @discardableResult
     func updateQuestResult(questID: UUID, failCount: Int) -> Bool {
-        quest(id: questID)?.status = .finished
-        let result = ResultViewData(failCount: failCount)
-        if failCount >= quest(id: questID)?.requiredFails ?? 1 {
-            result.type = .fail
-        } else {
-            result.type = .success
+        modifyAndSave {
+            quest(id: questID)?.status = .finished
+            let result = ResultViewData(failCount: failCount)
+            if failCount >= quest(id: questID)?.requiredFails ?? 1 {
+                result.type = .fail
+            } else {
+                result.type = .success
+            }
+            quest(id: questID)?.result = result
         }
-        quest(id: questID)?.result = result
 
         let isFinished = checkGameFinish()
         return isFinished
     }
 
     func clearQuestResult(questID: UUID) {
-        quest(id: questID)?.status = .inProgress
-        quest(id: questID)?.result = nil
+        modifyAndSave {
+            quest(id: questID)?.status = .inProgress
+            quest(id: questID)?.result = nil
+        }
     }
 
-    // MARK: - Private
+    // MARK: - Private Helper
 
     private func checkGameFinish() -> Bool {
         let quests = game.quests
@@ -136,15 +153,29 @@ final class GameStore {
 
     // MARK: - Persistence
 
-    func insertGame() async {
+    private func modifyAndSave(_ modification: () -> Void) {
+        modification()
+        saveDebounced()
+    }
+
+    private func saveDebounced() {
+        saveTask?.cancel()
+        saveTask = Task {
+            try? await Task.sleep(for: .milliseconds(500))
+            guard !Task.isCancelled else { return }
+            await saveGame()
+        }
+    }
+
+    private func insertGame() async {
         try? await container.interactors.games.insertGame(game)
     }
 
-    func getLastUnfinishedGame() async -> GameViewData? {
+    private func getLastUnfinishedGame() async -> GameViewData? {
         return try? await container.interactors.games.getLastUnfinishedGame()
     }
 
-    func saveGame() async {
-        try? await container.interactors.games.save()
+    private func saveGame() async {
+        try? await container.interactors.games.updateGame(game)
     }
 }
