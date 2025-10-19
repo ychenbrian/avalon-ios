@@ -73,13 +73,6 @@ struct GameView: View {
                         Label("gameView.toolbar.startAssistanation", systemImage: "drop.fill")
                     }
                 }
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        Task {}
-                    } label: {
-                        Label("gameView.toolbar.startAssistanation", systemImage: "drop.fill")
-                    }
-                }
             }
         }
         .onAppear {

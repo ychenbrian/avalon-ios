@@ -11,7 +11,8 @@ struct RealGamesInteractor: GamesInteractor {
 
     func insertGame(_ gameData: GameViewData) async throws {
         let savedGame = gameData.toAvalonGame()
-        try await dbRepository.insert(game: savedGame)
+        let persistentID = try await dbRepository.insert(game: savedGame)
+        gameData.persistentModelID = persistentID
     }
 
     func getLastUnfinishedGame() async throws -> GameViewData? {

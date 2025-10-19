@@ -2,17 +2,19 @@ import Foundation
 import SwiftData
 
 protocol GamesDBRepository {
-    func insert(game: AvalonGame) async throws
+    func insert(game: AvalonGame) async throws -> PersistentIdentifier
     func store(games: [AvalonGame]) async throws
     func getLastUnfinishedGame() async throws -> AvalonGame?
     func update(with gameData: GameViewData) async throws
 }
 
 extension MainDBRepository: GamesDBRepository {
-    func insert(game: AvalonGame) async throws {
+    func insert(game: AvalonGame) async throws -> PersistentIdentifier {
         try modelContext.transaction {
             modelContext.insert(game)
         }
+
+        return game.persistentModelID
     }
 
     func store(games: [AvalonGame]) async throws {
