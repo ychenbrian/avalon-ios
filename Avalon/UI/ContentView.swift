@@ -31,7 +31,7 @@ struct ContentView: View {
         }
         .onAppear {
             if gameStore == nil {
-                gameStore = GameStore(players: Player.defaultPlayers(size: 7), container: .init(appState: AppState(), interactors: .stub))
+                gameStore = GameStore(players: Player.defaultPlayers(size: 7), container: injected)
             }
         }
     }

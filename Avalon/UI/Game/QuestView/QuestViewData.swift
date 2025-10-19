@@ -18,7 +18,7 @@ final class QuestViewData: Identifiable {
         self.index = index
         self.numOfPlayers = numOfPlayers
         self.teams = teams
-        selectedTeamID = teams.first?.id
+        selectedTeamID = teams.first(where: { $0.teamIndex == 0 })?.id
     }
 
     init(quest: Quest) {
@@ -28,6 +28,7 @@ final class QuestViewData: Identifiable {
         numOfPlayers = quest.numOfPlayers
         result = ResultViewData(quest: quest.result)
         teams = quest.teams.map(TeamViewData.init(team:))
+        selectedTeamID = quest.teams.first(where: { $0.teamIndex == 0 })?.id
     }
 
     func toQuest() -> Quest {

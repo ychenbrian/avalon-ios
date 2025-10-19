@@ -18,6 +18,7 @@
 // MARK: - Game
 
 "game.namePrefix" = "Game";
+"game.untitledGame" = "Untitled Game";
 
 
 // MARK: - Enum
@@ -137,6 +138,7 @@
 
 
 // MARK: - Game Finish Alert
+
 "gameFinish.title" = "🏆 Game Complete! 🏆";
 "gameFinish.newGame.button" = "Start New Game";
 "gameFinish.viewGame.button" = "Review Game";
@@ -144,3 +146,8 @@
 "gameFinish.message.goodWin" = "Victory for the Loyal Servants of Arthur!";
 "gameFinish.message.evilWinQuest" = "The Minions of Mordred triumph!";
 "gameFinish.message.evilWinAssassin" = "The Assassin strikes Merlin!";
+
+
+// MARK: - History View
+
+"historyView.noMatchFound" = "No matches found";

@@ -5,11 +5,13 @@ import Testing
 @Suite("GameStore Tests")
 @MainActor
 struct GameStoreTests {
+    let container = DIContainer(interactors: .stub)
+
     // MARK: - Initial Tests
 
     @Test("Initial GameStore with game data")
     func initialization() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
 
         #expect(store.game.quests.count == 5)
         #expect(store.game.quests.allSatisfy { $0.teams.count == 5 })
@@ -17,7 +19,7 @@ struct GameStoreTests {
 
     @Test("Initial game has first quest in progress")
     func initialGameFirstQuestInProgress() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
 
         #expect(store.game.quests[0].status == .inProgress)
         #expect(store.game.quests[0].teams[0].status == .inProgress)
@@ -25,7 +27,7 @@ struct GameStoreTests {
 
     @Test("Initial game has other quests not started")
     func initialGameOtherQuestsNotStarted() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
 
         for i in 1 ..< 5 {
             #expect(store.game.quests[i].status == .notStarted)
@@ -37,7 +39,7 @@ struct GameStoreTests {
 
     @Test("Query quest by ID returns correct quest")
     func questQuery() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let randomIndex = Int.random(in: 0 ..< 5)
         let quest = store.game.quests[randomIndex]
 
@@ -50,7 +52,7 @@ struct GameStoreTests {
 
     @Test("Query quest with invalid ID returns nil")
     func questQueryInvalidID() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
 
         let foundQuest = store.quest(id: UUID())
 
@@ -59,7 +61,7 @@ struct GameStoreTests {
 
     @Test("Query team by ID returns correct team")
     func teamQuery() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let randomQuestIndex = Int.random(in: 0 ..< 5)
         let randomTeamIndex = Int.random(in: 0 ..< 5)
         let quest = store.game.quests[randomQuestIndex]
@@ -69,12 +71,12 @@ struct GameStoreTests {
 
         #expect(foundTeam != nil)
         #expect(foundTeam?.id == team.id)
-        #expect(foundTeam?.index == randomTeamIndex)
+        #expect(foundTeam?.teamIndex == randomTeamIndex)
     }
 
     @Test("Query team with invalid quest ID returns nil")
     func teamQueryInvalidQuestID() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
 
         let foundTeam = store.team(id: UUID(), in: UUID())
 
@@ -83,7 +85,7 @@ struct GameStoreTests {
 
     @Test("Query team with invalid team ID returns nil")
     func teamQueryInvalidTeamID() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let quest = store.game.quests[0]
 
         let foundTeam = store.team(id: UUID(), in: quest.id)
@@ -94,8 +96,8 @@ struct GameStoreTests {
     // MARK: - Initial Game Tests
 
     @Test("Initial game resets game data")
-    func testInitialGame() {
-        let store = GameStore(players: Player.defaultPlayers())
+    func initialGame() {
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
 
         store.startQuest(1)
         store.startQuest(2)
@@ -105,7 +107,7 @@ struct GameStoreTests {
         #expect(quest2.status == .inProgress)
 
         let oldGameID = store.game.id
-        store.initialGame()
+        store.createNewGame()
 
         #expect(store.game.id != oldGameID)
         #expect(store.game.quests.count == 5)
@@ -114,12 +116,38 @@ struct GameStoreTests {
         #expect(store.game.quests[2].status == .notStarted)
     }
 
+    // MARK: - Game Update Tests
+
+    @Test("Update number of players with game reset")
+    func udpdateNumberOfPlayersWithGameReset() {
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
+        let oldGameID = store.game.id
+
+        let numOfPlayers = Int.random(in: 5 ..< 11)
+        store.updateNumOfPlayers(numOfPlayers)
+
+        #expect(store.game.players.count == numOfPlayers)
+        #expect(store.game.id != oldGameID)
+    }
+
+    @Test("Update game name without game reset")
+    func updateGameNameWithoutGameReset() {
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
+        let gameID = store.game.id
+
+        let newGameName = "New Game Name"
+        store.updateGameDetails(gameName: newGameName)
+
+        #expect(store.game.name == newGameName)
+        #expect(store.game.id == gameID)
+    }
+
     // MARK: - Quest Management Tests
 
     @Test("Start quest sets status to in progress")
     func testStartQuest() {
-        let store = GameStore(players: Player.defaultPlayers())
-        let randomIndex = Int.random(in: 1 ..< 5) // Not 0 since it's already in progress
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
+        let randomIndex = Int.random(in: 1 ..< 5)
 
         #expect(store.game.quests[randomIndex].status == .notStarted)
 
@@ -131,7 +159,7 @@ struct GameStoreTests {
 
     @Test("Start quest only sets first team to in progress")
     func startQuestFirstTeamOnly() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let randomIndex = Int.random(in: 1 ..< 5)
 
         store.startQuest(randomIndex)
@@ -146,7 +174,7 @@ struct GameStoreTests {
 
     @Test("Start multiple quests independently")
     func startMultipleQuests() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
 
         store.startQuest(1)
         store.startQuest(3)
@@ -160,7 +188,7 @@ struct GameStoreTests {
 
     @Test("Update team leader sets leader")
     func updateTeamLeader() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let randomQuestIndex = Int.random(in: 0 ..< 5)
         let randomTeamIndex = Int.random(in: 0 ..< 5)
         let randomLeaderIndex = Int.random(in: 0 ..< store.players.count)
@@ -179,7 +207,7 @@ struct GameStoreTests {
 
     @Test("Update team members sets members")
     func updateTeamMembers() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let randomQuestIndex = Int.random(in: 0 ..< 5)
         let randomTeamIndex = Int.random(in: 0 ..< 5)
         let randomMemberCount = Int.random(in: 2 ... 5)
@@ -200,16 +228,16 @@ struct GameStoreTests {
 
     @Test("Update team votes sets votes")
     func updateTeamVotes() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let randomQuestIndex = Int.random(in: 0 ..< 5)
         let randomTeamIndex = Int.random(in: 0 ..< 5)
         let randomVoteCount = Int.random(in: 3 ... 10)
         let quest = store.game.quests[randomQuestIndex]
         let team = quest.teams[randomTeamIndex]
 
-        var votes: [Player: VoteType] = [:]
+        var votes: [PlayerID: VoteType] = [:]
         for i in 0 ..< randomVoteCount {
-            votes[store.players[i]] = Bool.random() ? .approve : .reject
+            votes[store.players[i].id] = Bool.random() ? .approve : .reject
         }
 
         #expect(team.votesByVoter.isEmpty)
@@ -222,15 +250,15 @@ struct GameStoreTests {
 
     @Test("Update team with multiple properties")
     func updateTeamMultipleProperties() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let quest = store.game.quests[0]
         let team = quest.teams[0]
 
         let leader = store.players[0]
         let members = Array(store.players.prefix(4))
-        let votes: [Player: VoteType] = [
-            store.players[0]: .approve,
-            store.players[1]: .approve,
+        let votes: [PlayerID: VoteType] = [
+            store.players[0].id: .approve,
+            store.players[1].id: .approve,
         ]
 
         store.updateTeam(
@@ -249,7 +277,7 @@ struct GameStoreTests {
 
     @Test("Update team with invalid IDs does nothing")
     func updateTeamInvalidIDs() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let leader = store.players.first!
 
         store.updateTeam(questID: UUID(), teamID: UUID(), leader: leader)
@@ -261,7 +289,7 @@ struct GameStoreTests {
 
     @Test("Finish team with majority approvals marks as approved")
     func finishTeamApproved() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let randomQuestIndex = Int.random(in: 0 ..< 5)
         let randomTeamIndex = Int.random(in: 0 ..< 5)
         let quest = store.game.quests[randomQuestIndex]
@@ -269,12 +297,12 @@ struct GameStoreTests {
 
         let approveCount = Int.random(in: 6 ... 8)
         let rejectCount = 10 - approveCount
-        var votes: [Player: VoteType] = [:]
+        var votes: [PlayerID: VoteType] = [:]
         for i in 0 ..< approveCount {
-            votes[store.players[i]] = .approve
+            votes[store.players[i].id] = .approve
         }
         for i in approveCount ..< 10 {
-            votes[store.players[i]] = .reject
+            votes[store.players[i].id] = .reject
         }
 
         store.updateTeam(questID: quest.id, teamID: team.id, votesByVoter: votes)
@@ -290,7 +318,7 @@ struct GameStoreTests {
 
     @Test("Finish team with majority rejections marks as rejected")
     func finishTeamRejected() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let randomQuestIndex = Int.random(in: 0 ..< 5)
         let randomTeamIndex = Int.random(in: 0 ..< 5)
         let quest = store.game.quests[randomQuestIndex]
@@ -298,12 +326,12 @@ struct GameStoreTests {
 
         let rejectCount = Int.random(in: 6 ... 8)
         let approveCount = 10 - rejectCount
-        var votes: [Player: VoteType] = [:]
+        var votes: [PlayerID: VoteType] = [:]
         for i in 0 ..< approveCount {
-            votes[store.players[i]] = .approve
+            votes[store.players[i].id] = .approve
         }
         for i in approveCount ..< 10 {
-            votes[store.players[i]] = .reject
+            votes[store.players[i].id] = .reject
         }
 
         store.updateTeam(questID: quest.id, teamID: team.id, votesByVoter: votes)
@@ -319,17 +347,17 @@ struct GameStoreTests {
 
     @Test("Finish team with tie votes favors rejection")
     func finishTeamTieVotes() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let quest = store.game.quests[0]
         let team = quest.teams[1]
 
-        let votes: [Player: VoteType] = [
-            store.players[0]: .approve,
-            store.players[1]: .approve,
-            store.players[2]: .approve,
-            store.players[3]: .reject,
-            store.players[4]: .reject,
-            store.players[5]: .reject,
+        let votes: [PlayerID: VoteType] = [
+            store.players[0].id: .approve,
+            store.players[1].id: .approve,
+            store.players[2].id: .approve,
+            store.players[3].id: .reject,
+            store.players[4].id: .reject,
+            store.players[5].id: .reject,
         ]
         store.updateTeam(questID: quest.id, teamID: team.id, votesByVoter: votes)
 
@@ -341,7 +369,7 @@ struct GameStoreTests {
 
     @Test("Finish team with no votes")
     func finishTeamNoVotes() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let quest = store.game.quests[0]
         let team = quest.teams[0]
 
@@ -358,7 +386,7 @@ struct GameStoreTests {
 
     @Test("Update quest result with enough fails marks as failed")
     func updateQuestResultFailed() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let randomQuestIndex = Int.random(in: 0 ..< 5)
         let quest = store.game.quests[randomQuestIndex]
         let failCount = Int.random(in: quest.requiredFails ... (quest.requiredFails + 2))
@@ -373,7 +401,7 @@ struct GameStoreTests {
 
     @Test("Update quest result with no fails marks as success")
     func updateQuestResultSuccess() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let randomQuestIndex = Int.random(in: 0 ..< 5)
         let quest = store.game.quests[randomQuestIndex]
         let failCount = Int.random(in: 0 ..< quest.requiredFails)
@@ -388,7 +416,7 @@ struct GameStoreTests {
 
     @Test("Update quest result respects required fails threshold")
     func updateQuestResultThreshold() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let quest = store.game.quests[3]
 
         let requiredFails = quest.requiredFails
@@ -397,7 +425,7 @@ struct GameStoreTests {
         var updatedQuest = store.quest(id: quest.id)
         #expect(updatedQuest?.result?.type == .success)
 
-        store.initialGame()
+        store.createNewGame()
         let newQuest = store.game.quests[3]
         store.updateQuestResult(questID: newQuest.id, failCount: requiredFails)
         updatedQuest = store.quest(id: newQuest.id)
@@ -406,7 +434,7 @@ struct GameStoreTests {
 
     @Test("Update quest result with excessive fails still marks as failed")
     func updateQuestResultExcessiveFails() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let quest = store.game.quests[2]
 
         store.updateQuestResult(questID: quest.id, failCount: 5)
@@ -418,7 +446,7 @@ struct GameStoreTests {
 
     @Test("Clear quest result")
     func clearQuestResult() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let randomQuestIndex = Int.random(in: 0 ..< 5)
         let quest = store.game.quests[randomQuestIndex]
         let failCount = Int.random(in: 0 ..< quest.requiredFails)
@@ -440,7 +468,7 @@ struct GameStoreTests {
 
     @Test("Complete successful quest flow")
     func completeSuccessfulQuestFlow() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let quest = store.game.quests[0]
         let team = quest.teams[0]
 
@@ -449,17 +477,17 @@ struct GameStoreTests {
 
         let leader = store.players[0]
         let members = Array(store.players.prefix(3))
-        let votes: [Player: VoteType] = [
-            store.players[0]: .approve,
-            store.players[1]: .approve,
-            store.players[2]: .approve,
-            store.players[3]: .approve,
-            store.players[4]: .approve,
-            store.players[5]: .approve,
-            store.players[6]: .approve,
-            store.players[7]: .reject,
-            store.players[8]: .reject,
-            store.players[9]: .reject,
+        let votes: [PlayerID: VoteType] = [
+            store.players[0].id: .approve,
+            store.players[1].id: .approve,
+            store.players[2].id: .approve,
+            store.players[3].id: .approve,
+            store.players[4].id: .approve,
+            store.players[5].id: .approve,
+            store.players[6].id: .approve,
+            store.players[7].id: .reject,
+            store.players[8].id: .reject,
+            store.players[9].id: .reject,
         ]
 
         store.updateTeam(
@@ -484,7 +512,7 @@ struct GameStoreTests {
 
     @Test("Complete failed quest flow")
     func completeFailedQuestFlow() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
 
         store.startQuest(1)
         let quest = store.game.quests[1]
@@ -492,17 +520,17 @@ struct GameStoreTests {
 
         let leader = store.players[1]
         let members = Array(store.players[2 ... 5])
-        let votes: [Player: VoteType] = [
-            store.players[0]: .reject,
-            store.players[1]: .reject,
-            store.players[2]: .reject,
-            store.players[3]: .reject,
-            store.players[4]: .reject,
-            store.players[5]: .reject,
-            store.players[6]: .approve,
-            store.players[7]: .approve,
-            store.players[8]: .approve,
-            store.players[9]: .approve,
+        let votes: [PlayerID: VoteType] = [
+            store.players[0].id: .reject,
+            store.players[1].id: .reject,
+            store.players[2].id: .reject,
+            store.players[3].id: .reject,
+            store.players[4].id: .reject,
+            store.players[5].id: .reject,
+            store.players[6].id: .approve,
+            store.players[7].id: .approve,
+            store.players[8].id: .approve,
+            store.players[9].id: .approve,
         ]
 
         store.updateTeam(
@@ -525,7 +553,7 @@ struct GameStoreTests {
 
     @Test("Multiple quests progression")
     func multipleQuestsProgression() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
 
         let quest1 = store.game.quests[0]
         store.updateQuestResult(questID: quest1.id, failCount: 0)
@@ -550,20 +578,20 @@ struct GameStoreTests {
 
     @Test("Multiple team proposals in a quest")
     func multipleTeamProposals() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
         let quest = store.game.quests[0]
 
         let team1 = quest.teams[0]
-        let votes1: [Player: VoteType] = Dictionary(
-            uniqueKeysWithValues: store.players.map { ($0, VoteType.reject) }
+        let votes1: [PlayerID: VoteType] = Dictionary(
+            uniqueKeysWithValues: store.players.map { ($0.id, VoteType.reject) }
         )
         store.updateTeam(questID: quest.id, teamID: team1.id, votesByVoter: votes1)
         store.finishTeam(questID: quest.id, teamID: team1.id)
         #expect(team1.result?.isApproved == false)
 
         let team2 = quest.teams[1]
-        let votes2: [Player: VoteType] = Dictionary(
-            uniqueKeysWithValues: store.players.map { ($0, VoteType.approve) }
+        let votes2: [PlayerID: VoteType] = Dictionary(
+            uniqueKeysWithValues: store.players.map { ($0.id, VoteType.approve) }
         )
         store.updateTeam(questID: quest.id, teamID: team2.id, votesByVoter: votes2)
         store.finishTeam(questID: quest.id, teamID: team2.id)
@@ -577,7 +605,7 @@ struct GameStoreTests {
 
     @Test("Reset game after progression")
     func resetGameAfterProgression() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
 
         store.startQuest(1)
         store.startQuest(2)
@@ -590,7 +618,7 @@ struct GameStoreTests {
         #expect(quest1.status == .finished)
         #expect(quest2.status == .finished)
 
-        store.initialGame()
+        store.createNewGame()
 
         #expect(store.game.quests.count == 5)
         #expect(store.game.quests[0].status == .inProgress)
@@ -601,7 +629,7 @@ struct GameStoreTests {
 
     @Test("Check game not finish with 1 success")
     func checkGameNotFinishWithOneSuccess() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
 
         store.startQuest(1)
 
@@ -613,7 +641,7 @@ struct GameStoreTests {
 
     @Test("Check game not finish with 2 successes and 2 fails")
     func checkGameNotFinishWithTwoSuccessesAndTwoFails() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
 
         store.startQuest(1)
         let quest1 = store.game.quests[0]
@@ -639,7 +667,7 @@ struct GameStoreTests {
 
     @Test("Check game finish with 3 successes")
     func checkGameFinishWithThreeSuccesses() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
 
         store.startQuest(1)
         let quest1 = store.game.quests[0]
@@ -660,7 +688,7 @@ struct GameStoreTests {
 
     @Test("Check game finish with 3 fails")
     func checkGameFinishWithThreeFails() {
-        let store = GameStore(players: Player.defaultPlayers())
+        let store = GameStore(players: Player.defaultPlayers(), container: container)
 
         store.startQuest(1)
         let quest1 = store.game.quests[0]

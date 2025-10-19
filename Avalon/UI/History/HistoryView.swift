@@ -79,12 +79,12 @@ private extension HistoryView {
     @ViewBuilder
     func loadedView() -> some View {
         if games.isEmpty {
-            Text("No matches found")
+            Text("historyView.noMatchFound")
                 .font(.footnote)
         }
         List(games, id: \.id) { game in
             NavigationLink(value: game) {
-                Text("\(game.name ?? "Game 1")")
+                Text(game.name.isEmpty ? String(localized: "game.untitledGame") : game.name)
             }
         }
         .refreshable {
@@ -113,8 +113,7 @@ private extension HistoryView {
     private func loadGamesList(forceReload: Bool) {
         guard forceReload || games.isEmpty else { return }
         $gamesState.load {
-            try await injected.interactors.games
-                .refreshGamesList()
+            // TODO: refresh the game list
         }
     }
 }

@@ -3,7 +3,7 @@ import SwiftData
 import SwiftUI
 
 @Model
-final class AvalonGame {
+final class AvalonGame: Sendable {
     var id: UUID
     var name: String
     var startedAt: String?

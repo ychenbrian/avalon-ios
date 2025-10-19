@@ -8,17 +8,34 @@ final class GameStore {
     private let container: DIContainer
 
     init(players: [Player], container: DIContainer) {
-        game = GameViewData(game: AvalonGame.initial(players: players))
         self.players = players
         self.container = container
+        game = GameViewData(game: AvalonGame.initial(players: players))
+        initialGame()
     }
 
-    func quest(id: UUID) -> QuestViewData? { game.quests.first(where: { $0.id == id }) }
+    func quest(id: UUID) -> QuestViewData? {
+        return game.quests.first(where: { $0.id == id })
+    }
+
     func team(id: UUID, in questID: UUID) -> TeamViewData? { quest(id: questID)?.teams.first(where: { $0.id == id }) }
 
     func initialGame() {
+        Task {
+            if let lastGame = await getLastUnfinishedGame() {
+                game = lastGame
+            } else {
+                createNewGame()
+            }
+        }
+    }
+
+    func createNewGame() {
         game = GameViewData(game: AvalonGame.initial(players: players))
         game.startedAt = Date().toISOString()
+        Task {
+            await insertGame()
+        }
     }
 
     func finishGame(_ result: GameResult? = .goodWinByFailedAss) {
@@ -29,7 +46,7 @@ final class GameStore {
 
     func updateNumOfPlayers(_ number: Int) {
         players = Player.defaultPlayers(size: number)
-        initialGame()
+        createNewGame()
     }
 
     func updateGameDetails(gameName: String) {
@@ -37,8 +54,8 @@ final class GameStore {
     }
 
     func startQuest(_ index: Int) {
-        game.quests[index].status = .inProgress
-        game.quests[index].teams.first?.status = .inProgress
+        game.quests.first(where: { $0.index == index })?.status = .inProgress
+        game.quests.first(where: { $0.index == index })?.teams.first(where: { $0.teamIndex == 0 })?.status = .inProgress
     }
 
     func startTeam(questID: UUID, teamID: UUID) {
@@ -89,7 +106,8 @@ final class GameStore {
         }
         quest(id: questID)?.result = result
 
-        return checkGameFinish()
+        let isFinished = checkGameFinish()
+        return isFinished
     }
 
     func clearQuestResult(questID: UUID) {
@@ -118,7 +136,15 @@ final class GameStore {
 
     // MARK: - Persistence
 
-    func queryGames() async {
-        try? await container.interactors.games.refreshGamesList()
+    func insertGame() async {
+        try? await container.interactors.games.insertGame(game)
+    }
+
+    func getLastUnfinishedGame() async -> GameViewData? {
+        return try? await container.interactors.games.getLastUnfinishedGame()
+    }
+
+    func saveGame() async {
+        try? await container.interactors.games.save()
     }
 }

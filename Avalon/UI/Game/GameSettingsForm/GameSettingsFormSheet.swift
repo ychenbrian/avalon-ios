@@ -3,7 +3,7 @@ import SwiftUI
 struct GameSettingsFormSheet: View {
     let onSave: (_ numOfPlayers: Int?, _ gameName: String) -> Void
     let onCancel: () -> Void
-    let onNewGame: (_ gameName: String) -> Void
+    let onNewGame: () -> Void
 
     @State private var draft: GameSettingsFormDraft
 
@@ -12,7 +12,7 @@ struct GameSettingsFormSheet: View {
         numOfPlayers: Int,
         onSave: @escaping (_ numOfPlayers: Int?, _ gameName: String) -> Void,
         onCancel: @escaping () -> Void,
-        onNewGame: @escaping (_ gameName: String) -> Void
+        onNewGame: @escaping () -> Void
     ) {
         self.onSave = onSave
         self.onCancel = onCancel
@@ -73,7 +73,7 @@ struct GameSettingsFormSheet: View {
                     .padding()
 
                 Button {
-                    onNewGame(draft.gameName)
+                    onNewGame()
                 } label: {
                     Text("gameSettingsForm.startNewGame.button")
                 }
@@ -126,7 +126,7 @@ struct GameSettingsFormSheetPreview: View {
             numOfPlayers: 10,
             onSave: { _, _ in },
             onCancel: {},
-            onNewGame: { _ in }
+            onNewGame: {}
         )
         .presentationDetents([.medium])
     }

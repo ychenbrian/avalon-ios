@@ -19,7 +19,7 @@ final class GameViewData: Identifiable {
         self.status = status
         self.result = result
         self.quests = quests
-        selectedQuestID = quests.first?.id
+        selectedQuestID = quests.first(where: { $0.index == 0 })?.id
     }
 
     init(game: AvalonGame) {
@@ -31,7 +31,7 @@ final class GameViewData: Identifiable {
         status = game.status
         result = game.result
         quests = game.quests.map(QuestViewData.init(quest:))
-        selectedQuestID = quests.first?.id
+        selectedQuestID = quests.first(where: { $0.index == 0 })?.id
     }
 
     func toAvalonGame() -> AvalonGame {

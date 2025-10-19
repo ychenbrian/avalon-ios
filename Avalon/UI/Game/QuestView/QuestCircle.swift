@@ -21,7 +21,7 @@ struct QuestCircle: View {
                 .foregroundStyle(.secondary)
         }
         .padding(8)
-        .background(isSelected ? Color.blue.opacity(0.1) : Color.clear)
+        .background(isSelected ? Color.blue.opacity(0.3) : Color.clear)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .animation(.default, value: quest.teams.count)
     }

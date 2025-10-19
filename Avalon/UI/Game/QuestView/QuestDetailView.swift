@@ -18,7 +18,7 @@ struct QuestDetailView: View {
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
                     if let quest = store.quest(id: questID) {
-                        ForEach(quest.teams) { team in
+                        ForEach(quest.teams.sorted { $0.teamIndex < $1.teamIndex }) { team in
                             TeamCircle(team: team, isSelected: selectedTeamID == team.id)
                                 .onTapGesture { store.quest(id: questID)?.selectedTeamID = team.id }
                         }
@@ -38,7 +38,7 @@ struct QuestDetailView: View {
         }
         .onAppear { selectFirstIfNeeded() }
         .onChange(of: teams.map(\.id)) {
-            if let sel = selectedTeamID, !teams.contains(where: { $0.id == sel }) {
+            if let selected = selectedTeamID, !teams.contains(where: { $0.id == selected }) {
                 store.quest(id: questID)?.selectedTeamID = nil
             }
             selectFirstIfNeeded()

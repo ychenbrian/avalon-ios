@@ -26,7 +26,7 @@ struct GameView: View {
                 VStack(alignment: .leading) {
                     ScrollView(.horizontal) {
                         HStack(spacing: 8) {
-                            ForEach(store.game.quests) { quest in
+                            ForEach(store.game.quests.sorted { $0.index < $1.index }) { quest in
                                 QuestCircle(quest: quest, isSelected: selectedQuestID == quest.id)
                                     .contentShape(Rectangle())
                                     .onTapGesture {
@@ -56,7 +56,7 @@ struct GameView: View {
                 }
             }
             .padding()
-            .navigationTitle(store.game.name)
+            .navigationTitle(store.game.name.isEmpty ? String(localized: "game.untitledGame") : store.game.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -75,9 +75,7 @@ struct GameView: View {
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        Task {
-                            try await store.queryGames()
-                        }
+                        Task {}
                     } label: {
                         Label("gameView.toolbar.startAssistanation", systemImage: "drop.fill")
                     }
@@ -85,7 +83,9 @@ struct GameView: View {
             }
         }
         .onAppear {
-            if selectedQuestID == nil { store.game.selectedQuestID = store.game.quests.first?.id }
+            if selectedQuestID == nil {
+                store.game.selectedQuestID = store.game.quests.first(where: { $0.index == 0 })?.id
+            }
         }
         .alert(item: $activeAlert) { route in
             switch route {
@@ -113,11 +113,9 @@ struct GameView: View {
             let rIdx = key.questIndex
             let tIdx = key.teamIndex
 
-            if store.game.quests.indices.contains(rIdx),
-               store.game.quests[rIdx].teams.indices.contains(tIdx)
+            if let quest = store.game.quests.first(where: { $0.index == rIdx }),
+               let team = quest.teams.first(where: { $0.teamIndex == tIdx })
             {
-                let quest = store.game.quests[rIdx]
-                let team = quest.teams[tIdx]
                 TeamFormSheet(
                     questID: quest.id,
                     teamID: team.id,
@@ -151,10 +149,9 @@ struct GameView: View {
                     store.updateGameDetails(gameName: gameName)
                 },
                 onCancel: { withAnimation { isEditingGame = false } },
-                onNewGame: { gameName in
+                onNewGame: {
                     withAnimation { isEditingGame = false }
-                    store.initialGame()
-                    store.updateGameDetails(gameName: gameName)
+                    store.createNewGame()
                 }
             )
             .presentationDetents([.medium])
@@ -175,7 +172,7 @@ struct GameView: View {
         }
         .alert("gameFinish.title", isPresented: $showFinishAlert) {
             Button("gameFinish.newGame.button", role: .cancel) {
-                withAnimation { store.initialGame() }
+                withAnimation { store.createNewGame() }
             }
             Button("gameFinish.viewGame.button") {
                 // TODO: Show the finished game's detail
@@ -187,7 +184,9 @@ struct GameView: View {
 
     private func availability(for quest: QuestViewData) -> QuestAvailability {
         if quest.index == 0 || quest.status != .notStarted { return .started }
-        let previousQuest = store.game.quests[quest.index - 1]
+        guard let previousQuest = store.game.quests.first(where: { $0.index == quest.index - 1 }) else {
+            return .locked
+        }
         if previousQuest.status == .notStarted && quest.status == .notStarted {
             return .locked
         } else {
@@ -199,7 +198,7 @@ struct GameView: View {
         store.startQuest(quest.index)
         withAnimation { store.game.selectedQuestID = quest.id }
 
-        if quest.teams.first != nil {
+        if quest.teams.first(where: { $0.teamIndex == 0 }) != nil {
             newTeam = TeamLocator(questIndex: quest.index, teamIndex: 0)
         }
     }

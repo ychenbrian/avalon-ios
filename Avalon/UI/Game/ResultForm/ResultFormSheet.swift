@@ -104,6 +104,7 @@ struct ResultFormSheet: View {
                         Text("resultForm.clearResult.button")
                     }
                     .font(.headline)
+                    .tint(.red)
                     .foregroundColor(.white)
                     .buttonStyle(.glassProminent)
                 }
