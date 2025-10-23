@@ -15,6 +15,13 @@
 "common.na" = "N/A";
 
 
+// MARK: - Date
+
+"date.today" = "Today";
+"date.tomorrow" = "Tomorrow";
+"date.yesterday" = "Yesterday";
+
+
 // MARK: - Game
 
 "game.namePrefix" = "Game";
@@ -151,3 +158,4 @@
 // MARK: - History View
 
 "historyView.noGamesFound" = "No games found";
+"historyView.title.unfinished" = "Unfinished Game";
