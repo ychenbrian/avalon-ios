@@ -6,6 +6,7 @@ protocol GamesDBRepository {
     func store(games: [DBModel.Game]) async throws
     func getLastUnfinishedGame() async throws -> DBModel.Game?
     func exists(id: PersistentIdentifier) async throws -> Bool
+    func get(id: PersistentIdentifier) async throws -> DBModel.Game?
     func update(with gameData: DBModel.Game) async throws
     func delete(id: PersistentIdentifier) async throws
     func deleteAll() async throws
@@ -44,6 +45,16 @@ extension MainDBRepository: GamesDBRepository {
             return games.contains(where: { $0.persistentModelID == id })
         } catch {
             return false
+        }
+    }
+
+    func get(id: PersistentIdentifier) async throws -> DBModel.Game? {
+        let descriptor = FetchDescriptor<DBModel.Game>()
+        do {
+            let games = try modelContext.fetch(descriptor)
+            return games.first(where: { $0.persistentModelID == id })
+        } catch {
+            return nil
         }
     }
 

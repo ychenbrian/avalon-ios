@@ -56,10 +56,6 @@ final class GameStore {
     }
 
     func validateGame() async {
-        if game.status == .initial {
-            return
-        }
-
         do {
             let exists = try await container.interactors.games.gameExists(game)
             if !exists {
