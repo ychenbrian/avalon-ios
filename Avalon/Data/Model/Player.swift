@@ -13,3 +13,11 @@ final class Player {
         self.index = index
     }
 }
+
+extension Player {
+    func detached() -> Player {
+        Player(
+            index: index
+        )
+    }
+}

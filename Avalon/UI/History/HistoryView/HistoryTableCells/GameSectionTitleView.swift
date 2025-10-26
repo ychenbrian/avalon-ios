@@ -1,12 +1,21 @@
 import SwiftUI
 
-struct DateTitleCell: View {
+struct GameSectionTitleView: View {
     let date: String
+    let count: Int
 
     var body: some View {
-        Text(formattedDate)
-            .font(.headline)
-            .foregroundColor(.primary)
+        HStack {
+            Text(formattedDate)
+                .font(.headline)
+                .foregroundColor(.primary)
+
+            Spacer()
+
+            Text(localizedGameCount())
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
     }
 
     private var formattedDate: String {
@@ -32,11 +41,16 @@ struct DateTitleCell: View {
             return displayFormatter.string(from: isoDate)
         }
     }
+
+    private func localizedGameCount() -> String {
+        let key = count == 1 ? "historyView.title.gameSingular" : "historyView.title.gamePlural"
+        return key.localizedWithArguments(arguments: [count])
+    }
 }
 
 #Preview {
     VStack {
-        DateTitleCell(date: Date().toISOString())
-        DateTitleCell(date: "")
+        GameSectionTitleView(date: Date().toISOString(), count: 5)
+        GameSectionTitleView(date: "", count: 0)
     }
 }

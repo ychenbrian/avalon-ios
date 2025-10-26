@@ -145,7 +145,7 @@ struct GameView: View {
                 onNewGame: {
                     withAnimation {
                         isEditingGame = false
-                        store.createNewGame()
+                        store.createNewGame(resetPlayersToDefault: false)
                     }
                 }
             )

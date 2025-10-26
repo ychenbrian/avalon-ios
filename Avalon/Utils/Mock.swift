@@ -48,10 +48,14 @@ extension Player {
 
 extension DBModel.Game {
     static func empty(
+        startedAt: String? = nil,
+        finishedAt: String? = nil,
         players: [Player] = Player.defaultPlayers(),
-        quests: [DBModel.Quest] = []
+        quests: [DBModel.Quest] = [],
+        result: GameResult? = nil,
+        status: GameStatus? = nil
     ) -> DBModel.Game {
-        .init(players: players, quests: quests)
+        .init(startedAt: startedAt, finishedAt: finishedAt, players: players, quests: quests, status: status, result: result)
     }
 
     static func random(players: [Player] = Player.randomTeam()) -> DBModel.Game {

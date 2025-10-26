@@ -27,18 +27,24 @@ final class GameStore {
         Task {
             if let lastGame = await getLastUnfinishedGame() {
                 game = lastGame
+                players = lastGame.players
             } else {
                 createNewGame()
             }
         }
     }
 
-    func createNewGame() {
+    func createNewGame(resetPlayersToDefault: Bool = true, count: Int? = nil) {
+        if resetPlayersToDefault {
+            let n = count ?? players.count
+            players = Player.defaultPlayers(size: n)
+        } else {
+            players = players.map { $0.detached() }
+        }
+
         game = DBModel.Game.initial(players: players, status: .inProgress)
         game.startedAt = Date().toISOString()
-        Task {
-            await insertGame()
-        }
+        Task { await insertGame() }
     }
 
     func finishGame(_ result: GameResult? = .goodWinByFailedAss) {

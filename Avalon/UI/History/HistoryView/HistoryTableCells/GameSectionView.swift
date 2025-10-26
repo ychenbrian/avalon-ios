@@ -13,7 +13,7 @@ struct GameSectionView: View {
             }
             .onDelete(perform: onDelete)
         } header: {
-            DateTitleCell(date: group.date)
+            GameSectionTitleView(date: group.date, count: group.games.count)
         }
     }
 }

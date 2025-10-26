@@ -44,6 +44,8 @@
 "team.result.approve" = "Approve";
 "team.result.reject" = "Reject";
 
+"game.result.goodWin" = "Good Win";
+"game.result.evilWin" = "Evil Win";
 "game.result.goodWin.assistanationFail" = "Good Win: Assistanation Fail";
 "game.result.evilWin.threeFailedQuests" = "Evil Win: Three Failed Quests";
 "game.result.evilWin.assistanationSuccess" = "Evil Win: Assistanation Success";
@@ -159,3 +161,7 @@
 
 "historyView.noGamesFound" = "No games found";
 "historyView.title.unfinished" = "Unfinished Game";
+"historyView.title.gameSingular" = "%d Game";
+"historyView.title.gamePlural" = "%d Games";
+"historyView.gameCell.numOfPlayer.singular" = "%d Player";
+"historyView.gameCell.numOfPlayer.plural" = "%d Players";

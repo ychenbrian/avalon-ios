@@ -24,7 +24,7 @@ extension DBModel {
             finishedAt: String? = nil,
             players: [Player] = [],
             quests: [Quest] = [],
-            status: GameStatus = .initial,
+            status: GameStatus? = nil,
             result: GameResult? = nil,
             selectedQuestID: UUID? = nil
         ) {
@@ -35,7 +35,7 @@ extension DBModel {
             self.players = players
             let sortedQuests = quests.sorted { $0.index < $1.index }
             self.quests = sortedQuests
-            self.status = status
+            self.status = status ?? .initial
             self.result = result
             if let selectedQuestID {
                 self.selectedQuestID = selectedQuestID

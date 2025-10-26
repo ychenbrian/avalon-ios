@@ -29,6 +29,15 @@ enum GameResult: String, Codable, Equatable, CaseIterable {
         String(localized: String.LocalizationValue(localizationKey))
     }
 
+    var shortText: String {
+        switch self {
+        case .goodWinByFailedAss:
+            return String(localized: "game.result.goodWin")
+        case .evilWinByAssassin, .evilWinByQuest:
+            return String(localized: "game.result.evilWin")
+        }
+    }
+
     init?(displayText: String) {
         self.init(rawValue: Self.allCases.first {
             $0.displayText == displayText
