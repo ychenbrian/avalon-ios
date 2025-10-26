@@ -4,10 +4,10 @@ import SwiftUI
 
 @Observable
 final class GameGroupViewData {
-    var games: [AvalonGame] = []
+    var games: [DBModel.Game] = []
     var date: String
 
-    init(games: [AvalonGame], date: String) {
+    init(games: [DBModel.Game], date: String) {
         self.games = games
         self.date = date
     }

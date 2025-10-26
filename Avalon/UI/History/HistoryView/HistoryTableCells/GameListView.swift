@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct GroupedGameListView: View {
-    let games: [AvalonGame]
+    let games: [DBModel.Game]
     @Binding var navigationPath: NavigationPath
     let routingState: HistoryView.Routing
     let routingBinding: Binding<HistoryView.Routing>
@@ -22,7 +22,7 @@ struct GroupedGameListView: View {
         .refreshable {
             onRefresh()
         }
-        .navigationDestination(for: AvalonGame.self) { _ in
+        .navigationDestination(for: DBModel.Game.self) { _ in
             // TODO: navigate to game details screen
         }
         .onChange(of: routingState.gameID, initial: true) { _, gameID in
@@ -42,7 +42,7 @@ struct GroupedGameListView: View {
         let formatter = ISO8601DateFormatter()
         let calendar = Calendar.current
 
-        var groups: [String: [AvalonGame]] = [:]
+        var groups: [String: [DBModel.Game]] = [:]
 
         for game in games {
             let key: String

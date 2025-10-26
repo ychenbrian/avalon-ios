@@ -3,7 +3,7 @@ import SwiftUI
 @MainActor
 @Observable
 final class GameStore {
-    var game: GameViewData
+    var game: DBModel.Game
     var players: [Player]
     private let container: DIContainer
     private var saveTask: Task<Void, Never>?
@@ -11,15 +11,15 @@ final class GameStore {
     init(players: [Player], container: DIContainer) {
         self.players = players
         self.container = container
-        game = GameViewData(game: AvalonGame.initial(players: players))
+        game = DBModel.Game.initial(players: players)
         initialGame()
     }
 
-    func quest(id: UUID) -> QuestViewData? {
-        return game.quests.first(where: { $0.id == id })
+    func quest(id: UUID) -> DBModel.Quest? {
+        return game.sortedQuests.first(where: { $0.id == id })
     }
 
-    func team(id: UUID, in questID: UUID) -> TeamViewData? { quest(id: questID)?.teams.first(where: { $0.id == id }) }
+    func team(id: UUID, in questID: UUID) -> DBModel.Team? { quest(id: questID)?.sortedTeams.first(where: { $0.id == id }) }
 
     // MARK: - Game Lifecycle
 
@@ -34,7 +34,7 @@ final class GameStore {
     }
 
     func createNewGame() {
-        game = GameViewData(game: AvalonGame.initial(players: players, status: .inProgress))
+        game = DBModel.Game.initial(players: players, status: .inProgress)
         game.startedAt = Date().toISOString()
         Task {
             await insertGame()
@@ -51,10 +51,6 @@ final class GameStore {
 
     func validateGame() async {
         if game.status == .initial {
-            return
-        }
-        guard game.persistentModelID != nil else {
-            createNewGame()
             return
         }
 
@@ -86,8 +82,8 @@ final class GameStore {
 
     func startQuest(_ index: Int) {
         modifyAndSave {
-            game.quests.first(where: { $0.index == index })?.status = .inProgress
-            game.quests.first(where: { $0.index == index })?.teams.first(where: { $0.teamIndex == 0 })?.status = .inProgress
+            game.sortedQuests.first(where: { $0.index == index })?.status = .inProgress
+            game.sortedQuests.first(where: { $0.index == index })?.sortedTeams.first(where: { $0.teamIndex == 0 })?.status = .inProgress
         }
     }
 
@@ -125,7 +121,7 @@ final class GameStore {
     func finishTeam(questID: UUID, teamID: UUID) {
         modifyAndSave {
             team(id: teamID, in: questID)?.status = .finished
-            let selectedTeam = team(id: teamID, in: questID) ?? TeamViewData(roundIndex: 0, teamIndex: 0)
+            let selectedTeam = team(id: teamID, in: questID) ?? DBModel.Team(roundIndex: 0, teamIndex: 0)
             let approvedCount = Set(selectedTeam.votesByVoter.compactMap { $0.value == .approve ? $0.key : nil }).count
             let rejectedCount = Set(selectedTeam.votesByVoter.compactMap { $0.value == .reject ? $0.key : nil }).count
 
@@ -138,7 +134,7 @@ final class GameStore {
     func updateQuestResult(questID: UUID, failCount: Int) -> Bool {
         modifyAndSave {
             quest(id: questID)?.status = .finished
-            let result = ResultViewData(failCount: failCount)
+            let result = DBModel.QuestResult(failCount: failCount)
             if failCount >= quest(id: questID)?.requiredFails ?? 1 {
                 result.type = .fail
             } else {
@@ -161,7 +157,7 @@ final class GameStore {
     // MARK: - Private Helper
 
     private func checkGameFinish() -> Bool {
-        let quests = game.quests
+        let quests = game.sortedQuests
         let successCount = quests.filter { $0.result?.type == .success }.count
         let failCount = quests.filter { $0.result?.type == .fail }.count
 
@@ -197,7 +193,7 @@ final class GameStore {
         try? await container.interactors.games.insertGame(game)
     }
 
-    private func getLastUnfinishedGame() async -> GameViewData? {
+    private func getLastUnfinishedGame() async -> DBModel.Game? {
         return try? await container.interactors.games.getLastUnfinishedGame()
     }
 

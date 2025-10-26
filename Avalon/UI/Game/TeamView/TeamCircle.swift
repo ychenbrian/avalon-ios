@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct TeamCircle: View {
-    @Bindable var team: TeamViewData
+    @Bindable var team: DBModel.Team
     var isSelected: Bool
 
     var body: some View {
@@ -55,7 +55,7 @@ struct TeamCircle: View {
 #Preview {
     HStack {
         ForEach(0 ..< 5) { i in
-            let team = TeamViewData(team: Team.random(roundIndex: 0, teamIndex: i), players: Player.defaultPlayers())
+            let team = DBModel.Team.random(roundIndex: 0, teamIndex: i)
             TeamCircle(team: team, isSelected: [true, false].randomElement()!)
         }
     }

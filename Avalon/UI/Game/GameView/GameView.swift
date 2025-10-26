@@ -26,7 +26,7 @@ struct GameView: View {
                 VStack(alignment: .leading) {
                     ScrollView(.horizontal) {
                         HStack(spacing: 8) {
-                            ForEach(store.game.quests ?? []) { quest in
+                            ForEach(store.game.sortedQuests) { quest in
                                 QuestCircle(quest: quest, isSelected: selectedQuestID == quest.id)
                                     .contentShape(Rectangle())
                                     .onTapGesture {
@@ -56,7 +56,7 @@ struct GameView: View {
                 }
             }
             .padding()
-            .navigationTitle(store.game.name.isEmpty == true ? String(localized: "game.untitledGame") : store.game.name ?? "")
+            .navigationTitle(store.game.name.isEmpty == true ? String(localized: "game.untitledGame") : store.game.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -177,7 +177,7 @@ struct GameView: View {
         }
     }
 
-    private func availability(for quest: QuestViewData) -> QuestAvailability {
+    private func availability(for quest: DBModel.Quest) -> QuestAvailability {
         if quest.index == 0 || quest.status != .notStarted { return .started }
         guard let previousQuest = store.game.quests.first(where: { $0.index == quest.index - 1 }) else {
             return .locked
@@ -189,7 +189,7 @@ struct GameView: View {
         }
     }
 
-    private func startQuestFlow(from quest: QuestViewData) {
+    private func startQuestFlow(from quest: DBModel.Quest) {
         store.startQuest(quest.index)
         withAnimation { store.game.selectedQuestID = quest.id }
 

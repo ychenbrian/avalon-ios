@@ -5,7 +5,12 @@ import SwiftUI
 struct HistoryView: View {
     @Environment(\.modelContext) private var ctx
 
-    @State private var games: [AvalonGame] = []
+    @Query(
+        filter: #Predicate<DBModel.Game> { _ in true },
+        sort: \.startedAt
+    ) private var dbGames: [DBModel.Game]
+
+    @State private var games: [DBModel.Game] = []
     @State private(set) var gamesState: Loadable<Void>
     @State private var canRequestPushPermission: Bool = false
     @State var navigationPath = NavigationPath()
@@ -23,10 +28,11 @@ struct HistoryView: View {
     var body: some View {
         NavigationStack(path: $navigationPath) {
             content
-                .query(searchText: "", results: $games) { _ in
-                    Query(filter: #Predicate<AvalonGame> { _ in
-                        return true
-                    }, sort: \AvalonGame.startedAt)
+                .onAppear {
+                    games = dbGames
+                }
+                .onChange(of: dbGames) {
+                    games = dbGames
                 }
                 .navigationTitle("History")
                 .toolbar {
@@ -114,7 +120,7 @@ private extension HistoryView {
                 let game = games[index]
                 do {
                     try await injected.interactors.games.deleteGame(
-                        GameViewData(game: game)
+                        game
                     )
                     games.removeAll { $0.id == game.id }
                 } catch {
@@ -130,7 +136,7 @@ private extension HistoryView {
                 let game = group.games[index]
                 do {
                     try await injected.interactors.games.deleteGame(
-                        GameViewData(game: game)
+                        game
                     )
                     games.removeAll { $0.id == game.id }
                 } catch {

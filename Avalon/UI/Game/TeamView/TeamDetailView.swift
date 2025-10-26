@@ -10,7 +10,7 @@ struct TeamDetailView: View {
     @State private var isGameFinish = false
     @State private var activeAlert: TeamDetailAlert?
 
-    private var team: TeamViewData? { store.team(id: teamID, in: questID) }
+    private var team: DBModel.Team? { store.team(id: teamID, in: questID) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -29,7 +29,7 @@ struct TeamDetailView: View {
                 Text("teamDetail.proposedTeam.label")
                     .font(.headline)
                     .foregroundColor(.primary)
-                if let members = team?.members.sorted(by: { $0.index < $1.index }), !members.isEmpty {
+                if let members = team?.sortedMembers, !members.isEmpty {
                     HStack(spacing: 6) {
                         ForEach(members, id: \.id) { player in
                             overlayForPlayer(player)

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct QuestCircle: View {
-    @Bindable var quest: QuestViewData
+    @Bindable var quest: DBModel.Quest
     var isSelected: Bool
 
     var body: some View {
@@ -63,7 +63,7 @@ struct QuestCircle: View {
 #Preview {
     HStack {
         ForEach(0 ..< 5) { i in
-            let quest = QuestViewData(quest: Quest.random(index: i), players: Player.defaultPlayers())
+            let quest = DBModel.Quest.random(index: i)
             QuestCircle(quest: quest, isSelected: [true, false].randomElement()!)
         }
     }

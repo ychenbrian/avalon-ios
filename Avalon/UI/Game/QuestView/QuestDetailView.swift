@@ -4,7 +4,7 @@ struct QuestDetailView: View {
     @Environment(GameStore.self) private var store
     let questID: UUID
 
-    private var teams: [TeamViewData] { store.quest(id: questID)?.teams ?? [] }
+    private var teams: [DBModel.Team] { store.quest(id: questID)?.teams ?? [] }
     private var roundIndex: Int { (store.quest(id: questID)?.index ?? 0) + 1 }
     private var selectedTeamID: UUID? { store.quest(id: questID)?.selectedTeamID }
 
@@ -18,7 +18,7 @@ struct QuestDetailView: View {
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
                     if let quest = store.quest(id: questID) {
-                        ForEach(quest.teams) { team in
+                        ForEach(quest.sortedTeams) { team in
                             TeamCircle(team: team, isSelected: selectedTeamID == team.id)
                                 .onTapGesture { store.quest(id: questID)?.selectedTeamID = team.id }
                         }

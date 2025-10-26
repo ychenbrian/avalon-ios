@@ -44,30 +44,30 @@ extension Player {
     }
 }
 
-// MARK: - AvalonGame
+// MARK: - Game
 
-extension AvalonGame {
+extension DBModel.Game {
     static func empty(
         players: [Player] = Player.defaultPlayers(),
-        quests: [Quest] = []
-    ) -> AvalonGame {
+        quests: [DBModel.Quest] = []
+    ) -> DBModel.Game {
         .init(players: players, quests: quests)
     }
 
-    static func random(players: [Player] = Player.randomTeam()) -> AvalonGame {
-        .init(players: players, quests: Quest.randomQuests(for: players))
+    static func random(players: [Player] = Player.randomTeam()) -> DBModel.Game {
+        .init(players: players, quests: DBModel.Quest.randomQuests(for: players))
     }
 
     static func initial(
         players: [Player] = Player.defaultPlayers(),
         status: GameStatus = .initial
-    ) -> AvalonGame {
+    ) -> DBModel.Game {
         let quests = [
-            Quest.initial(index: 0, numOfPlayers: players.count, status: .inProgress),
-            Quest.initial(index: 1, numOfPlayers: players.count),
-            Quest.initial(index: 2, numOfPlayers: players.count),
-            Quest.initial(index: 3, numOfPlayers: players.count),
-            Quest.initial(index: 4, numOfPlayers: players.count),
+            DBModel.Quest.initial(index: 0, numOfPlayers: players.count, status: .inProgress),
+            DBModel.Quest.initial(index: 1, numOfPlayers: players.count),
+            DBModel.Quest.initial(index: 2, numOfPlayers: players.count),
+            DBModel.Quest.initial(index: 3, numOfPlayers: players.count),
+            DBModel.Quest.initial(index: 4, numOfPlayers: players.count),
         ]
         return .init(players: players, quests: quests, status: status)
     }
@@ -75,17 +75,17 @@ extension AvalonGame {
 
 // MARK: - Team
 
-extension Team {
+extension DBModel.Team {
     static func empty(
         roundIndex: Int,
         teamIndex: Int
-    ) -> Team {
-        Team(
+    ) -> DBModel.Team {
+        DBModel.Team(
             roundIndex: roundIndex,
             teamIndex: teamIndex,
             status: .notStarted,
-            leaderID: nil,
-            memberIDs: [],
+            leader: nil,
+            members: [],
             votesByVoter: [:],
             result: nil
         )
@@ -98,24 +98,24 @@ extension Team {
         players: [Player] = Player.defaultPlayers(),
         status: TeamStatus? = nil,
         result: TeamResult? = nil
-    ) -> Team {
-        let leader = players.randomElement()?.id
-        let team = Player.randomTeam(size: teamSize, from: players).map(\.id)
+    ) -> DBModel.Team {
+        let leader = players.randomElement()
+        let members = Player.randomTeam(size: teamSize, from: players)
 
         var votes: [PlayerID: VoteType] = [:]
-        for p in players {
-            votes[p.id] = Bool.random() ? .approve : .reject
+        for player in players {
+            votes[player.id] = Bool.random() ? .approve : .reject
         }
 
         let teamVoteStatus = status ?? TeamStatus.random()
         let result = result ?? TeamResult.random()
 
-        let teamVote = Team(
+        let teamVote = DBModel.Team(
             roundIndex: roundIndex,
             teamIndex: teamIndex,
             status: teamVoteStatus,
-            leaderID: leader,
-            memberIDs: team,
+            leader: leader,
+            members: members,
             votesByVoter: votes,
             result: result
         )
@@ -126,7 +126,7 @@ extension Team {
     static func emptyTeams(
         roundIndex: Int,
         totalCount: Int = GameRules.teamsPerQuest
-    ) -> [Team] {
+    ) -> [DBModel.Team] {
         (0 ..< totalCount).map { .empty(roundIndex: roundIndex, teamIndex: $0) }
     }
 
@@ -135,7 +135,7 @@ extension Team {
         finishedIndex: Int = Int.random(in: 0 ... GameRules.teamsPerQuest),
         players: [Player] = Player.defaultPlayers(),
         count: Int = GameRules.teamsPerQuest
-    ) -> [Team] {
+    ) -> [DBModel.Team] {
         (0 ..< count).map {
             if $0 < finishedIndex {
                 return .random(roundIndex: roundIndex, teamIndex: $0, players: players, status: .finished, result: .random(isApproved: false))
@@ -149,24 +149,24 @@ extension Team {
 
 // MARK: - Quest
 
-extension Quest {
+extension DBModel.Quest {
     static func empty(
         index: Int,
         numOfPlayers: Int,
         status: QuestStatus = .notStarted,
-        teams: [Team] = Team.emptyTeams(roundIndex: 0),
-        quest: QuestResult? = nil
-    ) -> Quest {
-        return .init(index: index, numOfPlayers: numOfPlayers, status: status, result: quest, teams: teams)
+        teams: [DBModel.Team] = DBModel.Team.emptyTeams(roundIndex: 0),
+        result: DBModel.QuestResult? = nil
+    ) -> DBModel.Quest {
+        return .init(index: index, numOfPlayers: numOfPlayers, status: status, result: result, teams: teams)
     }
 
     static func initial(
         index: Int,
         numOfPlayers: Int,
         status: QuestStatus = .notStarted,
-        teams: [Team] = Team.emptyTeams(roundIndex: 0),
-        quest: QuestResult? = nil
-    ) -> Quest {
+        teams: [DBModel.Team] = DBModel.Team.emptyTeams(roundIndex: 0),
+        result: DBModel.QuestResult? = nil
+    ) -> DBModel.Quest {
         var teams = teams
         if index == 0 {
             if let firstTeam = teams.first {
@@ -174,44 +174,44 @@ extension Quest {
                 teams[0] = firstTeam
             }
         }
-        return .init(index: index, numOfPlayers: numOfPlayers, status: status, result: quest, teams: teams)
+        return .init(index: index, numOfPlayers: numOfPlayers, status: status, result: result, teams: teams)
     }
 
     static func random(
         index: Int,
         players: [Player] = Player.randomTeam()
-    ) -> Quest {
+    ) -> DBModel.Quest {
         .init(
             index: index,
             numOfPlayers: players.count,
             status: QuestStatus.random(),
-            result: QuestResult.random(),
-            teams: Team.randomTeams(roundIndex: index)
+            result: DBModel.QuestResult.random(),
+            teams: DBModel.Team.randomTeams(roundIndex: index)
         )
     }
 
     static func randomQuests(
         for players: [Player] = Player.defaultPlayers()
-    ) -> [Quest] {
+    ) -> [DBModel.Quest] {
         (0 ..< GameRules.questsPerGame).map { random(index: $0, players: players) }
     }
 
-    static func emptyQuests() -> [Quest] {
+    static func emptyQuests() -> [DBModel.Quest] {
         (0 ..< GameRules.questsPerGame).map { .empty(index: $0, numOfPlayers: Int.random(in: 5 ... 10)) }
     }
 }
 
-// MARK: - Result
+// MARK: - QuestResult
 
-extension QuestResult {
+extension DBModel.QuestResult {
     static func empty(
         type: ResultType = .success,
         failVotes: Int = 0
-    ) -> QuestResult {
+    ) -> DBModel.QuestResult {
         .init(type: type, failCount: failVotes)
     }
 
-    static func random() -> QuestResult {
+    static func random() -> DBModel.QuestResult {
         let failVotes = Int.random(in: 0 ... 4)
         return .init(
             type: ResultType.random(),

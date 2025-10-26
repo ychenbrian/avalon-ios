@@ -2,7 +2,7 @@ import SwiftUI
 
 enum GameViewAlert: Identifiable {
     case cannotStart
-    case confirmStart(quest: QuestViewData)
+    case confirmStart(quest: DBModel.Quest)
 
     var id: String {
         switch self {

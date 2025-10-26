@@ -7,7 +7,7 @@ extension Schema {
 
     static var appSchema: Schema {
         Schema([
-            AvalonGame.self,
+            DBModel.Game.self,
         ], version: actualVersion)
     }
 }

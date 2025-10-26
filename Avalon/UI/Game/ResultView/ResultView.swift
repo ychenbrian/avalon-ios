@@ -4,7 +4,7 @@ struct ResultView: View {
     @Environment(GameStore.self) private var store
     let questID: UUID
 
-    private var quest: QuestViewData? { store.quest(id: questID) }
+    private var quest: DBModel.Quest? { store.quest(id: questID) }
 
     var body: some View {
         VStack {
