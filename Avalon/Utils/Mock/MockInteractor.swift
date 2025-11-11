@@ -3,7 +3,7 @@ import Foundation
 final class MockGamesInteractor: GamesInteractor {
     private var store: DBModel.Game
 
-    init(seed: DBModel.Game) { store = seed }
+    init(seed: DBModel.Game = .empty()) { store = seed }
 
     func getGame(_: DBModel.Game) async throws -> DBModel.Game? { store }
     func gameExists(_: DBModel.Game) async throws -> Bool { return true }
