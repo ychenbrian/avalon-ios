@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct TeamDetailView: View {
-    @EnvironmentObject var store: GamePresenter
+    @EnvironmentObject var presenter: GamePresenter
     let questID: UUID
     let teamID: UUID
 
@@ -10,7 +10,7 @@ struct TeamDetailView: View {
     @State private var isGameFinish = false
     @State private var activeAlert: TeamDetailAlert?
 
-    private var team: DBModel.Team? { store.team(id: teamID, in: questID) }
+    private var team: DBModel.Team? { presenter.team(id: teamID, in: questID) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -57,7 +57,7 @@ struct TeamDetailView: View {
             }
             HStack {
                 Button {
-                    if let quest = store.quest(id: questID) {
+                    if let quest = presenter.quest(id: questID) {
                         if quest.status != .finished {
                             isEditingTeam = true
                         } else {
@@ -96,32 +96,47 @@ struct TeamDetailView: View {
             }
         }
         .sheet(isPresented: $isEditingTeam) {
-            if let quest = store.quest(id: questID), let team = store.team(id: teamID, in: questID) {
+            if let quest = presenter.quest(id: questID), let team = presenter.team(id: teamID, in: questID) {
                 TeamFormSheet(
                     questID: questID,
                     teamID: team.id,
                     leader: team.leader,
                     members: team.members,
-                    players: store.players,
+                    players: presenter.players,
                     votesByVoter: team.votesByVoter,
                     requiredTeamSize: quest.requiredTeamSize,
                     showVotes: true,
                     onSave: { questID, teamID, leader, members, votesByVoter in
-                        Task {
-                            await store.updateTeam(questID: questID, teamID: teamID, leader: leader, members: members, votesByVoter: votesByVoter)
-                            await store.finishTeam(questID: questID, teamID: teamID)
-                        }
-                        withAnimation {
-                            isEditingTeam = false
-                            if store.team(id: teamID, in: questID)?.result?.isApproved == true {
-                                isEditingResult = true
-                            } else {
-                                let teamIndex = store.team(id: teamID, in: questID)?.teamIndex ?? 0
-                                if teamIndex + 1 < GameRules.teamsPerQuest, let nextTeam = store.quest(id: questID)?.teams[teamIndex + 1] {
-                                    Task {
-                                        await store.startTeam(questID: questID, teamID: nextTeam.id)
-                                    }
+                        Task { @MainActor in
+                            await presenter.updateTeam(
+                                questID: questID,
+                                teamID: teamID,
+                                leader: leader,
+                                members: members,
+                                votesByVoter: votesByVoter
+                            )
+                            await presenter.finishTeam(questID: questID, teamID: teamID)
+
+                            let team = presenter.team(id: teamID, in: questID)
+                            let isApproved = team?.result?.isApproved == true
+
+                            let nextTeamID: UUID? = {
+                                guard !isApproved else { return nil }
+                                let idx = team?.teamIndex ?? 0
+                                guard idx + 1 < GameRules.teamsPerQuest,
+                                      let next = presenter.quest(id: questID)?.sortedTeams[idx + 1] else { return nil }
+                                return next.id
+                            }()
+
+                            withAnimation {
+                                isEditingTeam = false
+                                if isApproved {
+                                    isEditingResult = true
                                 }
+                            }
+
+                            if let nextTeamID {
+                                await presenter.startTeam(questID: questID, teamID: nextTeamID)
                             }
                         }
                     },
@@ -133,20 +148,20 @@ struct TeamDetailView: View {
             }
         }
         .sheet(isPresented: $isEditingResult) {
-            if let quest = store.quest(id: questID), let team = store.team(id: teamID, in: questID) {
+            if let quest = presenter.quest(id: questID), let team = presenter.team(id: teamID, in: questID) {
                 ResultFormSheet(
                     questID: questID,
                     teamID: team.id,
                     leader: team.leader,
                     members: team.members,
-                    players: store.players,
+                    players: presenter.players,
                     votesByVoter: team.votesByVoter,
                     teamSize: quest.requiredTeamSize,
                     requiredFails: quest.requiredFails,
                     failCount: quest.result?.failCount,
                     onSave: { questID, failCount in
-                        Task {
-                            let gameFinish = await store.updateQuestResult(questID: questID, failCount: failCount)
+                        Task { @MainActor in
+                            let gameFinish = await presenter.updateQuestResult(questID: questID, failCount: failCount)
                             withAnimation {
                                 isEditingResult = false
                                 if gameFinish {
@@ -159,7 +174,7 @@ struct TeamDetailView: View {
                     onClearResult: {
                         isEditingResult = false
                         Task {
-                            await store.clearQuestResult(questID: questID)
+                            await presenter.clearQuestResult(questID: questID)
                         }
                     }
                 )
@@ -170,7 +185,7 @@ struct TeamDetailView: View {
         }
         .sheet(isPresented: $isGameFinish) {
             GameFinishFormSheet(
-                status: store.game.status,
+                status: presenter.game.status,
                 result: nil,
                 onFinish: { _ in
                     withAnimation {
@@ -207,12 +222,13 @@ struct TeamDetailView: View {
     }
 
     private func playerRows() -> [[Player]] {
-        let total = store.players.count
+        let players = presenter.players.sorted { $0.index < $1.index }
+        let total = players.count
         guard total > 0 else { return [] }
 
         let firstRowCount = Int(ceil(Double(total) / 2.0))
-        let firstRow = Array(store.players.prefix(firstRowCount))
-        let secondRow = Array(store.players.suffix(total - firstRowCount))
+        let firstRow = Array(players.prefix(firstRowCount))
+        let secondRow = Array(players.suffix(total - firstRowCount))
 
         return [firstRow, secondRow]
     }

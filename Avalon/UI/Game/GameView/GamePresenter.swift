@@ -14,7 +14,6 @@ final class GamePresenter: ObservableObject {
     // MARK: - Derived
 
     var selectedQuestID: UUID? { game.selectedQuestID }
-    var isDirty: Bool { game != lastSaved }
 
     // MARK: - Dependencies
 
@@ -66,7 +65,7 @@ final class GamePresenter: ObservableObject {
     }
 
     func save() async {
-        guard isDirty, !isSaving else { return }
+        guard !isSaving else { return }
         isSaving = true
         saveError = nil
         defer { isSaving = false }
@@ -116,8 +115,8 @@ final class GamePresenter: ObservableObject {
     }
 
     func startTeam(questID: UUID, teamID: UUID) async {
-        guard let quest = quest(id: questID), let t = team(id: teamID, in: questID) else { return }
-        t.status = .inProgress
+        guard let quest = quest(id: questID), let team = team(id: teamID, in: questID) else { return }
+        team.status = .inProgress
         quest.selectedTeamID = teamID
         await save()
     }
@@ -213,7 +212,7 @@ final class GamePresenter: ObservableObject {
 extension GamePresenter {
     @MainActor
     static func preview() -> GamePresenter {
-        var game: DBModel.Game = .random()
+        let game: DBModel.Game = .random()
 
         let interactor = MockGamesInteractor(seed: game)
         let presenter = GamePresenter(interactor: interactor)

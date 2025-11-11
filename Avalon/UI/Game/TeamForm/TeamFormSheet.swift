@@ -24,6 +24,10 @@ struct TeamFormSheet: View {
         }
     }
 
+    private func sortedPlayer() -> [Player] {
+        return players.sorted { $0.index < $1.index }
+    }
+
     init(
         questID: UUID,
         teamID: UUID,
@@ -67,7 +71,7 @@ struct TeamFormSheet: View {
                     .padding(.top, 12)
 
                 PlayerGrid(
-                    players: self.players,
+                    players: sortedPlayer(),
                     selected: { draft.leader == $0 },
                     action: { player in
                         draft.leader = player
@@ -84,7 +88,7 @@ struct TeamFormSheet: View {
                     .padding(.top, 8)
 
                 PlayerGrid(
-                    players: self.players,
+                    players: sortedPlayer(),
                     selected: { draft.members.contains($0) },
                     action: { draft.toggleTeamMember($0) }
                 )
@@ -100,7 +104,7 @@ struct TeamFormSheet: View {
                         .padding(.top, 12)
 
                     PlayerGrid(
-                        players: self.players,
+                        players: sortedPlayer(),
                         selectedColor: .green,
                         selected: { draft.votesByVoter[$0.id] == .approve },
                         action: { toggleApprove($0) }
@@ -114,7 +118,7 @@ struct TeamFormSheet: View {
                         .padding(.top, 8)
 
                     PlayerGrid(
-                        players: self.players,
+                        players: sortedPlayer(),
                         selectedColor: .red,
                         selected: { draft.votesByVoter[$0.id] == .reject },
                         action: { toggleReject($0) }
