@@ -10,7 +10,7 @@ struct GameSettingsFormDraft: Equatable {
     }
 
     mutating func setNumberOfPlayers(_ number: Int) {
-        guard GameRules.defaultTeamSizeRange.contains(number) else { return }
+        guard GameRules.numOfPlayerRange.contains(number) else { return }
         updatedNumber = number
     }
 

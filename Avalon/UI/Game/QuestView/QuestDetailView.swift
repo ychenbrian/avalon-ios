@@ -1,12 +1,12 @@
 import SwiftUI
 
 struct QuestDetailView: View {
-    @Environment(GameStore.self) private var store
+    @EnvironmentObject var presenter: GamePresenter
     let questID: UUID
 
-    private var teams: [DBModel.Team] { store.quest(id: questID)?.teams ?? [] }
-    private var roundIndex: Int { (store.quest(id: questID)?.index ?? 0) + 1 }
-    private var selectedTeamID: UUID? { store.quest(id: questID)?.selectedTeamID }
+    private var teams: [DBModel.Team] { presenter.quest(id: questID)?.sortedTeams ?? [] }
+    private var roundIndex: Int { (presenter.quest(id: questID)?.index ?? 0) + 1 }
+    private var selectedTeamID: UUID? { presenter.quest(id: questID)?.selectedTeamID }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -17,16 +17,16 @@ struct QuestDetailView: View {
 
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
-                    if let quest = store.quest(id: questID) {
+                    if let quest = presenter.quest(id: questID) {
                         ForEach(quest.sortedTeams) { team in
                             TeamCircle(team: team, isSelected: selectedTeamID == team.id)
-                                .onTapGesture { store.quest(id: questID)?.selectedTeamID = team.id }
+                                .onTapGesture { presenter.quest(id: questID)?.selectedTeamID = team.id }
                         }
                     }
                 }
             }
 
-            if store.quest(id: questID)?.result?.type != nil {
+            if presenter.quest(id: questID)?.result?.type != nil {
                 ResultView(questID: questID)
             }
 
@@ -39,7 +39,7 @@ struct QuestDetailView: View {
         .onAppear { selectFirstIfNeeded() }
         .onChange(of: teams.map(\.id)) {
             if let selected = selectedTeamID, !teams.contains(where: { $0.id == selected }) {
-                store.quest(id: questID)?.selectedTeamID = nil
+                presenter.quest(id: questID)?.selectedTeamID = nil
             }
             selectFirstIfNeeded()
         }
@@ -47,16 +47,16 @@ struct QuestDetailView: View {
 
     private func selectFirstIfNeeded() {
         if selectedTeamID == nil, let first = teams.first?.id {
-            store.quest(id: questID)?.selectedTeamID = first
+            presenter.quest(id: questID)?.selectedTeamID = first
         }
     }
 }
 
 #Preview {
-    let container = DIContainer.preview
-    let store = GameStore(players: Player.randomTeam(), container: container)
-    QuestDetailView(questID: store.game.quests[0].id)
-        .environment(store)
-        .padding()
+    let presenter = GamePresenter.preview()
+    let questID = presenter.game.sortedQuests.first?.id ?? UUID()
+    return QuestDetailView(questID: questID)
+        .environmentObject(presenter)
         .frame(maxWidth: 600)
+        .padding()
 }

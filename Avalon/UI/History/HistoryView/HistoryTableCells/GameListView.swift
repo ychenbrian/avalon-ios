@@ -22,8 +22,8 @@ struct GroupedGameListView: View {
         .refreshable {
             onRefresh()
         }
-        .navigationDestination(for: DBModel.Game.self) { _ in
-            // TODO: navigate to game details screen
+        .navigationDestination(for: DBModel.Game.self) { game in
+            GameDetails(game: game)
         }
         .onChange(of: routingState.gameID, initial: true) { _, gameID in
             guard let gameID,

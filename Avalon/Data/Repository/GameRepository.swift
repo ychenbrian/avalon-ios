@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 protocol GamesDBRepository {
-    func insert(game: DBModel.Game) async throws -> PersistentIdentifier
+    func insert(game: DBModel.Game) async throws -> DBModel.Game
     func store(games: [DBModel.Game]) async throws
     func getLastUnfinishedGame() async throws -> DBModel.Game?
     func exists(id: PersistentIdentifier) async throws -> Bool
@@ -13,12 +13,10 @@ protocol GamesDBRepository {
 }
 
 extension MainDBRepository: GamesDBRepository {
-    func insert(game: DBModel.Game) async throws -> PersistentIdentifier {
-        try modelContext.transaction {
-            modelContext.insert(game)
-        }
-
-        return game.persistentModelID
+    func insert(game: DBModel.Game) async throws -> DBModel.Game {
+        modelContext.insert(game)
+        try modelContext.save()
+        return game
     }
 
     func store(games: [DBModel.Game]) async throws {

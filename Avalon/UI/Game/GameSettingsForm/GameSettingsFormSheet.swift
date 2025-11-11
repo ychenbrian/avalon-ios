@@ -35,7 +35,7 @@ struct GameSettingsFormSheet: View {
                     .foregroundStyle(.primary)
 
                 NumberRadioGroup(
-                    range: GameRules.defaultTeamSizeRange,
+                    range: GameRules.numOfPlayerRange,
                     selected: { number in
                         number == draft.updatedNumber
                     },

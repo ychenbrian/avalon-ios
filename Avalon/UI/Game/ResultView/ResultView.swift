@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ResultView: View {
-    @Environment(GameStore.self) private var store
+    @EnvironmentObject var store: GamePresenter
     let questID: UUID
 
     private var quest: DBModel.Quest? { store.quest(id: questID) }
@@ -69,9 +69,8 @@ struct ResultView: View {
 
 #Preview {
     let container = DIContainer.preview
-    let store = GameStore(players: Player.randomTeam(), container: container)
-    ResultView(questID: store.game.quests.first?.id ?? UUID())
-        .environment(store)
+    let presenter = GamePresenter(interactor: container.interactors.games)
+    ResultView(questID: presenter.game.quests.first?.id ?? UUID())
         .padding()
         .frame(maxWidth: 600)
 }

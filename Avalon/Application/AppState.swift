@@ -9,7 +9,9 @@ struct AppState: Equatable {
 
 extension AppState {
     struct ViewRouting: Equatable {
-        var gameHistory = HistoryView.Routing()
+        var gameView = GameView.Routing()
+        var historyView = HistoryView.Routing()
+        var gameDetails = GameDetails.Routing()
     }
 }
 

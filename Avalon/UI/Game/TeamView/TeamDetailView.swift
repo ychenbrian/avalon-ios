@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct TeamDetailView: View {
-    @Environment(GameStore.self) private var store
+    @EnvironmentObject var store: GamePresenter
     let questID: UUID
     let teamID: UUID
 
@@ -107,8 +107,10 @@ struct TeamDetailView: View {
                     requiredTeamSize: quest.requiredTeamSize,
                     showVotes: true,
                     onSave: { questID, teamID, leader, members, votesByVoter in
-                        store.updateTeam(questID: questID, teamID: teamID, leader: leader, members: members, votesByVoter: votesByVoter)
-                        store.finishTeam(questID: questID, teamID: teamID)
+                        Task {
+                            await store.updateTeam(questID: questID, teamID: teamID, leader: leader, members: members, votesByVoter: votesByVoter)
+                            await store.finishTeam(questID: questID, teamID: teamID)
+                        }
                         withAnimation {
                             isEditingTeam = false
                             if store.team(id: teamID, in: questID)?.result?.isApproved == true {
@@ -116,7 +118,9 @@ struct TeamDetailView: View {
                             } else {
                                 let teamIndex = store.team(id: teamID, in: questID)?.teamIndex ?? 0
                                 if teamIndex + 1 < GameRules.teamsPerQuest, let nextTeam = store.quest(id: questID)?.teams[teamIndex + 1] {
-                                    store.startTeam(questID: questID, teamID: nextTeam.id)
+                                    Task {
+                                        await store.startTeam(questID: questID, teamID: nextTeam.id)
+                                    }
                                 }
                             }
                         }
@@ -141,19 +145,23 @@ struct TeamDetailView: View {
                     requiredFails: quest.requiredFails,
                     failCount: quest.result?.failCount,
                     onSave: { questID, failCount in
-                        let gameFinish = store.updateQuestResult(questID: questID, failCount: failCount)
-                        withAnimation {
-                            isEditingResult = false
-                            if gameFinish {
-                                isGameFinish = true
+                        Task {
+                            let gameFinish = await store.updateQuestResult(questID: questID, failCount: failCount)
+                            withAnimation {
+                                isEditingResult = false
+                                if gameFinish {
+                                    isGameFinish = true
+                                }
                             }
                         }
                     },
                     onCancel: { withAnimation { isEditingResult = false } },
-                    onClearResult: { withAnimation {
+                    onClearResult: {
                         isEditingResult = false
-                        store.clearQuestResult(questID: questID)
-                    } }
+                        Task {
+                            await store.clearQuestResult(questID: questID)
+                        }
+                    }
                 )
                 .presentationDetents([.medium])
             } else {
@@ -212,10 +220,10 @@ struct TeamDetailView: View {
 
 #Preview {
     let container = DIContainer.preview
-    let store = GameStore(players: Player.randomTeam(), container: container)
-    let quest = store.game.quests[0]
+    let presenter = GamePresenter.preview()
+    let quest = presenter.game.quests[0]
     TeamDetailView(questID: quest.id, teamID: quest.teams.first?.id ?? UUID())
-        .environment(store)
+        .environmentObject(presenter)
         .padding()
         .frame(maxWidth: 600)
 }

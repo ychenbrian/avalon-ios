@@ -3,7 +3,7 @@ import SwiftData
 import SwiftUI
 
 struct HistoryView: View {
-    @Environment(\.modelContext) private var ctx
+    @Environment(\.modelContext) private var context
 
     @Query(
         filter: #Predicate<DBModel.Game> { _ in true },
@@ -16,7 +16,7 @@ struct HistoryView: View {
     @State var navigationPath = NavigationPath()
     @State private var routingState: Routing = .init()
     private var routingBinding: Binding<Routing> {
-        $routingState.dispatched(to: injected.appState, \.routing.gameHistory)
+        $routingState.dispatched(to: injected.appState, \.routing.historyView)
     }
 
     @Environment(\.injected) private var injected: DIContainer
@@ -159,7 +159,7 @@ extension HistoryView {
 
 private extension HistoryView {
     private var routingUpdate: AnyPublisher<Routing, Never> {
-        injected.appState.updates(for: \.routing.gameHistory)
+        injected.appState.updates(for: \.routing.historyView)
     }
 
     private var canRequestPushPermissionUpdate: AnyPublisher<Bool, Never> {

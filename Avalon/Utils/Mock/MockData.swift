@@ -13,13 +13,13 @@ extension Player {
 
     /// Returns a random team from the given pool.
     /// - Parameters:
-    ///   - size: Team size; defaults to a random size within `GameRules.defaultTeamSizeRange`.
+    ///   - size: Team size; defaults to a random size within `GameRules.teamSizeRange`.
     ///   - players: Player pool to draw from.
     static func randomTeam(
         size: Int? = nil,
         from players: [Player] = defaultPlayers()
     ) -> [Player] {
-        let teamSize = size ?? Int.random(in: GameRules.defaultTeamSizeRange)
+        let teamSize = size ?? Int.random(in: GameRules.teamSizeRange)
         precondition(teamSize >= 0 && teamSize <= players.count, "Invalid team size: \(teamSize)")
         return Array(players.shuffled().prefix(teamSize))
     }

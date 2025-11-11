@@ -1,3 +1,4 @@
+import Combine
 import Observation
 import SwiftUI
 
@@ -10,7 +11,16 @@ private struct TeamLocator: Identifiable, Equatable {
 }
 
 struct GameView: View {
-    @Environment(GameStore.self) private var store
+    @Environment(\.injected) private var injected: DIContainer
+
+    private var gameState: Loadable<Void> { presenter.gameState }
+    @State var navigationPath = NavigationPath()
+    @State private var routingState: Routing = .init()
+    private var routingBinding: Binding<Routing> {
+        $routingState.dispatched(to: injected.appState, \.routing.gameView)
+    }
+
+    @Environment(\.modelContext) private var context
 
     @State private var activeAlert: GameViewAlert?
     @State private var newTeam: TeamLocator?
@@ -18,68 +28,41 @@ struct GameView: View {
     @State private var isGameFinish = false
     @State private var showFinishAlert = false
 
-    private var selectedQuestID: UUID? { store.game.selectedQuestID }
+    @StateObject private var presenter: GamePresenter
+
+    init(interactor: GamesInteractor) {
+        _presenter = StateObject(wrappedValue: GamePresenter(interactor: interactor))
+    }
+
+    init(presenter: GamePresenter) {
+        _presenter = StateObject(wrappedValue: presenter)
+    }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading) {
-                    ScrollView(.horizontal) {
-                        HStack(spacing: 8) {
-                            ForEach(store.game.sortedQuests) { quest in
-                                QuestCircle(quest: quest, isSelected: selectedQuestID == quest.id)
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        let status = availability(for: quest)
-                                        switch status {
-                                        case .locked:
-                                            activeAlert = .cannotStart
-                                        case .next:
-                                            activeAlert = .confirmStart(quest: quest)
-                                        case .started:
-                                            withAnimation { store.game.selectedQuestID = quest.id }
-                                        }
-                                    }
-                            }
+        NavigationStack(path: $navigationPath) {
+            content
+                .task { await presenter.loadIfNeeded() }
+                .padding()
+                .navigationTitle(presenter.game.name.isEmpty == true ? String(localized: "game.untitledGame") : presenter.game.name)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            isEditingGame = true
+                        } label: {
+                            Label("gameView.toolbar.editGame", systemImage: "pencil")
                         }
                     }
-
-                    if let id = selectedQuestID, let quest = store.quest(id: id) {
-                        QuestDetailView(questID: quest.id)
-                    } else {
-                        ContentUnavailableView(
-                            "gameView.unavailable.title",
-                            systemImage: "train.side.front.car",
-                            description: Text("gameView.unavailable.description")
-                        )
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            isGameFinish = true
+                        } label: {
+                            Label("gameView.toolbar.startAssistanation", systemImage: "drop.fill")
+                        }
                     }
                 }
-            }
-            .padding()
-            .navigationTitle(store.game.name.isEmpty == true ? String(localized: "game.untitledGame") : store.game.name)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        isEditingGame = true
-                    } label: {
-                        Label("gameView.toolbar.editGame", systemImage: "pencil")
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        isGameFinish = true
-                    } label: {
-                        Label("gameView.toolbar.startAssistanation", systemImage: "drop.fill")
-                    }
-                }
-            }
         }
-        .onAppear {
-            Task {
-                await store.validateGame()
-            }
-        }
+        .environmentObject(presenter)
         .alert(item: $activeAlert) { route in
             switch route {
             case .cannotStart:
@@ -106,7 +89,7 @@ struct GameView: View {
             let rIdx = key.questIndex
             let tIdx = key.teamIndex
 
-            if let quest = store.game.quests.first(where: { $0.index == rIdx }),
+            if let quest = presenter.game.quests.first(where: { $0.index == rIdx }),
                let team = quest.teams.first(where: { $0.teamIndex == tIdx })
             {
                 TeamFormSheet(
@@ -114,12 +97,14 @@ struct GameView: View {
                     teamID: team.id,
                     leader: team.leader,
                     members: team.members,
-                    players: store.players,
+                    players: presenter.players,
                     votesByVoter: team.votesByVoter,
                     requiredTeamSize: quest.requiredTeamSize,
                     onSave: { questID, teamID, leader, members, votesByVoter in
-                        store.updateTeam(questID: questID, teamID: teamID, leader: leader, members: members, votesByVoter: votesByVoter)
-                        withAnimation { newTeam = nil }
+                        Task { @MainActor in
+                            await presenter.updateTeam(questID: questID, teamID: teamID, leader: leader, members: members, votesByVoter: votesByVoter)
+                            withAnimation { newTeam = nil }
+                        }
                     },
                     onCancel: { withAnimation { newTeam = nil } }
                 )
@@ -130,22 +115,24 @@ struct GameView: View {
         }
         .sheet(isPresented: $isEditingGame) {
             GameSettingsFormSheet(
-                gameName: store.game.name,
-                numOfPlayers: store.players.count,
+                gameName: presenter.game.name,
+                numOfPlayers: presenter.players.count,
                 onSave: { numOfPlayers, gameName in
-                    withAnimation {
-                        isEditingGame = false
+                    Task { @MainActor in
+                        withAnimation {
+                            isEditingGame = false
+                        }
+                        if let number = numOfPlayers {
+                            await presenter.updateNumOfPlayers(number)
+                        }
+                        await presenter.updateGameDetails(gameName: gameName)
                     }
-                    if let number = numOfPlayers {
-                        store.updateNumOfPlayers(number)
-                    }
-                    store.updateGameDetails(gameName: gameName)
                 },
                 onCancel: { withAnimation { isEditingGame = false } },
                 onNewGame: {
-                    withAnimation {
+                    Task { @MainActor in
                         isEditingGame = false
-                        store.createNewGame(resetPlayersToDefault: false)
+                        await presenter.createNewGame(resetPlayersToDefault: false)
                     }
                 }
             )
@@ -156,9 +143,9 @@ struct GameView: View {
                 status: .earlyAssassin,
                 result: nil,
                 onFinish: { result in
-                    withAnimation {
+                    Task { @MainActor in
                         isGameFinish = false
-                        store.finishGame(result)
+                        await presenter.finishGame(result)
                         showFinishAlert = true
                     }
                 }
@@ -167,7 +154,9 @@ struct GameView: View {
         }
         .alert("gameFinish.title", isPresented: $showFinishAlert) {
             Button("gameFinish.newGame.button", role: .cancel) {
-                withAnimation { store.createNewGame() }
+                Task { @MainActor in
+                    await presenter.createNewGame()
+                }
             }
             Button("gameFinish.viewGame.button") {
                 // TODO: Show the finished game's detail
@@ -175,11 +164,13 @@ struct GameView: View {
         } message: {
             Text(getFinishMessage())
         }
+        .onReceive(routingUpdate) { self.routingState = $0 }
+        .flipsForRightToLeftLayoutDirection(true)
     }
 
     private func availability(for quest: DBModel.Quest) -> QuestAvailability {
         if quest.index == 0 || quest.status != .notStarted { return .started }
-        guard let previousQuest = store.game.quests.first(where: { $0.index == quest.index - 1 }) else {
+        guard let previousQuest = presenter.game.quests.first(where: { $0.index == quest.index - 1 }) else {
             return .locked
         }
         if previousQuest.status == .notStarted && quest.status == .notStarted {
@@ -190,8 +181,10 @@ struct GameView: View {
     }
 
     private func startQuestFlow(from quest: DBModel.Quest) {
-        store.startQuest(quest.index)
-        withAnimation { store.game.selectedQuestID = quest.id }
+        Task { @MainActor in
+            await presenter.startQuest(quest.index)
+        }
+        withAnimation { presenter.game.selectedQuestID = quest.id }
 
         if quest.teams.first(where: { $0.teamIndex == 0 }) != nil {
             newTeam = TeamLocator(questIndex: quest.index, teamIndex: 0)
@@ -199,7 +192,7 @@ struct GameView: View {
     }
 
     private func getFinishMessage() -> String {
-        guard let result = store.game.result else {
+        guard let result = presenter.game.result else {
             return String(localized: "gameFinish.message.unknown")
         }
 
@@ -216,4 +209,112 @@ struct GameView: View {
 
         return "\(message)\n\n\(result.displayText)"
     }
+
+    @ViewBuilder private var content: some View {
+        switch gameState {
+        case .notRequested:
+            defaultView()
+        case .isLoading:
+            loadingView()
+        case .loaded:
+            loadedView()
+        case let .failed(error):
+            failedView(error)
+        }
+    }
+}
+
+// MARK: - Loading Content
+
+private extension GameView {
+    func defaultView() -> some View {
+        Text("Default View")
+    }
+
+    func loadingView() -> some View {
+        ProgressView()
+            .progressViewStyle(CircularProgressViewStyle())
+    }
+
+    func failedView(_ error: Error) -> some View {
+        ErrorView(error: error, retryAction: {})
+    }
+}
+
+// MARK: - Displaying Content
+
+@MainActor
+private extension GameView {
+    func viewDebug() -> Bool {
+        return false
+    }
+
+    @ViewBuilder
+    func loadedView() -> some View {
+        if viewDebug() && false {
+            EmptyStateView()
+        } else {
+            ScrollView {
+                VStack(alignment: .leading) {
+                    ScrollView(.horizontal) {
+                        HStack(spacing: 8) {
+                            ForEach(presenter.game.sortedQuests) { quest in
+                                QuestCircle(quest: quest, isSelected: presenter.selectedQuestID == quest.id)
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        let status = availability(for: quest)
+                                        switch status {
+                                        case .locked:
+                                            activeAlert = .cannotStart
+                                        case .next:
+                                            activeAlert = .confirmStart(quest: quest)
+                                        case .started:
+                                            withAnimation { presenter.game.selectedQuestID = quest.id }
+                                        }
+                                    }
+                            }
+                        }
+                    }
+
+                    if let id = presenter.selectedQuestID, let quest = presenter.quest(id: id) {
+                        QuestDetailView(questID: quest.id)
+                    } else {
+                        ContentUnavailableView(
+                            "gameView.unavailable.title",
+                            systemImage: "train.side.front.car",
+                            description: Text("gameView.unavailable.description")
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Routing
+
+extension GameView {
+    struct Routing: Equatable {
+        var gameID: UUID?
+    }
+}
+
+// MARK: - State Updates
+
+private extension GameView {
+    private var routingUpdate: AnyPublisher<Routing, Never> {
+        injected.appState.updates(for: \.routing.gameView)
+    }
+
+    private var canRequestPushPermissionUpdate: AnyPublisher<Bool, Never> {
+        injected.appState.updates(for: AppState.permissionKeyPath(for: .pushNotifications))
+            .map { $0 == .notRequested || $0 == .denied }
+            .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - Preview
+
+#Preview() {
+    GameView(presenter: .preview())
 }
