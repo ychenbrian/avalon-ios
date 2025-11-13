@@ -12,31 +12,23 @@ struct ResultView: View {
                 VStack(spacing: 4) {
                     Text("resultView.success.label")
                         .font(.caption)
-                        .foregroundColor(.primary)
-                    Text("\((quest?.requiredTeamSize ?? 0) - (quest?.result?.failCount ?? 0))")
-                        .font(.body.bold())
-                        .frame(width: 40, height: 40)
-                        .background(Circle().fill(.green))
-                        .foregroundColor(.white)
-                        .overlay(
-                            Circle()
-                                .stroke(Color.white, lineWidth: 2)
-                        )
+                        .foregroundColor(.appColor(.primaryTextColor))
+                    TextCircle(
+                        name: "\((quest?.requiredTeamSize ?? 0) - (quest?.result?.failCount ?? 0))",
+                        size: 40,
+                        filledColor: .appColor(.successColor)
+                    )
                 }
 
                 VStack(spacing: 4) {
                     Text("resultView.fail.label")
                         .font(.caption)
-                        .foregroundColor(.primary)
-                    Text("\(quest?.result?.failCount ?? 0)")
-                        .font(.body.bold())
-                        .frame(width: 40, height: 40)
-                        .background(Circle().fill(.red))
-                        .foregroundColor(.white)
-                        .overlay(
-                            Circle()
-                                .stroke(Color.white, lineWidth: 2)
-                        )
+                        .foregroundColor(.appColor(.primaryTextColor))
+                    TextCircle(
+                        name: "\(quest?.result?.failCount ?? 0)",
+                        size: 40,
+                        filledColor: .appColor(.failColor)
+                    )
                 }
 
                 if let result = quest?.result?.type, let requiredFail = quest?.requiredFails {
@@ -47,30 +39,34 @@ struct ResultView: View {
                                 : "resultView.failRequired.plural.label"
                         ).replacingOccurrences(of: "%d", with: "\(requiredFail)"))
                             .font(.caption)
-                            .foregroundColor(.primary)
+                            .foregroundColor(.appColor(.primaryTextColor))
 
-                        Text(result.displayText)
-                            .font(.body.bold())
-                            .frame(height: 40)
-                            .padding(.horizontal, 16)
-                            .foregroundColor(.white)
-                            .background(
-                                Capsule()
-                                    .fill(result.color)
-                            )
-                            .accessibilityLabel(result.accessibilityLabel)
+                        TextCapsule(
+                            name: result.displayText,
+                            height: 40,
+                            filledColor: result.color,
+                            expandHorizontally: false
+                        )
+                        .accessibilityLabel(result.accessibilityLabel)
                     }
                 }
             }
             .frame(maxWidth: .infinity)
         }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(quest?.result?.type?.color.opacity(0.2) ?? Color(.secondarySystemBackground))
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }
 
 #Preview {
-    let container = DIContainer.preview
-    let presenter = GamePresenter(interactor: container.interactors.games)
+    let presenter = GamePresenter.preview()
     ResultView(questID: presenter.game.quests.first?.id ?? UUID())
+        .environmentObject(presenter)
         .padding()
         .frame(maxWidth: 600)
 }

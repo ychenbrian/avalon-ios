@@ -8,7 +8,7 @@ struct GameSectionTitleView: View {
         HStack {
             Text(formattedDate)
                 .font(.headline)
-                .foregroundColor(.primary)
+                .foregroundColor(.appColor(.primaryTextColor))
 
             Spacer()
 

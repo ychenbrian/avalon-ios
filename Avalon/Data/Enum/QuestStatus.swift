@@ -7,9 +7,9 @@ enum QuestStatus: String, Codable, Equatable {
 
     var color: Color {
         switch self {
-        case .notStarted: return .gray.opacity(0.3)
-        case .inProgress: return .blue
-        case .finished: return .green
+        case .notStarted: return .appColor(.emptyColor)
+        case .inProgress: return .appColor(.selectedColor)
+        case .finished: return .appColor(.successColor)
         }
     }
 }

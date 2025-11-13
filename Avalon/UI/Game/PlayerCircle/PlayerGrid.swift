@@ -8,7 +8,7 @@ struct PlayerGrid: View {
 
     init(
         players: [Player],
-        selectedColor: Color = .blue,
+        selectedColor: Color = .appColor(.selectedColor),
         selected: @escaping (Player) -> Bool,
         action: @escaping (Player) -> Void
     ) {

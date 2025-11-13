@@ -10,10 +10,14 @@ struct QuestDetailView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
+            if presenter.quest(id: questID)?.result?.type != nil {
+                ResultView(questID: questID)
+            }
+
             Text("questDetailView.voteTrack.title")
                 .padding(.top, 8)
                 .font(.headline)
-                .foregroundColor(.primary)
+                .foregroundColor(.appColor(.primaryTextColor))
 
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
@@ -24,10 +28,6 @@ struct QuestDetailView: View {
                         }
                     }
                 }
-            }
-
-            if presenter.quest(id: questID)?.result?.type != nil {
-                ResultView(questID: questID)
             }
 
             if let teamID = selectedTeamID {

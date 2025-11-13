@@ -24,7 +24,7 @@ struct CountRadioGroup: View {
                 PlayerCircleToggle(
                     name: "\(i)",
                     isSelected: selected(i),
-                    selectedColor: i < requiredFails ? .green : .red
+                    selectedColor: i < requiredFails ? .appColor(.successColor) : .appColor(.failColor)
                 ) {
                     action(i)
                 }

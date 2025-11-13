@@ -8,9 +8,9 @@ enum GameResult: String, Codable, Equatable, CaseIterable {
     var color: Color {
         switch self {
         case .goodWinByFailedAss:
-            return .green
+            return .appColor(.successColor)
         case .evilWinByQuest, .evilWinByAssassin:
-            return .red
+            return .appColor(.failColor)
         }
     }
 

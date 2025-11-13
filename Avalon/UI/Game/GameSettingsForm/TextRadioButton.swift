@@ -8,18 +8,15 @@ struct TextRadioButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text(text)
-                .font(.headline)
-                .frame(width: 48, height: 48)
-                .background(
-                    Circle()
-                        .fill(isSelected ? selectedColor : Color.gray.opacity(0.5))
-                )
-                .foregroundColor(.white)
+            TextCircle(
+                name: text,
+                size: 48,
+                filledColor: isSelected ? selectedColor : .appColor(.emptyColor)
+            )
         }
     }
 }
 
 #Preview {
-    TextRadioButton(text: "1", isSelected: false, selectedColor: Color.blue, action: {})
+    TextRadioButton(text: "1", isSelected: false, selectedColor: .appColor(.selectedColor), action: {})
 }

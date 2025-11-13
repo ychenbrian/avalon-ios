@@ -32,7 +32,7 @@ struct GameSettingsFormSheet: View {
             VStack {
                 Text("gameSettingsForm.playerNumber.label")
                     .font(.subheadline)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color.appColor(.primaryTextColor))
 
                 NumberRadioGroup(
                     range: GameRules.numOfPlayerRange,
@@ -48,7 +48,7 @@ struct GameSettingsFormSheet: View {
                     Text("gameSettingsForm.playerNumber.warning")
                         .font(.subheadline)
                         .frame(maxWidth: .infinity, alignment: .center)
-                        .foregroundColor(.red)
+                        .foregroundColor(.appColor(.failTextColor))
                 }
 
                 Divider()
@@ -56,7 +56,7 @@ struct GameSettingsFormSheet: View {
 
                 Text("gameSettingsForm.gameName.label")
                     .font(.subheadline)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color.appColor(.primaryTextColor))
 
                 let nameBinding = Binding<String>(
                     get: { draft.gameName },
@@ -84,7 +84,7 @@ struct GameSettingsFormSheet: View {
                 Text("gameSettingsForm.startNewGame.warning")
                     .font(.subheadline)
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .foregroundColor(.red)
+                    .foregroundColor(.appColor(.failTextColor))
 
                 Spacer(minLength: 0)
             }
@@ -98,7 +98,7 @@ struct GameSettingsFormSheet: View {
                     } label: {
                         Text("gameSettingsForm.cancel.button")
                     }
-                    .foregroundStyle(.red)
+                    .foregroundStyle(Color.appColor(.failTextColor))
                     .accessibilityLabel(String(localized: "gameSettingsForm.cancel.accessibility"))
                 }
                 ToolbarItem(placement: .confirmationAction) {
@@ -110,7 +110,7 @@ struct GameSettingsFormSheet: View {
                     } label: {
                         Text("gameSettingsForm.save.button")
                     }
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.appColor(.selectedTextColor))
                     .accessibilityLabel(String(localized: "gameSettingsForm.save.accessibility"))
                 }
             }

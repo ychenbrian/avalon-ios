@@ -13,8 +13,15 @@ enum ResultType: String, Codable {
 
     var color: Color {
         switch self {
-        case .success: return .green
-        case .fail: return .red
+        case .success: return .appColor(.successColor)
+        case .fail: return .appColor(.failColor)
+        }
+    }
+
+    var textColor: Color {
+        switch self {
+        case .success: return .appColor(.successTextColor)
+        case .fail: return .appColor(.failTextColor)
         }
     }
 

@@ -17,7 +17,7 @@ struct TeamDetailView: View {
             HStack(alignment: .center, spacing: 8) {
                 Text("teamDetail.leader.label")
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.appColor(.primaryTextColor))
                 if let leader = team?.leader {
                     overlayForPlayer(leader)
                 } else {
@@ -28,7 +28,7 @@ struct TeamDetailView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("teamDetail.proposedTeam.label")
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.appColor(.primaryTextColor))
                 if let members = team?.sortedMembers, !members.isEmpty {
                     HStack(spacing: 6) {
                         ForEach(members, id: \.id) { player in
@@ -43,8 +43,8 @@ struct TeamDetailView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("teamDetail.votes.label")
                     .font(.headline)
-                    .foregroundColor(.primary)
-                VStack(alignment: .leading, spacing: 4) {
+                    .foregroundColor(.appColor(.primaryTextColor))
+                VStack(alignment: .leading, spacing: 8) {
                     let rows = playerRows()
                     ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
                         HStack(spacing: 6) {
@@ -68,7 +68,7 @@ struct TeamDetailView: View {
                     Text("teamDetail.editTeam.button")
                 }
                 .font(.headline)
-                .foregroundColor(.primary)
+                .foregroundColor(.appColor(.primaryTextColor))
                 .buttonStyle(.glass)
 
                 Button {
@@ -77,7 +77,7 @@ struct TeamDetailView: View {
                     Text("teamDetail.editResult.button")
                 }
                 .font(.headline)
-                .foregroundColor(.primary)
+                .foregroundColor(.appColor(.primaryTextColor))
                 .buttonStyle(.glass)
             }
         }
@@ -191,6 +191,11 @@ struct TeamDetailView: View {
                     withAnimation {
                         isGameFinish = false
                     }
+                },
+                onCancel: {
+                    withAnimation {
+                        isGameFinish = false
+                    }
                 }
             )
             .presentationDetents([.medium])
@@ -199,23 +204,20 @@ struct TeamDetailView: View {
 
     private func overlayForPlayer(_ player: Player) -> some View {
         let vote = team?.votesByVoter[player.id]
+        let voteColor: Color = vote == .approve ? .appColor(.successColor) : (vote == .reject ? .appColor(.failColor) : .appColor(.emptyColor))
         return AnyView(
-            PlayerCircle(name: "\(player.index + 1)")
-                .overlay(
-                    Circle()
-                        .stroke(vote == .approve ? .green : (vote == .reject ? .red : .gray), lineWidth: 3)
-                )
+            PlayerCircle(name: "\(player.index + 1)", filledColor: voteColor)
                 .opacity(vote == nil ? 0.5 : 1)
                 .overlay(
                     vote == .approve ?
                         Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
+                        .foregroundColor(.appColor(.successTextColor))
                         .offset(x: 12, y: 12) : nil
                 )
                 .overlay(
                     vote == .reject ?
                         Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.red)
+                        .foregroundColor(.appColor(.failTextColor))
                         .offset(x: 12, y: 12) : nil
                 )
         )
@@ -235,7 +237,6 @@ struct TeamDetailView: View {
 }
 
 #Preview {
-    let container = DIContainer.preview
     let presenter = GamePresenter.preview()
     let quest = presenter.game.quests[0]
     TeamDetailView(questID: quest.id, teamID: quest.teams.first?.id ?? UUID())

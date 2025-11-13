@@ -24,8 +24,15 @@ final class TeamResult {
 
     var color: Color {
         switch isApproved {
-        case true: return .green
-        case false: return .red
+        case true: return .appColor(.successColor)
+        case false: return .appColor(.failColor)
+        }
+    }
+
+    var textColor: Color {
+        switch isApproved {
+        case true: return .appColor(.successTextColor)
+        case false: return .appColor(.failTextColor)
         }
     }
 }

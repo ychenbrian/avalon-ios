@@ -6,9 +6,9 @@ struct GameResultView: View {
     var body: some View {
         Text(result.shortText)
             .font(.subheadline.weight(.semibold))
-            .foregroundColor(.white)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
+            .foregroundColor(.appColor(.primaryTextColor))
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
             .background(
                 Capsule()
                     .fill(result.color)

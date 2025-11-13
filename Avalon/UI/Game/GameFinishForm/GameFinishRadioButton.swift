@@ -8,19 +8,16 @@ struct GameFinishRadioButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text(text)
-                .font(.headline)
-                .frame(maxWidth: .infinity, minHeight: 48)
-                .padding(.horizontal, 16)
-                .foregroundColor(.white)
-                .background(
-                    Capsule()
-                        .fill(isSelected ? selectedColor : Color.gray.opacity(0.5))
-                )
+            TextCapsule(
+                name: text,
+                height: 48,
+                filledColor: isSelected ? selectedColor : .appColor(.emptyColor),
+                expandHorizontally: true
+            )
         }
     }
 }
 
 #Preview {
-    GameFinishRadioButton(text: "Finish with 3 Fails", isSelected: false, selectedColor: Color.blue, action: {})
+    GameFinishRadioButton(text: "Finish with 3 Fails", isSelected: false, selectedColor: .appColor(.selectedColor), action: {})
 }

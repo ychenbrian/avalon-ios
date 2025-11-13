@@ -144,9 +144,16 @@ struct GameView: View {
                 result: nil,
                 onFinish: { result in
                     Task { @MainActor in
-                        isGameFinish = false
+                        withAnimation {
+                            isGameFinish = false
+                        }
                         await presenter.finishGame(result)
                         showFinishAlert = true
+                    }
+                },
+                onCancel: {
+                    withAnimation {
+                        isGameFinish = false
                     }
                 }
             )

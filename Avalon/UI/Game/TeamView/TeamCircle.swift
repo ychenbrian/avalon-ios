@@ -6,34 +6,31 @@ struct TeamCircle: View {
 
     var body: some View {
         VStack(spacing: 6) {
-            ZStack {
-                Circle()
-                    .fill(fillColor)
-                    .frame(width: 52, height: 52)
-                Text("\(team.teamIndex + 1)")
-                    .font(.headline.bold())
-                    .foregroundColor(.white)
-            }
+            TextCircle(
+                name: "\(team.teamIndex + 1)",
+                size: 52,
+                filledColor: fillColor
+            )
             Text(displayText)
                 .font(.caption)
                 .bold()
-                .foregroundColor(team.result?.color ?? .secondary)
+                .foregroundColor(team.result?.textColor ?? .secondary)
                 .foregroundStyle(.secondary)
         }
         .padding(8)
-        .background(isSelected ? Color.blue.opacity(0.3) : Color.clear)
+        .background(isSelected ? .appColor(.selectedColor).opacity(0.2) : Color.clear)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     private var fillColor: Color {
         switch team.status {
-        case .notStarted: return .gray.opacity(0.5)
-        case .inProgress: return .blue.opacity(0.7)
+        case .notStarted: return .appColor(.emptyColor)
+        case .inProgress: return .appColor(.selectedColor)
         case .finished:
             if let result = team.result {
-                return result.isApproved ? .green.opacity(0.8) : .red.opacity(0.8)
+                return result.isApproved ? .appColor(.successColor) : .appColor(.failColor)
             } else {
-                return .gray.opacity(0.3)
+                return .appColor(.emptyColor)
             }
         }
     }

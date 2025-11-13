@@ -8,18 +8,15 @@ struct PlayerCircleToggle: View {
 
     var body: some View {
         Button(action: action) {
-            Text(name.prefix(2))
-                .font(.headline)
-                .frame(width: 48, height: 48)
-                .background(
-                    Circle()
-                        .fill(isSelected ? selectedColor : Color.gray.opacity(0.5))
-                )
-                .foregroundColor(.white)
+            TextCircle(
+                name: String(name.prefix(2)),
+                size: 48,
+                filledColor: isSelected ? selectedColor : .appColor(.emptyColor)
+            )
         }
     }
 }
 
 #Preview {
-    PlayerCircleToggle(name: "1", isSelected: false, selectedColor: Color.blue, action: {})
+    PlayerCircleToggle(name: "1", isSelected: false, selectedColor: .appColor(.selectedColor), action: {})
 }

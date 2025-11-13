@@ -67,7 +67,7 @@ struct TeamFormSheet: View {
                 // Leader
                 Text("teamForm.leader.label")
                     .font(.subheadline)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color.appColor(.primaryTextColor))
                     .padding(.top, 12)
 
                 PlayerGrid(
@@ -84,7 +84,7 @@ struct TeamFormSheet: View {
                 let teamSize = draft.requiredTeamSize
                 Text(String(format: NSLocalizedString("teamForm.team.label", comment: ""), teamCount, teamSize))
                     .font(.subheadline)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color.appColor(.primaryTextColor))
                     .padding(.top, 8)
 
                 PlayerGrid(
@@ -100,12 +100,12 @@ struct TeamFormSheet: View {
                     // Approvals
                     Text("teamForm.approvals.label")
                         .font(.subheadline)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Color.appColor(.primaryTextColor))
                         .padding(.top, 12)
 
                     PlayerGrid(
                         players: sortedPlayer(),
-                        selectedColor: .green,
+                        selectedColor: .appColor(.successColor),
                         selected: { draft.votesByVoter[$0.id] == .approve },
                         action: { toggleApprove($0) }
                     )
@@ -114,12 +114,12 @@ struct TeamFormSheet: View {
                     // Rejects
                     Text("teamForm.rejects.label")
                         .font(.subheadline)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Color.appColor(.primaryTextColor))
                         .padding(.top, 8)
 
                     PlayerGrid(
                         players: sortedPlayer(),
-                        selectedColor: .red,
+                        selectedColor: .appColor(.failColor),
                         selected: { draft.votesByVoter[$0.id] == .reject },
                         action: { toggleReject($0) }
                     )
@@ -138,7 +138,7 @@ struct TeamFormSheet: View {
                     } label: {
                         Text("teamForm.cancel.button")
                     }
-                    .foregroundStyle(.red)
+                    .foregroundStyle(Color.appColor(.failTextColor))
                     .accessibilityLabel(String(localized: "teamForm.cancel.accessibility"))
                 }
                 ToolbarItem(placement: .confirmationAction) {
@@ -153,7 +153,7 @@ struct TeamFormSheet: View {
                     } label: {
                         Text("teamForm.save.button")
                     }
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.appColor(.selectedTextColor))
                     .accessibilityLabel(String(localized: "teamForm.save.accessibility"))
                 }
             }

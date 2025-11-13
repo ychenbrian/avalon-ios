@@ -21,7 +21,7 @@ struct NumberRadioGroup: View {
                 TextRadioButton(
                     text: "\(i)",
                     isSelected: selected(i),
-                    selectedColor: .blue
+                    selectedColor: .appColor(.selectedColor)
                 ) {
                     action(i)
                 }

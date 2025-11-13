@@ -6,33 +6,30 @@ struct QuestCircle: View {
 
     var body: some View {
         VStack(spacing: 6) {
-            ZStack {
-                Circle()
-                    .fill(getStatusColor())
-                    .frame(width: 52, height: 52)
-                Text("\(quest.requiredTeamSize)")
-                    .font(.headline.bold())
-                    .foregroundColor(.white)
-            }
+            TextCircle(
+                name: "\(quest.requiredTeamSize)",
+                size: 52,
+                filledColor: getStatusColor()
+            )
             Text(getStatusText())
                 .font(.caption)
                 .bold()
-                .foregroundColor(quest.result?.type?.color ?? .secondary)
+                .foregroundColor(quest.result?.type?.textColor ?? .secondary)
                 .foregroundStyle(.secondary)
         }
         .padding(8)
-        .background(isSelected ? Color.blue.opacity(0.2) : Color.clear)
+        .background(isSelected ? .appColor(.selectedColor).opacity(0.2) : Color.clear)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .animation(.default, value: quest.teams.count)
     }
 
     private func getStatusColor() -> Color {
         if quest.status == .finished {
-            return quest.result?.type?.color ?? .blue.opacity(0.7)
+            return quest.result?.type?.color ?? .appColor(.selectedColor)
         } else if quest.status == .inProgress {
-            return .blue.opacity(0.7)
+            return .appColor(.selectedColor)
         }
-        return .gray.opacity(0.5)
+        return .appColor(.emptyColor)
     }
 
     private func getStatusText() -> String {

@@ -21,7 +21,7 @@ struct GameFinishRadioGroup: View {
                 GameFinishRadioButton(
                     text: text,
                     isSelected: selected(text),
-                    selectedColor: .blue
+                    selectedColor: Color.appColor(.selectedColor)
                 ) {
                     action(text)
                 }

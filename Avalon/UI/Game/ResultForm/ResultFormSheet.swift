@@ -49,7 +49,7 @@ struct ResultFormSheet: View {
                 HStack(alignment: .center, spacing: 8) {
                     Text("resultForm.leader.label")
                         .font(.subheadline)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Color.appColor(.primaryTextColor))
                     if let leader = draft.leader {
                         overlayForPlayer(leader)
                     } else {
@@ -62,7 +62,7 @@ struct ResultFormSheet: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("resultForm.proposedTeam.label")
                         .font(.subheadline)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Color.appColor(.primaryTextColor))
 
                     let members = draft.members.sorted(by: { $0.index < $1.index })
                     if !members.isEmpty {
@@ -82,7 +82,7 @@ struct ResultFormSheet: View {
 
                 Text("resultForm.failCount.label")
                     .font(.subheadline)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color.appColor(.primaryTextColor))
 
                 CountRadioGroup(
                     teamSize: draft.teamSize,
@@ -104,7 +104,7 @@ struct ResultFormSheet: View {
                         Text("resultForm.clearResult.button")
                     }
                     .font(.headline)
-                    .tint(.red)
+                    .tint(.appColor(.failTextColor))
                     .foregroundColor(.white)
                     .buttonStyle(.glassProminent)
                 }
@@ -121,7 +121,7 @@ struct ResultFormSheet: View {
                     } label: {
                         Text("resultForm.cancel.button")
                     }
-                    .foregroundStyle(.red)
+                    .foregroundStyle(Color.appColor(.failTextColor))
                     .accessibilityLabel(String(localized: "resultForm.cancel.accessibility"))
                 }
                 ToolbarItem(placement: .confirmationAction) {
@@ -133,7 +133,7 @@ struct ResultFormSheet: View {
                     } label: {
                         Text("resultForm.save.button")
                     }
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.appColor(.selectedTextColor))
                     .accessibilityLabel(String(localized: "resultForm.save.accessibility"))
                 }
             }
@@ -143,23 +143,20 @@ struct ResultFormSheet: View {
 
     private func overlayForPlayer(_ player: Player) -> some View {
         let vote = draft.votesByVoter[player.id]
+        let voteColor: Color = vote == .approve ? .appColor(.successColor) : (vote == .reject ? .appColor(.failColor) : .appColor(.emptyColor))
         return AnyView(
-            PlayerCircle(name: "\(player.index + 1)")
-                .overlay(
-                    Circle()
-                        .stroke(vote == .approve ? .green : (vote == .reject ? .red : .gray), lineWidth: 3)
-                )
+            PlayerCircle(name: "\(player.index + 1)", filledColor: voteColor)
                 .opacity(vote == nil ? 0.5 : 1)
                 .overlay(
                     vote == .approve ?
                         Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
+                        .foregroundColor(.appColor(.successTextColor))
                         .offset(x: 12, y: 12) : nil
                 )
                 .overlay(
                     vote == .reject ?
                         Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.red)
+                        .foregroundColor(.appColor(.failTextColor))
                         .offset(x: 12, y: 12) : nil
                 )
         )

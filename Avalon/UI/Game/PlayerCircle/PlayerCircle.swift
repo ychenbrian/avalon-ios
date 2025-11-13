@@ -2,19 +2,18 @@ import SwiftUI
 
 struct PlayerCircle: View {
     let name: String
+    let filledColor: Color
+
     var body: some View {
-        Text(name)
-            .font(.headline)
-            .frame(width: 44, height: 44)
-            .background(Circle().fill(Color.blue.opacity(0.85)))
-            .foregroundColor(.white)
-            .overlay(
-                Circle().stroke(Color.white, lineWidth: 2)
-            )
-            .padding(2)
+        TextCircle(
+            name: name,
+            size: 40,
+            filledColor: filledColor
+        )
+        .padding(2)
     }
 }
 
 #Preview {
-    PlayerCircle(name: "1")
+    PlayerCircle(name: "1", filledColor: .appColor(.failColor))
 }
