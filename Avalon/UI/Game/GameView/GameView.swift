@@ -13,7 +13,6 @@ private struct TeamLocator: Identifiable, Equatable {
 struct GameView: View {
     @Environment(\.injected) private var injected: DIContainer
 
-    private var gameState: Loadable<Void> { presenter.gameState }
     @State var navigationPath = NavigationPath()
     @State private var routingState: Routing = .init()
     private var routingBinding: Binding<Routing> {
@@ -218,7 +217,7 @@ struct GameView: View {
     }
 
     @ViewBuilder private var content: some View {
-        switch gameState {
+        switch presenter.gameState {
         case .notRequested:
             defaultView()
         case .isLoading:
@@ -231,34 +230,13 @@ struct GameView: View {
     }
 }
 
-// MARK: - Loading Content
-
-private extension GameView {
-    func defaultView() -> some View {
-        Text("Default View")
-    }
-
-    func loadingView() -> some View {
-        ProgressView()
-            .progressViewStyle(CircularProgressViewStyle())
-    }
-
-    func failedView(_ error: Error) -> some View {
-        ErrorView(error: error, retryAction: {})
-    }
-}
-
 // MARK: - Displaying Content
 
 @MainActor
 private extension GameView {
-    func viewDebug() -> Bool {
-        return false
-    }
-
     @ViewBuilder
     func loadedView() -> some View {
-        if viewDebug() && false {
+        if presenter.game.status == .initial {
             EmptyStateView()
         } else {
             ScrollView {
@@ -295,6 +273,19 @@ private extension GameView {
                 }
             }
         }
+    }
+
+    func defaultView() -> some View {
+        Text("Default View")
+    }
+
+    func loadingView() -> some View {
+        ProgressView()
+            .progressViewStyle(CircularProgressViewStyle())
+    }
+
+    func failedView(_ error: Error) -> some View {
+        ErrorView(error: error, retryAction: {})
     }
 }
 

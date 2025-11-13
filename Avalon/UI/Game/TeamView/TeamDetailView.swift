@@ -55,30 +55,32 @@ struct TeamDetailView: View {
                     }
                 }
             }
-            HStack {
-                Button {
-                    if let quest = presenter.quest(id: questID) {
-                        if quest.status != .finished {
-                            isEditingTeam = true
-                        } else {
-                            activeAlert = .cannotEditTeam
+            if presenter.allowEditing {
+                HStack {
+                    Button {
+                        if let quest = presenter.quest(id: questID) {
+                            if quest.status != .finished {
+                                isEditingTeam = true
+                            } else {
+                                activeAlert = .cannotEditTeam
+                            }
                         }
+                    } label: {
+                        Text("teamDetail.editTeam.button")
                     }
-                } label: {
-                    Text("teamDetail.editTeam.button")
-                }
-                .font(.headline)
-                .foregroundColor(.appColor(.primaryTextColor))
-                .buttonStyle(.glass)
+                    .font(.headline)
+                    .foregroundColor(.appColor(.primaryTextColor))
+                    .buttonStyle(.glass)
 
-                Button {
-                    isEditingResult = true
-                } label: {
-                    Text("teamDetail.editResult.button")
+                    Button {
+                        isEditingResult = true
+                    } label: {
+                        Text("teamDetail.editResult.button")
+                    }
+                    .font(.headline)
+                    .foregroundColor(.appColor(.primaryTextColor))
+                    .buttonStyle(.glass)
                 }
-                .font(.headline)
-                .foregroundColor(.appColor(.primaryTextColor))
-                .buttonStyle(.glass)
             }
         }
         .padding()

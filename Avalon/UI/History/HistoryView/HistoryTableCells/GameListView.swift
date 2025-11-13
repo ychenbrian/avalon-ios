@@ -23,7 +23,7 @@ struct GroupedGameListView: View {
             onRefresh()
         }
         .navigationDestination(for: DBModel.Game.self) { game in
-            GameDetails(game: game)
+            GameDetailsView(game: game)
         }
         .onChange(of: routingState.gameID, initial: true) { _, gameID in
             guard let gameID,

@@ -14,10 +14,11 @@ final class GamePresenter: ObservableObject {
     // MARK: - Derived
 
     var selectedQuestID: UUID? { game.selectedQuestID }
+    var allowEditing: Bool = true
 
     // MARK: - Dependencies
 
-    private let interactor: GamesInteractor
+    private let interactor: GamesInteractor?
 
     // MARK: - Internal State
 
@@ -28,6 +29,14 @@ final class GamePresenter: ObservableObject {
 
     init(interactor: GamesInteractor) {
         self.interactor = interactor
+    }
+
+    init(game: DBModel.Game, allowEditing: Bool = false) {
+        self.game = game
+        players = game.players
+        gameState = .loaded(())
+        interactor = nil
+        self.allowEditing = allowEditing
     }
 
     // MARK: - Accessors
@@ -54,7 +63,7 @@ final class GamePresenter: ObservableObject {
         gameState = .isLoading(last: nil, cancelBag: bag)
 
         do {
-            let dbGame = try await interactor.getLastUnfinishedGame() ?? .empty()
+            let dbGame = try await interactor?.getLastUnfinishedGame() ?? .empty()
             game = dbGame
             lastSaved = dbGame
             players = dbGame.players
@@ -71,7 +80,7 @@ final class GamePresenter: ObservableObject {
         defer { isSaving = false }
 
         do {
-            try await interactor.updateGame(game)
+            try await interactor?.updateGame(game)
             lastSaved = game
         } catch {
             saveError = error
@@ -94,7 +103,7 @@ final class GamePresenter: ObservableObject {
         defer { isSaving = false }
 
         do {
-            let saved = try await interactor.insertGame(draft)
+            let saved = try await interactor?.insertGame(draft) ?? .empty()
             withAnimation {
                 players = newPlayers
                 game = saved

@@ -5,7 +5,6 @@
 "error.view.title" = "An Error Occurred";
 "error.view.retryButton" = "Retry";
 
-
 // MARK: - Common
 
 "common.ok" = "OK";
@@ -14,19 +13,16 @@
 "common.notImplemented" = "Not implemented";
 "common.na" = "N/A";
 
-
 // MARK: - Date
 
 "date.today" = "Today";
 "date.tomorrow" = "Tomorrow";
 "date.yesterday" = "Yesterday";
 
-
 // MARK: - Game
 
 "game.namePrefix" = "Game";
 "game.untitledGame" = "Untitled Game";
-
 
 // MARK: - Enum
 
@@ -50,7 +46,6 @@
 "game.result.evilWin.threeFailedQuests" = "Evil Win: Three Failed Quests";
 "game.result.evilWin.assistanationSuccess" = "Evil Win: Assistanation Success";
 
-
 // MARK: - Game View
 
 "gameView.unavailable.title" = "Select a quest";
@@ -64,13 +59,11 @@
 "gameView.alert.confirmStart.title" = "Start new quest?";
 "gameView.alert.confirmStart.messageFormat" = "Do you want to start Quest %d?";
 
-
 // MARK: - Quest Detail View
 
 "questDetailView.voteTrack.title" = "Vote Track";
 "questDetailView.unavailable.title" = "Select a team";
 "questDetailView.unavailable.description" = "Tap a circle above.";
-
 
 // MARK: - Result Form Sheet
 
@@ -86,14 +79,12 @@
 "resultForm.save.button" = "Save";
 "resultForm.save.accessibility" = "Save quest result";
 
-
 // MARK: - Result View
 
 "resultView.success.label" = "Success";
 "resultView.fail.label" = "Fail";
 "resultView.failRequired.singular.label" = "%d Fail Required";
 "resultView.failRequired.plural.label" = "%d Fails Required";
-
 
 // MARK: - Team Form Sheet
 
@@ -106,7 +97,6 @@
 "teamForm.cancel.accessibility" = "Cancel editing team vote";
 "teamForm.save.button" = "Save";
 "teamForm.save.accessibility" = "Save team vote";
-
 
 // MARK: - Team Detail View
 
@@ -121,7 +111,6 @@
 "teamDetail.cannotEditTeam.message" = "The quest has finished, you cannot edit any teams of this quest.";
 "teamDetail.cannotEditTeam.ok" = "OK";
 
-
 // MARK: - Game Settings Form Sheet
 
 "gameSettingsForm.title" = "Game Settings";
@@ -135,7 +124,6 @@
 "gameSettingsForm.save.button" = "Save";
 "gameSettingsForm.save.accessibility" = "Save game settings";
 
-
 // MARK: - Game Finish Form Sheet
 
 "gameFinishForm.title" = "Finish Game";
@@ -144,7 +132,6 @@
 "gameFinishForm.earlyAssassin.label" = "Early Assistanation";
 "gameFinishForm.finish.button" = "Finish";
 "gameFinishForm.finish.accessibility" = "Finish the game";
-
 
 // MARK: - Game Finish Alert
 
@@ -156,7 +143,6 @@
 "gameFinish.message.evilWinQuest" = "The Minions of Mordred triumph!";
 "gameFinish.message.evilWinAssassin" = "The Assassin strikes Merlin!";
 
-
 // MARK: - History View
 
 "historyView.noGamesFound" = "No games found";
@@ -165,3 +151,10 @@
 "historyView.title.gamePlural" = "%d Games";
 "historyView.gameCell.numOfPlayer.singular" = "%d Player";
 "historyView.gameCell.numOfPlayer.plural" = "%d Players";
+
+// MARK: - Quest Details
+
+"quest.details.unfinished"= "Not Finished";
+"quest.details.success"= "Success without Fails";
+"quest.details.success.oneFail"= "Success with 1 Fail";
+"quest.details.fail.xFail"= "F";

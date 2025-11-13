@@ -11,7 +11,7 @@ extension AppState {
     struct ViewRouting: Equatable {
         var gameView = GameView.Routing()
         var historyView = HistoryView.Routing()
-        var gameDetails = GameDetails.Routing()
+        var gameDetailsView = GameDetailsView.Routing()
     }
 }
 
