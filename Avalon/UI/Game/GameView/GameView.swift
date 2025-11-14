@@ -2,8 +2,6 @@ import Combine
 import Observation
 import SwiftUI
 
-private enum QuestAvailability { case locked, next, started }
-
 private struct TeamLocator: Identifiable, Equatable {
     let questIndex: Int
     let teamIndex: Int
@@ -41,7 +39,7 @@ struct GameView: View {
         NavigationStack(path: $navigationPath) {
             content
                 .task { await presenter.loadIfNeeded() }
-                .padding()
+                .padding(.horizontal)
                 .navigationTitle(presenter.game.name.isEmpty == true ? String(localized: "game.untitledGame") : presenter.game.name)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -174,18 +172,6 @@ struct GameView: View {
         .flipsForRightToLeftLayoutDirection(true)
     }
 
-    private func availability(for quest: DBModel.Quest) -> QuestAvailability {
-        if quest.index == 0 || quest.status != .notStarted { return .started }
-        guard let previousQuest = presenter.game.quests.first(where: { $0.index == quest.index - 1 }) else {
-            return .locked
-        }
-        if previousQuest.status == .notStarted && quest.status == .notStarted {
-            return .locked
-        } else {
-            return .next
-        }
-    }
-
     private func startQuestFlow(from quest: DBModel.Quest) {
         Task { @MainActor in
             await presenter.startQuest(quest.index)
@@ -239,39 +225,7 @@ private extension GameView {
         if presenter.game.status == .initial {
             EmptyStateView()
         } else {
-            ScrollView {
-                VStack(alignment: .leading) {
-                    ScrollView(.horizontal) {
-                        HStack(spacing: 8) {
-                            ForEach(presenter.game.sortedQuests) { quest in
-                                QuestCircle(quest: quest, isSelected: presenter.selectedQuestID == quest.id)
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        let status = availability(for: quest)
-                                        switch status {
-                                        case .locked:
-                                            activeAlert = .cannotStart
-                                        case .next:
-                                            activeAlert = .confirmStart(quest: quest)
-                                        case .started:
-                                            withAnimation { presenter.game.selectedQuestID = quest.id }
-                                        }
-                                    }
-                            }
-                        }
-                    }
-
-                    if let id = presenter.selectedQuestID, let quest = presenter.quest(id: id) {
-                        QuestDetailView(questID: quest.id)
-                    } else {
-                        ContentUnavailableView(
-                            "gameView.unavailable.title",
-                            systemImage: "train.side.front.car",
-                            description: Text("gameView.unavailable.description")
-                        )
-                    }
-                }
-            }
+            GameContentView(activeAlert: $activeAlert)
         }
     }
 

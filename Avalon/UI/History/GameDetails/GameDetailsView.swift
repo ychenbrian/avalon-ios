@@ -33,7 +33,7 @@ struct GameDetailsView: View {
 
     var body: some View {
         content
-            .padding()
+            .padding(.horizontal)
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .environmentObject(presenter)
@@ -63,38 +63,7 @@ private extension GameDetailsView {
         if presenter.game.status == .initial {
             EmptyStateView()
         } else {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(presenter.game.sortedQuests) { quest in
-                                QuestCircle(
-                                    quest: quest,
-                                    isSelected: presenter.selectedQuestID == quest.id
-                                )
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    withAnimation {
-                                        presenter.game.selectedQuestID = quest.id
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if let id = presenter.selectedQuestID,
-                       let quest = presenter.quest(id: id)
-                    {
-                        QuestDetailView(questID: quest.id)
-                    } else {
-                        ContentUnavailableView(
-                            "gameView.unavailable.title",
-                            systemImage: "train.side.front.car",
-                            description: Text("gameView.unavailable.description")
-                        )
-                    }
-                }
-            }
+            GameContentView(activeAlert: .constant(nil))
         }
     }
 

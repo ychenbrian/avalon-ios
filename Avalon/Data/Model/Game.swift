@@ -47,5 +47,17 @@ extension DBModel {
         var sortedQuests: [Quest] {
             quests.sorted { $0.index < $1.index }
         }
+
+        var resultText: String? {
+            if result == .evilWinByAssassin {
+                return String(localized: "game.result.evilVictory.assistanationSuccess")
+            } else if result == .evilWinByQuest {
+                return String(localized: "game.result.evilVictory.threeFailedQuests")
+            } else if result == .goodWinByFailedAss {
+                return String(localized: "game.result.goodVictory.assistanationFail")
+            } else {
+                return String(localized: "game.result.notFinished")
+            }
+        }
     }
 }

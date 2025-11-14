@@ -42,9 +42,9 @@
 
 "game.result.goodWin" = "Good Win";
 "game.result.evilWin" = "Evil Win";
-"game.result.goodWin.assistanationFail" = "Good Win: Assistanation Fail";
-"game.result.evilWin.threeFailedQuests" = "Evil Win: Three Failed Quests";
-"game.result.evilWin.assistanationSuccess" = "Evil Win: Assistanation Success";
+"game.result.goodWin.assistanationFail" = "Good Victory: Assistanation Fail";
+"game.result.evilWin.threeFailedQuests" = "Evil Victory: Three Failed Quests";
+"game.result.evilWin.assistanationSuccess" = "Evil Victory: Assistanation Success";
 
 // MARK: - Game View
 
@@ -158,3 +158,10 @@
 "quest.details.success"= "Success without Fails";
 "quest.details.success.oneFail"= "Success with 1 Fail";
 "quest.details.fail.xFail"= "F";
+
+// MARK: - Game Result View
+
+"game.result.notFinished" = "⏳ Game in Progress";
+"game.result.goodVictory.assistanationFail" = "🏆 Good Victory – Assassination Failed";
+"game.result.evilVictory.threeFailedQuests" = "😈 Evil Victory – Three Failed Quests";
+"game.result.evilVictory.assistanationSuccess" = "😈 Evil Victory – Assassination Success";
