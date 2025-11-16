@@ -4,6 +4,7 @@ import SwiftUI
 
 struct GameDetailsView: View {
     @Environment(\.injected) private var injected: DIContainer
+    @Environment(\.dismiss) private var dismiss
 
     @State private var routingState = Routing()
     @StateObject private var presenter: GamePresenter
@@ -37,7 +38,19 @@ struct GameDetailsView: View {
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .environmentObject(presenter)
+            .toolbar(.hidden, for: .tabBar)
             .onReceive(routingUpdate) { routingState = $0 }
+            .toolbar {
+                if presenter.game.status != .complete {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button {
+                            backToGameTab()
+                        } label: {
+                            Text("gameDetails.edit.button")
+                        }
+                    }
+                }
+            }
     }
 
     @ViewBuilder
@@ -51,6 +64,16 @@ struct GameDetailsView: View {
             loadedView
         case let .failed(error):
             failedView(error)
+        }
+    }
+
+    private func backToGameTab() {
+        dismiss()
+
+        injected.appState.bulkUpdate { state in
+            state.routing.gameDetailsView.gameID = nil
+            state.routing.gameView.gameID = presenter.game.id
+            state.routing.selectedTab = .game
         }
     }
 }
@@ -84,7 +107,9 @@ private extension GameDetailsView {
 // MARK: - Routing
 
 extension GameDetailsView {
-    struct Routing: Equatable {}
+    struct Routing: Equatable {
+        var gameID: UUID?
+    }
 }
 
 // MARK: - State Updates

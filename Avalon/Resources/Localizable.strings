@@ -24,6 +24,13 @@
 "game.namePrefix" = "Game";
 "game.untitledGame" = "Untitled Game";
 
+// MARK: - Tab
+
+"navigation.tab.game" = "Game";
+"navigation.tab.history" = "History";
+"navigation.tab.rule" = "Rule";
+"navigation.tab.settings" = "Settings";
+
 // MARK: - Enum
 
 "quest.status.notStarted" = "Not Started";
@@ -152,12 +159,9 @@
 "historyView.gameCell.numOfPlayer.singular" = "%d Player";
 "historyView.gameCell.numOfPlayer.plural" = "%d Players";
 
-// MARK: - Quest Details
+// MARK: - Game Details View
 
-"quest.details.unfinished"= "Not Finished";
-"quest.details.success"= "Success without Fails";
-"quest.details.success.oneFail"= "Success with 1 Fail";
-"quest.details.fail.xFail"= "F";
+"gameDetails.edit.button" = "Edit";
 
 // MARK: - Game Result View
 

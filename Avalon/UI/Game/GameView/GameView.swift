@@ -60,6 +60,15 @@ struct GameView: View {
                 }
         }
         .environmentObject(presenter)
+        .onReceive(routingUpdate) { newRouting in
+            guard routingState != newRouting else { return }
+
+            routingState = newRouting
+
+            if let id = newRouting.gameID {
+                presenter.loadByID(gameID: id)
+            }
+        }
         .alert(item: $activeAlert) { route in
             switch route {
             case .cannotStart:
@@ -168,7 +177,6 @@ struct GameView: View {
         } message: {
             Text(getFinishMessage())
         }
-        .onReceive(routingUpdate) { self.routingState = $0 }
         .flipsForRightToLeftLayoutDirection(true)
     }
 

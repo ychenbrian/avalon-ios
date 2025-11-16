@@ -1,8 +1,10 @@
+import SwiftData
 import SwiftUI
 
 protocol GamesInteractor {
     func insertGame(_ gameData: DBModel.Game) async throws -> DBModel.Game
     func getGame(_ gameData: DBModel.Game) async throws -> DBModel.Game?
+    func getGameByID(_ gameID: UUID) async throws -> DBModel.Game?
     func getLastUnfinishedGame() async throws -> DBModel.Game?
     func gameExists(_ gameData: DBModel.Game) async throws -> Bool
     func updateGame(_ gameData: DBModel.Game) async throws
@@ -20,6 +22,10 @@ struct RealGamesInteractor: GamesInteractor {
 
     func getGame(_ gameData: DBModel.Game) async throws -> DBModel.Game? {
         return try await dbRepository.get(id: gameData.persistentModelID)
+    }
+
+    func getGameByID(_ gameID: UUID) async throws -> DBModel.Game? {
+        return try await dbRepository.get(gameID: gameID)
     }
 
     func getLastUnfinishedGame() async throws -> DBModel.Game? {
@@ -50,6 +56,7 @@ struct RealGamesInteractor: GamesInteractor {
 struct StubGamesInteractor: GamesInteractor {
     func insertGame(_: DBModel.Game) async throws -> DBModel.Game { return .empty() }
     func getGame(_: DBModel.Game) async throws -> DBModel.Game? { return nil }
+    func getGameByID(_: UUID) async throws -> DBModel.Game? { return nil }
     func getLastUnfinishedGame() async throws -> DBModel.Game? { return nil }
     func gameExists(_: DBModel.Game) async throws -> Bool { return true }
     func updateGame(_: DBModel.Game) async throws {}

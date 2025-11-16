@@ -8,7 +8,17 @@ struct AppState: Equatable {
 }
 
 extension AppState {
+    enum Tab: Hashable {
+        case game
+        case history
+        case rules
+        case settings
+    }
+}
+
+extension AppState {
     struct ViewRouting: Equatable {
+        var selectedTab: Tab = .game
         var gameView = GameView.Routing()
         var historyView = HistoryView.Routing()
         var gameDetailsView = GameDetailsView.Routing()

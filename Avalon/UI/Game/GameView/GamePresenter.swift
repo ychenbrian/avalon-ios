@@ -15,6 +15,7 @@ final class GamePresenter: ObservableObject {
 
     var selectedQuestID: UUID? { game.selectedQuestID }
     var allowEditing: Bool = true
+    private var gameID: UUID?
 
     // MARK: - Dependencies
 
@@ -35,6 +36,13 @@ final class GamePresenter: ObservableObject {
         self.game = game
         players = game.players
         gameState = .loaded(())
+        interactor = nil
+        self.allowEditing = allowEditing
+    }
+
+    init(gameID: UUID, allowEditing: Bool = false) {
+        self.gameID = gameID
+        gameState = .notRequested
         interactor = nil
         self.allowEditing = allowEditing
     }
@@ -73,6 +81,12 @@ final class GamePresenter: ObservableObject {
         }
     }
 
+    func loadByID(gameID: UUID) {
+        Task { [weak self] in
+            await self?.loadByIDImpl(gameID: gameID)
+        }
+    }
+
     func save() async {
         guard !isSaving else { return }
         isSaving = true
@@ -85,6 +99,24 @@ final class GamePresenter: ObservableObject {
         } catch {
             saveError = error
             game = lastSaved
+        }
+    }
+
+    @MainActor
+    private func loadByIDImpl(gameID: UUID) async {
+        loadBag.cancel()
+        let bag = CancelBag()
+        loadBag = bag
+        gameState = .isLoading(last: nil, cancelBag: bag)
+
+        do {
+            let dbGame = try await interactor?.getGameByID(gameID) ?? .empty()
+            game = dbGame
+            lastSaved = dbGame
+            players = dbGame.players
+            gameState = .loaded(())
+        } catch {
+            gameState = .failed(error)
         }
     }
 

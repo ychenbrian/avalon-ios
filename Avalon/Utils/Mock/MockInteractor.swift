@@ -6,6 +6,7 @@ final class MockGamesInteractor: GamesInteractor {
     init(seed: DBModel.Game = .empty()) { store = seed }
 
     func getGame(_: DBModel.Game) async throws -> DBModel.Game? { store }
+    func getGameByID(_: UUID) async throws -> DBModel.Game? { store }
     func gameExists(_: DBModel.Game) async throws -> Bool { return true }
     func deleteGame(_: DBModel.Game) async throws {}
     func deleteAllGames() async throws {}

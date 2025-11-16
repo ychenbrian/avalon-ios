@@ -150,9 +150,7 @@ private extension HistoryView {
 // MARK: - Routing
 
 extension HistoryView {
-    struct Routing: Equatable {
-        var gameID: UUID?
-    }
+    struct Routing: Equatable {}
 }
 
 // MARK: - State Updates

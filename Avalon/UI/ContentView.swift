@@ -4,28 +4,41 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.injected) private var injected: DIContainer
+    @State private var routingState = AppState.ViewRouting()
+
+    private var tabSelection: Binding<AppState.Tab> {
+        $routingState.selectedTab
+            .dispatched(to: injected.appState, \.routing.selectedTab)
+    }
 
     var body: some View {
-        TabView {
+        TabView(selection: tabSelection) {
             GameView(interactor: injected.interactors.games)
                 .tabItem {
-                    Label("Game", systemImage: "gamecontroller")
+                    Label("navigation.tab.game", systemImage: "gamecontroller")
                 }
+                .tag(AppState.Tab.game)
 
             HistoryView()
                 .tabItem {
-                    Label("History", systemImage: "clock")
+                    Label("navigation.tab.history", systemImage: "clock")
                 }
+                .tag(AppState.Tab.history)
 
             RulesView()
                 .tabItem {
-                    Label("Rules", systemImage: "book")
+                    Label("navigation.tab.rule", systemImage: "book")
                 }
+                .tag(AppState.Tab.rules)
 
             SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gearshape")
+                    Label("navigation.tab.settings", systemImage: "gearshape")
                 }
+                .tag(AppState.Tab.settings)
+        }
+        .onReceive(injected.appState.updates(for: \.routing)) {
+            routingState = $0
         }
     }
 }

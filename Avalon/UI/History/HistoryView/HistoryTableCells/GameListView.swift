@@ -25,17 +25,6 @@ struct GroupedGameListView: View {
         .navigationDestination(for: DBModel.Game.self) { game in
             GameDetailsView(game: game)
         }
-        .onChange(of: routingState.gameID, initial: true) { _, gameID in
-            guard let gameID,
-                  let game = games.first(where: { $0.id == gameID })
-            else { return }
-            navigationPath.append(game)
-        }
-        .onChange(of: navigationPath) { _, path in
-            if !path.isEmpty {
-                routingBinding.wrappedValue.gameID = nil
-            }
-        }
     }
 
     private var groupedGames: [GameGroupViewData] {
