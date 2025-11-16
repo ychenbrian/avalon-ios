@@ -42,6 +42,9 @@ struct GameView: View {
                 .padding(.horizontal)
                 .navigationTitle(presenter.game.name.isEmpty == true ? String(localized: "game.untitledGame") : presenter.game.name)
                 .navigationBarTitleDisplayMode(.inline)
+                .navigationDestination(for: DBModel.Game.self) { game in
+                    GameDetailsView(game: game)
+                }
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
@@ -168,11 +171,19 @@ struct GameView: View {
         .alert("gameFinish.title", isPresented: $showFinishAlert) {
             Button("gameFinish.newGame.button", role: .cancel) {
                 Task { @MainActor in
+                    showFinishAlert = false
                     await presenter.createNewGame()
                 }
             }
             Button("gameFinish.viewGame.button") {
-                // TODO: Show the finished game's detail
+                let finishedGame = presenter.game
+
+                showFinishAlert = false
+                navigationPath.append(finishedGame)
+
+                Task { @MainActor in
+                    await presenter.createNewGame()
+                }
             }
         } message: {
             Text(getFinishMessage())

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct GameFinishFormSheet: View {
-    let onFinish: (_ result: GameResult?) -> Void
+    let onFinish: (_ result: GameResult) -> Void
     let onCancel: () -> Void
 
     @State private var draft: GameFinishFormDraft
@@ -9,7 +9,7 @@ struct GameFinishFormSheet: View {
     init(
         status: GameStatus,
         result: GameResult?,
-        onFinish: @escaping (_ result: GameResult?) -> Void,
+        onFinish: @escaping (_ result: GameResult) -> Void,
         onCancel: @escaping () -> Void
     ) {
         self.onFinish = onFinish
@@ -50,11 +50,18 @@ struct GameFinishFormSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
-                        onFinish(draft.result)
+                        if let result = draft.result {
+                            onFinish(result)
+                        }
                     } label: {
                         Text("gameFinishForm.finish.button")
                     }
-                    .foregroundStyle(Color.appColor(.selectedTextColor))
+                    .foregroundStyle(
+                        draft.result == nil
+                            ? Color.appColor(.disabledTextColor)
+                            : Color.appColor(.selectedTextColor)
+                    )
+                    .disabled(draft.result == nil)
                     .accessibilityLabel(String(localized: "gameFinishForm.finish.accessibility"))
                 }
             }

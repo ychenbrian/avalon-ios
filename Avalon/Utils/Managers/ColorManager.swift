@@ -10,6 +10,7 @@ public enum AppColor: String {
     case failTextColor
     case selectedTextColor
     case primaryTextColor
+    case disabledTextColor
 
     case circleRing
 }

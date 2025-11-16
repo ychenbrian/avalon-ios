@@ -169,7 +169,7 @@ final class GamePresenter: ObservableObject {
         await save()
     }
 
-    func finishGame(_ result: GameResult? = .goodWinByFailedAss) async {
+    func finishGame(_ result: GameResult) async {
         game.result = result
         game.status = .complete
         game.finishedAt = Date().toISOString()

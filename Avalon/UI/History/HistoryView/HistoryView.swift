@@ -34,7 +34,7 @@ struct HistoryView: View {
                 .onChange(of: dbGames) {
                     games = dbGames
                 }
-                .navigationTitle("History")
+                .navigationTitle("navigation.tab.history")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         EditButton()
