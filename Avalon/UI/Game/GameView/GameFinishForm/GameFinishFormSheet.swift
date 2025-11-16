@@ -73,7 +73,7 @@ struct GameFinishFormSheet: View {
         if draft.status == .threeSuccesses {
             return String(localized: "gameFinishForm.threeSuccess.label")
         } else if draft.status == .threeFails {
-            return String(localized: "gameFinishForm.threeSuccess.label")
+            return String(localized: "gameFinishForm.threeFail.label")
         } else if draft.status == .earlyAssassin {
             return String(localized: "gameFinishForm.earlyAssassin.label")
         }

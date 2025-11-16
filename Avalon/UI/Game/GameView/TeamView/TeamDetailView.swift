@@ -7,7 +7,6 @@ struct TeamDetailView: View {
 
     @State private var isEditingTeam = false
     @State private var isEditingResult = false
-    @State private var isGameFinish = false
     @State private var activeAlert: TeamDetailAlert?
 
     private var team: DBModel.Team? { presenter.team(id: teamID, in: questID) }
@@ -163,12 +162,9 @@ struct TeamDetailView: View {
                     failCount: quest.result?.failCount,
                     onSave: { questID, failCount in
                         Task { @MainActor in
-                            let gameFinish = await presenter.updateQuestResult(questID: questID, failCount: failCount)
+                            await presenter.updateQuestResult(questID: questID, failCount: failCount)
                             withAnimation {
                                 isEditingResult = false
-                                if gameFinish {
-                                    isGameFinish = true
-                                }
                             }
                         }
                     },
@@ -184,23 +180,6 @@ struct TeamDetailView: View {
             } else {
                 Color.clear.onAppear { isEditingResult = false }
             }
-        }
-        .sheet(isPresented: $isGameFinish) {
-            GameFinishFormSheet(
-                status: presenter.game.status,
-                result: nil,
-                onFinish: { _ in
-                    withAnimation {
-                        isGameFinish = false
-                    }
-                },
-                onCancel: {
-                    withAnimation {
-                        isGameFinish = false
-                    }
-                }
-            )
-            .presentationDetents([.medium])
         }
     }
 

@@ -10,6 +10,7 @@ final class GamePresenter: ObservableObject {
     @Published private(set) var gameState: Loadable<Void> = .notRequested
     @Published private(set) var isSaving = false
     @Published var saveError: Error?
+    @Published var gameFinishSheet: GameStatus?
 
     // MARK: - Derived
 
@@ -190,9 +191,8 @@ final class GamePresenter: ObservableObject {
         await save()
     }
 
-    @discardableResult
-    func updateQuestResult(questID: UUID, failCount: Int) async -> Bool {
-        guard let quest = quest(id: questID) else { return false }
+    func updateQuestResult(questID: UUID, failCount: Int) async {
+        guard let quest = quest(id: questID) else { return }
 
         quest.status = .finished
         let result = DBModel.QuestResult(failCount: failCount)
@@ -200,8 +200,19 @@ final class GamePresenter: ObservableObject {
         result.type = (failCount >= requiredFails) ? .fail : .success
         quest.result = result
 
+        checkGameFinish()
         await save()
-        return checkGameFinish()
+    }
+
+    func earlyAssassin() async {
+        game.status = .earlyAssassin
+        setFinishStatus(status: .earlyAssassin)
+
+        await save()
+    }
+
+    func setFinishStatus(status: GameStatus?) {
+        gameFinishSheet = status
     }
 
     func clearQuestResult(questID: UUID) async {
@@ -230,21 +241,22 @@ final class GamePresenter: ObservableObject {
 
     // MARK: - Helpers
 
-    private func checkGameFinish() -> Bool {
+    private func checkGameFinish() {
         let quests = game.sortedQuests
         let successCount = quests.filter { $0.result?.type == .success }.count
         let failCount = quests.filter { $0.result?.type == .fail }.count
 
         if successCount >= 3 {
             game.status = .threeSuccesses
-            return true
+            setFinishStatus(status: .threeSuccesses)
+            return
         }
         if failCount >= 3 {
             game.status = .threeFails
-            return true
+            setFinishStatus(status: .threeFails)
+            return
         }
         game.status = .inProgress
-        return false
     }
 }
 

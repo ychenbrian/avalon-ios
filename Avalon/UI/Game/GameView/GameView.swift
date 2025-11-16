@@ -22,7 +22,6 @@ struct GameView: View {
     @State private var activeAlert: GameViewAlert?
     @State private var newTeam: TeamLocator?
     @State private var isEditingGame = false
-    @State private var isGameFinish = false
     @State private var showFinishAlert = false
 
     @StateObject private var presenter: GamePresenter
@@ -67,7 +66,9 @@ struct GameView: View {
                     }
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
-                            isGameFinish = true
+                            Task {
+                                await presenter.earlyAssassin()
+                            }
                         } label: {
                             Label("gameView.toolbar.startAssistanation", systemImage: "drop.fill")
                         }
@@ -159,14 +160,14 @@ struct GameView: View {
             )
             .presentationDetents([.medium])
         }
-        .sheet(isPresented: $isGameFinish) {
+        .sheet(item: $presenter.gameFinishSheet) { status in
             GameFinishFormSheet(
-                status: .earlyAssassin,
+                status: status,
                 result: nil,
                 onFinish: { result in
                     Task { @MainActor in
                         withAnimation {
-                            isGameFinish = false
+                            presenter.setFinishStatus(status: nil)
                         }
                         await presenter.finishGame(result)
                         showFinishAlert = true
@@ -174,7 +175,7 @@ struct GameView: View {
                 },
                 onCancel: {
                     withAnimation {
-                        isGameFinish = false
+                        presenter.setFinishStatus(status: nil)
                     }
                 }
             )
