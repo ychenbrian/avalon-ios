@@ -58,8 +58,15 @@ extension DBModel.Game {
         .init(startedAt: startedAt, finishedAt: finishedAt, players: players, quests: quests, status: status, result: result)
     }
 
-    static func random(players: [Player] = Player.randomTeam()) -> DBModel.Game {
-        .init(players: players, quests: DBModel.Quest.randomQuests(for: players))
+    static func random(
+        players: [Player] = Player.randomTeam(),
+        status: GameStatus = .random()
+    ) -> DBModel.Game {
+        .init(
+            players: players,
+            quests: DBModel.Quest.randomQuests(for: players),
+            status: status
+        )
     }
 
     static func initial(
@@ -230,6 +237,13 @@ extension QuestStatus {
     static func random() -> QuestStatus {
         let options: [QuestStatus] = [.notStarted, .inProgress, .finished]
         return options.randomElement() ?? .notStarted
+    }
+}
+
+extension GameStatus {
+    static func random() -> GameStatus {
+        let options: [GameStatus] = [.initial, .inProgress, .complete, .earlyAssassin, .threeFails, .threeSuccesses]
+        return options.randomElement() ?? .inProgress
     }
 }
 

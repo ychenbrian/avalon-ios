@@ -19,8 +19,11 @@ extension AppState {
 extension AppState {
     struct ViewRouting: Equatable {
         var selectedTab: Tab = .game
+
         var gameView = GameView.Routing()
         var historyView = HistoryView.Routing()
+
+        var playerView = PlayerView.Routing()
         var gameDetailsView = GameDetailsView.Routing()
     }
 }

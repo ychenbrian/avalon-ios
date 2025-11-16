@@ -11,7 +11,7 @@ private struct TeamLocator: Identifiable, Equatable {
 struct GameView: View {
     @Environment(\.injected) private var injected: DIContainer
 
-    @State var navigationPath = NavigationPath()
+    @State var navigationPath: [Route] = []
     @State private var routingState: Routing = .init()
     private var routingBinding: Binding<Routing> {
         $routingState.dispatched(to: injected.appState, \.routing.gameView)
@@ -42,10 +42,22 @@ struct GameView: View {
                 .padding(.horizontal)
                 .navigationTitle(presenter.game.name.isEmpty == true ? String(localized: "game.untitledGame") : presenter.game.name)
                 .navigationBarTitleDisplayMode(.inline)
-                .navigationDestination(for: DBModel.Game.self) { game in
-                    GameDetailsView(game: game)
+                .navigationDestination(for: Route.self) { route in
+                    switch route {
+                    case let .details(game):
+                        GameDetailsView(game: game)
+                    case let .players(game):
+                        PlayerView(game: game)
+                    }
                 }
                 .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            navigationPath.append(.players(presenter.game))
+                        } label: {
+                            Label("gameView.toolbar.playerView", systemImage: "person.crop.circle")
+                        }
+                    }
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
                             isEditingGame = true
@@ -179,7 +191,7 @@ struct GameView: View {
                 let finishedGame = presenter.game
 
                 showFinishAlert = false
-                navigationPath.append(finishedGame)
+                navigationPath.append(.details(finishedGame))
 
                 Task { @MainActor in
                     await presenter.createNewGame()
@@ -265,6 +277,11 @@ private extension GameView {
 // MARK: - Routing
 
 extension GameView {
+    enum Route: Hashable {
+        case details(DBModel.Game)
+        case players(DBModel.Game)
+    }
+
     struct Routing: Equatable {
         var gameID: UUID?
     }

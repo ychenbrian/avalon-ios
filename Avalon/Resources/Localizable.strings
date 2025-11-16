@@ -58,6 +58,7 @@
 "gameView.unavailable.title" = "Select a quest";
 "gameView.unavailable.description" = "Tap a circle above.";
 "gameView.navigation.titleFormat" = "%@ - Quest %d";
+"gameView.toolbar.playerView" = "Player View";
 "gameView.toolbar.editGame" = "Edit Game";
 "gameView.toolbar.startAssistanation" = "Start Assistanation";
 
