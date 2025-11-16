@@ -18,7 +18,7 @@ struct TeamCircle: View {
                 .foregroundStyle(.secondary)
         }
         .padding(8)
-        .background(isSelected ? .appColor(.selectedColor).opacity(0.2) : Color.clear)
+        .background(isSelected ? .appColor(.selectedBackgroundColor) : Color.clear)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 

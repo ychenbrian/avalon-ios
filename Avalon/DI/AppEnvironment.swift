@@ -17,7 +17,8 @@ extension AppEnvironment {
         let webRepositories = configuredWebRepositories(session: session)
         let modelContainer = configuredModelContainer()
         let dbRepositories = configuredDBRepositories(modelContainer: modelContainer)
-        let interactors = configuredInteractors(appState: appState, webRepositories: webRepositories, dbRepositories: dbRepositories)
+        let prefRepositories = configuredPrefRepositories()
+        let interactors = configuredInteractors(appState: appState, webRepositories: webRepositories, dbRepositories: dbRepositories, prefRepositories: prefRepositories)
         let diContainer = DIContainer(appState: appState, interactors: interactors)
         let deepLinksHandler = RealDeepLinksHandler(container: diContainer)
         let pushNotificationsHandler = RealPushNotificationsHandler(deepLinksHandler: deepLinksHandler)
@@ -64,10 +65,16 @@ extension AppEnvironment {
         return .init(images: images)
     }
 
+    private static func configuredPrefRepositories() -> DIContainer.PrefRepository {
+        let preferences = DefaultPreferencesRepository()
+        return .init(preferences: preferences)
+    }
+
     private static func configuredInteractors(
         appState: Store<AppState>,
         webRepositories: DIContainer.WebRepositories,
-        dbRepositories: DIContainer.DBRepositories
+        dbRepositories: DIContainer.DBRepositories,
+        prefRepositories: DIContainer.PrefRepository
     ) -> DIContainer.Interactors {
         let images = RealImagesInteractor(webRepository: webRepositories.images)
         let games = RealGamesInteractor(
@@ -79,7 +86,8 @@ extension AppEnvironment {
                 }
             }
         )
+        let preferences = RealPreferencesInteractor(repository: prefRepositories.preferences)
 
-        return .init(images: images, games: games, userPermissions: userPermissions)
+        return .init(images: images, games: games, userPermissions: userPermissions, preferences: preferences)
     }
 }

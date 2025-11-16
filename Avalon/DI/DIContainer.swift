@@ -24,15 +24,21 @@ extension DIContainer {
         let games: GamesDBRepository
     }
 
+    struct PrefRepository {
+        let preferences: PreferencesRepository
+    }
+
     struct Interactors {
         let images: ImagesInteractor
         let games: GamesInteractor
         let userPermissions: UserPermissionsInteractor
+        let preferences: PreferencesInteractor
 
         static var stub: Self {
             .init(images: StubImagesInteractor(),
                   games: StubGamesInteractor(),
-                  userPermissions: StubUserPermissionsInteractor())
+                  userPermissions: StubUserPermissionsInteractor(),
+                  preferences: StubPreferencesInteractor())
         }
     }
 }

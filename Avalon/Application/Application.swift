@@ -3,10 +3,21 @@ import SwiftUI
 @main
 struct MainApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @StateObject private var themeManager: ThemeManager
+
+    init() {
+        let repo = DefaultPreferencesRepository()
+        let prefs = repo.load()
+        _themeManager = StateObject(
+            wrappedValue: ThemeManager(initialIsDarkMode: prefs.isDarkModeEnabled)
+        )
+    }
 
     var body: some Scene {
         WindowGroup {
             appDelegate.rootView
+                .environmentObject(themeManager)
+                .preferredColorScheme(themeManager.colorScheme)
         }
     }
 }

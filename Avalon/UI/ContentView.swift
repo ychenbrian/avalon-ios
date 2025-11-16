@@ -4,6 +4,7 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.injected) private var injected: DIContainer
+    @EnvironmentObject private var themeManager: ThemeManager
     @State private var routingState = AppState.ViewRouting()
 
     private var tabSelection: Binding<AppState.Tab> {
@@ -31,7 +32,7 @@ struct ContentView: View {
                 }
                 .tag(AppState.Tab.rules)
 
-            SettingsView()
+            SettingsView(interactor: injected.interactors.preferences, themeManager: themeManager)
                 .tabItem {
                     Label("navigation.tab.settings", systemImage: "gearshape")
                 }
