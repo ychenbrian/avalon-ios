@@ -3,13 +3,14 @@ import SwiftUI
 struct TextCapsule: View {
     var name: String
     var height: CGFloat = 48
+    var font: Font = .headline
     var horizontalPadding: CGFloat = 16
     var filledColor: Color = .appColor(.emptyColor)
     var expandHorizontally: Bool = false
 
     var body: some View {
         Text(name)
-            .font(.headline)
+            .font(font)
             .padding(.horizontal, horizontalPadding)
             .frame(height: height)
             .frame(maxWidth: expandHorizontally ? .infinity : nil)

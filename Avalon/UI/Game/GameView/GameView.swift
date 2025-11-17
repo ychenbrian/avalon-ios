@@ -38,7 +38,6 @@ struct GameView: View {
         NavigationStack(path: $navigationPath) {
             content
                 .task { await presenter.loadIfNeeded() }
-                .padding(.horizontal)
                 .navigationTitle(presenter.game.name.isEmpty == true ? String(localized: "game.untitledGame") : presenter.game.name)
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationDestination(for: Route.self) { route in
@@ -54,7 +53,10 @@ struct GameView: View {
                         Button {
                             navigationPath.append(.players(presenter.game))
                         } label: {
-                            Label("gameView.toolbar.playerView", systemImage: "person.crop.circle")
+                            HStack {
+                                Image(systemName: "person.crop.circle")
+                                Text("gameView.toolbar.playerView")
+                            }
                         }
                     }
                     ToolbarItem(placement: .topBarTrailing) {

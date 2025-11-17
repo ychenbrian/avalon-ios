@@ -41,5 +41,9 @@ extension DBModel {
         var requiredTeamSize: Int { GameRules.getRequiredTeamSize(numOfPlayers: numOfPlayers, questIndex: index) }
 
         var requiredFails: Int { GameRules.getRequiredFails(numOfPlayers: numOfPlayers, questIndex: index) }
+
+        var approvedTeam: Team? {
+            return sortedTeams.first { $0.result?.isApproved == true }
+        }
     }
 }

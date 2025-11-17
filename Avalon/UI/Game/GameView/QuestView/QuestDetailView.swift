@@ -9,15 +9,18 @@ struct QuestDetailView: View {
     private var selectedTeamID: UUID? { presenter.quest(id: questID)?.selectedTeamID }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .center, spacing: 12) {
             if presenter.quest(id: questID)?.result?.type != nil {
                 ResultView(questID: questID)
+                    .padding(.horizontal)
             }
 
             Text("questDetailView.voteTrack.title")
-                .padding(.top, 8)
+                .padding(.top)
+                .padding(.horizontal)
                 .font(.headline)
                 .foregroundColor(.appColor(.primaryTextColor))
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
@@ -28,10 +31,12 @@ struct QuestDetailView: View {
                         }
                     }
                 }
+                .padding(.horizontal)
             }
 
             if let teamID = selectedTeamID {
                 TeamDetailView(questID: questID, teamID: teamID)
+                    .padding(.horizontal)
             } else {
                 ContentUnavailableView("questDetailView.unavailable.title", systemImage: "door.left.hand.closed", description: Text("questDetailView.unavailable.description"))
             }

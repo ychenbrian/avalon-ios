@@ -27,6 +27,7 @@ struct GameContentView: View {
                             }
                         }
                     }
+                    .padding(.horizontal)
                 }
 
                 if let id = presenter.selectedQuestID, let quest = presenter.quest(id: id) {

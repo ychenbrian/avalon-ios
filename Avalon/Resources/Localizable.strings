@@ -58,7 +58,7 @@
 "gameView.unavailable.title" = "Select a quest";
 "gameView.unavailable.description" = "Tap a circle above.";
 "gameView.navigation.titleFormat" = "%@ - Quest %d";
-"gameView.toolbar.playerView" = "Player View";
+"gameView.toolbar.playerView" = "Player";
 "gameView.toolbar.editGame" = "Edit Game";
 "gameView.toolbar.startAssistanation" = "Start Assistanation";
 
@@ -170,3 +170,17 @@
 "game.result.goodVictory.assistanationFail" = "🏆 Good Victory – Assassination Failed";
 "game.result.evilVictory.threeFailedQuests" = "😈 Evil Victory – Three Failed Quests";
 "game.result.evilVictory.assistanationSuccess" = "😈 Evil Victory – Assassination Success";
+
+// MARK: - Player View
+
+"playerView.title.format" = "Player %d";
+"playerView.quest.title.format" = "Q%d";
+"playerView.quest.leader" = "Leader";
+"playerView.quest.notLeader" = "Not Leader";
+"playerView.quest.onTeam" = "On quest team";
+"playerView.quest.notOnTeam" = "Not on team";
+"playerView.quest.noTeamYet" = "No approved teams yet";
+"playerView.quest.title.team" = "Team";
+"playerView.quest.title.leader" = "Leader";
+"playerView.quest.title.members" = "Members";
+"playerView.quest.title.vote" = "Vote";

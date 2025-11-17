@@ -24,8 +24,12 @@ struct PlayerView: View {
 
     var body: some View {
         content
-            .padding(.horizontal)
-            .navigationTitle("Player \((selectedPlayer?.index ?? 0) + 1)")
+            .navigationTitle(
+                String(
+                    format: NSLocalizedString("playerView.title.format", comment: "Player number in list"),
+                    (selectedPlayer?.index ?? 0) + 1
+                )
+            )
             .navigationBarTitleDisplayMode(.inline)
             .environmentObject(presenter)
             .toolbar(.hidden, for: .tabBar)
@@ -62,32 +66,28 @@ private extension PlayerView {
         if presenter.game.status == .initial {
             EmptyStateView()
         } else {
-            VStack {
-                HStack(alignment: .top) {
-                    PlayerVGrid(
+            ScrollView {
+                VStack {
+                    PlayerGrid(
                         players: sortedPlayer(),
                         selectedColor: .appColor(.selectedColor),
-                        half: .firstHalf,
                         selected: { selectedPlayer == $0 },
                         action: { player in
                             selectedPlayer = player
                         }
                     )
 
-                    Spacer()
-
-                    PlayerVGrid(
-                        players: sortedPlayer(),
-                        selectedColor: .appColor(.selectedColor),
-                        half: .secondHalf,
-                        selected: { selectedPlayer == $0 },
-                        action: { player in
-                            selectedPlayer = player
+                    if let selectedPlayer {
+                        VStack {
+                            ForEach(presenter.game.sortedQuests, id: \.id) { quest in
+                                if quest.status != .notStarted {
+                                    PlayerQuestView(quest: quest, player: selectedPlayer)
+                                }
+                            }
                         }
-                    )
+                        .padding()
+                    }
                 }
-
-                Spacer()
             }
         }
     }

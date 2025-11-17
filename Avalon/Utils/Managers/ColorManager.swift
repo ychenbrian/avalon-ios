@@ -4,6 +4,7 @@ public enum AppColor: String {
     case successColor
     case failColor
     case selectedColor
+    case highlightColor
     case selectedBackgroundColor
     case emptyColor
 
