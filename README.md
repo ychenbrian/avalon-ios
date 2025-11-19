@@ -9,15 +9,15 @@ Avalon Quest Chronicle is a hobby project born from a love of the Avalon board g
 ## Features
 
 ### Current
-- **Game Session Tracking**: Record complete game sessions with all rounds and quests
+- **Game Session Tracking**: Record complete game sessions with all quests and teams
 - **Quest Details**: Track each quest's team composition, leader, and outcome
-- **Player Management**: Manage players participating in each game
+- **Player Management**: View players participating in each game
 - **Vote Recording**: Keep track of team approvals and rejections
 - **Quest Results**: Record success/fail counts for each quest
 - **Modern UI**: Built with SwiftUI and enhanced with Liquid Glass design elements
+- **Game History**: Persist and browse past game sessions
 
 ### Upcoming
-- **Game History**: Persist and browse past game sessions
 - **Search & Filter**: Find specific games by date, players, or outcomes
 - **Game Rules**: Built-in guide explaining Avalon rules and mechanics
 - **Settings**: Customise app behaviour and preferences
@@ -29,14 +29,14 @@ Avalon Quest Chronicle is a hobby project born from a love of the Avalon board g
 
 ## Technical Details
 
-- **Minimum iOS Version**: iOS 26.0
-- **Framework**: SwiftUI with Swift Observation framework
+- **Minimum iOS Version**: iOS 17.6
+- **Framework**: SwiftUI + Combine
 - **Design**: Liquid Glass UI components
-- **Architecture**: @Observable state management
+- **Architecture**: Clean architecture
 
 ## Requirements
 
-- iOS 26.0 or later
+- iOS 17.6 or later
 - Xcode 26.0 or later
 
 ## Installation

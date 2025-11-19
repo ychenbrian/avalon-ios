@@ -72,14 +72,24 @@ struct GameSettingsFormSheet: View {
                 Divider()
                     .padding()
 
-                Button {
-                    onNewGame()
-                } label: {
-                    Text("gameSettingsForm.startNewGame.button")
+                if #available(iOS 26.0, *) {
+                    Button {
+                        onNewGame()
+                    } label: {
+                        Text("gameSettingsForm.startNewGame.button")
+                    }
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .buttonStyle(.glassProminent)
+                } else {
+                    Button {
+                        onNewGame()
+                    } label: {
+                        Text("gameSettingsForm.startNewGame.button")
+                    }
+                    .font(.headline)
+                    .foregroundColor(.white)
                 }
-                .font(.headline)
-                .foregroundColor(.white)
-                .buttonStyle(.glassProminent)
 
                 Text("gameSettingsForm.startNewGame.warning")
                     .font(.subheadline)

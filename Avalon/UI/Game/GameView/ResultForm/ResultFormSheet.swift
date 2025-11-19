@@ -98,15 +98,26 @@ struct ResultFormSheet: View {
                 if draft.hasFinished {
                     Divider()
 
-                    Button {
-                        onClearResult()
-                    } label: {
-                        Text("resultForm.clearResult.button")
+                    if #available(iOS 26.0, *) {
+                        Button {
+                            onClearResult()
+                        } label: {
+                            Text("resultForm.clearResult.button")
+                        }
+                        .font(.headline)
+                        .tint(.appColor(.failTextColor))
+                        .foregroundColor(.white)
+                        .buttonStyle(.glassProminent)
+                    } else {
+                        Button {
+                            onClearResult()
+                        } label: {
+                            Text("resultForm.clearResult.button")
+                        }
+                        .font(.headline)
+                        .tint(.appColor(.failTextColor))
+                        .foregroundColor(.white)
                     }
-                    .font(.headline)
-                    .tint(.appColor(.failTextColor))
-                    .foregroundColor(.white)
-                    .buttonStyle(.glassProminent)
                 }
 
                 Spacer(minLength: 0)

@@ -56,29 +56,53 @@ struct TeamDetailView: View {
             }
             if presenter.allowEditing {
                 HStack {
-                    Button {
-                        if let quest = presenter.quest(id: questID) {
-                            if quest.status != .finished {
-                                isEditingTeam = true
-                            } else {
-                                activeAlert = .cannotEditTeam
+                    if #available(iOS 26.0, *) {
+                        Button {
+                            if let quest = presenter.quest(id: questID) {
+                                if quest.status != .finished {
+                                    isEditingTeam = true
+                                } else {
+                                    activeAlert = .cannotEditTeam
+                                }
                             }
+                        } label: {
+                            Text("teamDetail.editTeam.button")
                         }
-                    } label: {
-                        Text("teamDetail.editTeam.button")
+                        .font(.headline)
+                        .foregroundColor(.appColor(.primaryTextColor))
+                        .buttonStyle(.glass)
+                        
+                        Button {
+                            isEditingResult = true
+                        } label: {
+                            Text("teamDetail.editResult.button")
+                        }
+                        .font(.headline)
+                        .foregroundColor(.appColor(.primaryTextColor))
+                        .buttonStyle(.glass)
+                    } else {
+                        Button {
+                            if let quest = presenter.quest(id: questID) {
+                                if quest.status != .finished {
+                                    isEditingTeam = true
+                                } else {
+                                    activeAlert = .cannotEditTeam
+                                }
+                            }
+                        } label: {
+                            Text("teamDetail.editTeam.button")
+                        }
+                        .font(.headline)
+                        .foregroundColor(.appColor(.primaryTextColor))
+                        
+                        Button {
+                            isEditingResult = true
+                        } label: {
+                            Text("teamDetail.editResult.button")
+                        }
+                        .font(.headline)
+                        .foregroundColor(.appColor(.primaryTextColor))
                     }
-                    .font(.headline)
-                    .foregroundColor(.appColor(.primaryTextColor))
-                    .buttonStyle(.glass)
-
-                    Button {
-                        isEditingResult = true
-                    } label: {
-                        Text("teamDetail.editResult.button")
-                    }
-                    .font(.headline)
-                    .foregroundColor(.appColor(.primaryTextColor))
-                    .buttonStyle(.glass)
                 }
             }
         }
